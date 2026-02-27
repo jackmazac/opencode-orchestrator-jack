@@ -1,0 +1,132 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "autoupdate": false,
+  "plugin": [
+    "@nick-vi/opencode-type-inject",
+    "@tarquinen/opencode-dcp@latest",
+    "@franlol/opencode-md-table-formatter@latest",
+    "@mohak34/opencode-notifier@latest"
+  ],
+  "instructions": ["~/.config/opencode/plugin/shell-strategy/shell_strategy.md"],
+  "formatter": {
+    "biome": {
+      "disabled": true
+    },
+    "oxfmt": {
+      "command": ["oxfmt", "$FILE"],
+      "extensions": [".js", ".jsx", ".ts", ".tsx"]
+    }
+  },
+  "agent": {
+    "orchestrator": {
+      "description": "Primary agent that plans, ideates, delegates, and synthesizes",
+      "mode": "primary",
+      "model": "amazon-bedrock/anthropic.claude-opus-4-6-v1-1m",
+      "prompt": "{file:./prompts/orchestrator.txt}",
+      "permission": {
+        "task": {
+          "planner": "allow",
+          "executor-high": "allow",
+          "executor-medium": "allow",
+          "executor-low": "allow",
+          "explore": "allow",
+          "explore-high": "allow",
+          "reviewer": "allow",
+          "designer": "allow",
+          "debugger-xhigh": "allow"
+        }
+      }
+    },
+    "compaction": {
+      "prompt": "{file:./prompts/compaction.txt}"
+    },
+    "planner": {
+      "description": "Drafts implementation plans with complexity assessments. Can explore the codebase.",
+      "mode": "subagent",
+      "model": "openai/gpt-5.2",
+      "prompt": "{file:./prompts/planner.txt}",
+      "tools": { "write": false, "edit": false, "bash": true },
+      "permission": {
+        "task": {
+          "explore": "allow"
+        }
+      }
+    },
+    "planner-high": {
+      "description": "Drafts implementation plans with complexity assessments. Can explore the codebase.",
+      "mode": "subagent",
+      "model": "openai/gpt-5.2",
+      "reasoningEffort": "high",
+      "prompt": "{file:./prompts/planner.txt}",
+      "tools": { "write": false, "edit": false, "bash": true },
+      "permission": {
+        "task": {
+          "explore": "allow"
+        }
+      }
+    },
+    "debugger-xhigh": {
+      "description": "High-complexity code debugging",
+      "mode": "subagent",
+      "model": "openai/gpt-5.3-codex",
+      "reasoningEffort": "high",
+      "prompt": "{file:./prompts/debugger.txt}",
+      "tools": { "write": true, "edit": true, "bash": true }
+    },
+    "executor-high": {
+      "description": "High-complexity code execution — highest intelligence",
+      "mode": "subagent",
+      "model": "amazon-bedrock/anthropic.claude-opus-4-6-v1-1m",
+      "prompt": "{file:./prompts/executor.txt}",
+      "tools": { "write": true, "edit": true, "bash": true }
+    },
+    "executor-medium": {
+      "description": "Medium-complexity code execution",
+      "mode": "subagent",
+      "model": "amazon-bedrock/anthropic.claude-sonnet-4-6-1m",
+      "prompt": "{file:./prompts/executor.txt}",
+      "tools": { "write": true, "edit": true, "bash": true }
+    },
+    "executor-low": {
+      "description": "Low-complexity code execution",
+      "mode": "subagent",
+      "model": "openai/gpt-5.3-codex",
+      "reasoningEffort": "medium",
+      "prompt": "{file:./prompts/executor.txt}",
+      "tools": { "write": true, "edit": true, "bash": true }
+    },
+    "reviewer": {
+      "description": "Reviews executor output, runs tests, validates against plan",
+      "mode": "subagent",
+      "model": "openai/gpt-5.2",
+      "prompt": "{file:./prompts/reviewer.txt}",
+      "tools": { "write": false, "edit": false, "bash": true },
+      "permission": {
+        "task": {
+          "explore": "allow"
+        }
+      }
+    },
+    "explore": {
+      "description": "Fast, read-only agent for exploring codebases",
+      "mode": "subagent",
+      "model": "amazon-bedrock/anthropic.claude-haiku-4-5-20251001-v1:0",
+      "prompt": "{file:./prompts/explore.txt}",
+      "tools": { "write": false, "edit": false, "bash": true }
+    },
+    "explore-high": {
+      "description": "Deep codebase exploration for complex analysis",
+      "mode": "subagent",
+      "model": "openai/gpt-5.3-codex",
+      "prompt": "{file:./prompts/explore.txt}",
+      "tools": { "write": false, "edit": false, "bash": true }
+    },
+    "designer": {
+      "description": "UI/UX design specialist — generates design systems and implements UI code using ui-ux-pro-max skill",
+      "mode": "subagent",
+      "model": "amazon-bedrock/anthropic.claude-sonnet-4-6-1m",
+      "prompt": "{file:./prompts/designer.txt}",
+      "tools": { "write": true, "edit": true, "bash": true }
+    }
+  }
+}
