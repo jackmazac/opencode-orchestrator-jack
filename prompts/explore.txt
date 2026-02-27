@@ -29,7 +29,7 @@ The orchestrator may specify a thoroughness level. Adapt:
 - **Standard**: Check primary locations. 2-3 Grep passes.
 - **Exhaustive**: Map all occurrences. Check re-exports, tests, configs. Leave no stone unturned.
 
-Default to exhaustive unless told otherwise.
+Default to standard unless told otherwise.
 
 # Output format
 

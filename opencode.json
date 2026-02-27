@@ -29,6 +29,7 @@
           "executor-high": "allow",
           "executor-medium": "allow",
           "executor-low": "allow",
+          "suborchestrator": "allow",
           "explore": "allow",
           "explore-high": "allow",
           "reviewer": "allow",
@@ -41,18 +42,6 @@
       "prompt": "{file:./prompts/compaction.txt}"
     },
     "planner": {
-      "description": "Drafts implementation plans with complexity assessments. Can explore the codebase.",
-      "mode": "subagent",
-      "model": "openai/gpt-5.2",
-      "prompt": "{file:./prompts/planner.txt}",
-      "tools": { "write": false, "edit": false, "bash": true },
-      "permission": {
-        "task": {
-          "explore": "allow"
-        }
-      }
-    },
-    "planner-high": {
       "description": "Drafts implementation plans with complexity assessments. Can explore the codebase.",
       "mode": "subagent",
       "model": "openai/gpt-5.2",
@@ -78,22 +67,49 @@
       "mode": "subagent",
       "model": "amazon-bedrock/anthropic.claude-opus-4-6-v1-1m",
       "prompt": "{file:./prompts/executor.txt}",
-      "tools": { "write": true, "edit": true, "bash": true }
+      "tools": { "write": true, "edit": true, "bash": true },
+      "permission": {
+        "task": {
+          "explore": "allow"
+        }
+      }
     },
     "executor-medium": {
       "description": "Medium-complexity code execution",
       "mode": "subagent",
       "model": "amazon-bedrock/anthropic.claude-sonnet-4-6-1m",
       "prompt": "{file:./prompts/executor.txt}",
-      "tools": { "write": true, "edit": true, "bash": true }
+      "tools": { "write": true, "edit": true, "bash": true },
+      "permission": {
+        "task": {
+          "explore": "allow"
+        }
+      }
     },
     "executor-low": {
       "description": "Low-complexity code execution",
       "mode": "subagent",
       "model": "openai/gpt-5.3-codex",
-      "reasoningEffort": "medium",
       "prompt": "{file:./prompts/executor.txt}",
-      "tools": { "write": true, "edit": true, "bash": true }
+      "tools": { "write": true, "edit": true, "bash": true },
+      "permission": {
+        "task": {
+          "explore": "allow"
+        }
+      }
+    },
+    "suborchestrator": {
+      "description": "Manages focused multi-file campaigns — lint fixes, mechanical refactors, migrations",
+      "mode": "subagent",
+      "model": "amazon-bedrock/anthropic.claude-sonnet-4-6-1m",
+      "prompt": "{file:./prompts/suborchestrator.txt}",
+      "tools": { "write": true, "edit": true, "bash": true },
+      "permission": {
+        "task": {
+          "executor-low": "allow",
+          "explore": "allow"
+        }
+      }
     },
     "reviewer": {
       "description": "Reviews executor output, runs tests, validates against plan",
