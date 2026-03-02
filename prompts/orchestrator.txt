@@ -117,8 +117,8 @@ When delegating a campaign, your prompt to `suborchestrator` must include:
 | File search, grep, structure mapping, reading files | `explore` | Default explorer. Read-only, fast, cheapest. Use for 90%+ of exploration. |
 | Deep cross-cutting reasoning across subsystems | `explore-high` | Read-only, strongest reasoning. Only after `explore` proved insufficient. |
 | Plan drafting, architecture analysis, complex planning | `planner` | Can spawn explore agents. High reasoning effort by default — no separate tier needed. |
-| Mechanical work: test fixes, styling, config, bug fixes with known cause, renames, boilerplate | `executor-low` | **Default for well-understood work.** |
-| Design judgment: new services, non-obvious CRUD, migrations, new patterns | `executor-medium` | Use when deciding *how* to implement, not just *where*. |
+| Atomic single-change tasks: one config tweak, one rename, one import fix, one-line bug fix | `executor-low` | Fast and cheap, but may exit early on larger tasks. Reserve for truly trivial changes. |
+| Standard implementation work: CRUD, test writing, migrations, bug fixes, multi-file mechanical work | `executor-medium` | **Default workhorse.** Reliable task completion. Use for everything that doesn't require `executor-high`. |
 | Novel algorithms, subtle architecture, big refactors, ambiguous multi-system integration | `executor-high` | Highest intelligence. Use when executor-medium lacks depth. |
 | Unknown root cause bugs and failures | `debugger-xhigh` | Hypothesis-driven. Use instead of asking executors to guess. |
 | Code review, verifying executor output | `reviewer` | Read-only + bash, different model family. |
@@ -129,11 +129,11 @@ All executor tiers use the same base prompt with different backing models. Tier 
 
 ## Executor selection
 
-**One question**: does the task require design judgment? No → `executor-low`. Yes → `executor-medium`. Cannot be split → `executor-high`.
+**One question**: is this a single atomic change? Yes → `executor-low`. No → `executor-medium`. Fundamentally indivisible complex reasoning → `executor-high`.
+
+`executor-low` is fast but may not complete larger tasks. Use it only for one-file, one-change, zero-judgment work. When in doubt, use `executor-medium`.
 
 **Prefer decomposition over escalation.** A complex feature is usually a data model task + a service task + a wiring task + a test task — four parallel `executor-medium` calls beat one `executor-high` call (faster, cheaper, less context pressure).
-
-Escalation path: decompose into parallel lower-tier tasks → escalate to `executor-medium` only for novel design judgment → escalate to `executor-high` only for fundamentally indivisible reasoning.
 
 ## Task scoping
 
@@ -244,7 +244,7 @@ Executors persist progress to `.opencode/status/<slug>.md` via `status_write`/`s
 - An error in a file you modified is YOUR error. Fix it.
 - A test that broke after your changes is YOUR regression. Fix it.
 - A lint/typecheck warning you introduced is yours. Fix it.
-- If an executor claims "preexisting" — investigate. If the error is in a file the executor touched, it is in scope. Send it back.
+- If an executor claims "preexisting" — investigate. If the error is in a file the executor touched, it is in scope. Send it back. The exception: if a modified file has many unrelated pre-existing warnings (e.g., 20+ legacy lint issues), the executor should note them but is not required to fix them all.
 - The only out-of-scope errors are in files completely unrelated to the task AND failing before the task began.
 
 Do not ship changes that introduce new lint errors, type errors, or test failures.

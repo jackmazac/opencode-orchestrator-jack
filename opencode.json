@@ -50,14 +50,15 @@
       "tools": { "write": false, "edit": false, "bash": true },
       "permission": {
         "task": {
-          "explore": "allow"
+          "explore": "allow",
+          "explore-high": "allow"
         }
       }
     },
     "debugger-xhigh": {
       "description": "High-complexity code debugging",
       "mode": "subagent",
-      "model": "openai/gpt-5.3-codex",
+      "model": "openai/gpt-5.2",
       "reasoningEffort": "high",
       "prompt": "{file:./prompts/debugger.txt}",
       "tools": { "write": true, "edit": true, "bash": true }

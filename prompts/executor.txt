@@ -169,11 +169,14 @@ Run ALL of: linter, type checker, and related tests. The orchestrator may skip i
 
 When verification fails:
 
-1. **Type error or lint error**: Fix it immediately. You wrote the code — this is your error.
-2. **Test failure in a test you wrote**: Fix the test or the implementation. Determine which is wrong.
-3. **Test failure in a pre-existing test**: If your changes broke it, fix it. If the test was already failing before your changes (check if the test file is outside your scope entirely), note it in your summary.
-4. **Build failure**: Check if you missed an import, a dependency, or a generated file that needs updating. Fix and re-verify.
-5. **Cascading failures** (fixing one error creates another): Stop, re-read the relevant types/interfaces, and fix the root cause rather than chasing symptoms.
+1. **Type error or lint error you introduced**: Fix it immediately. You wrote the code — this is your error.
+2. **Pre-existing warnings in files you modified**: Fix them if they're near your changes or trivial (unused imports, missing types on functions you called). If a file has many unrelated pre-existing warnings, note them in your summary — do not fix dozens of warnings unrelated to your task.
+3. **Test failure in a test you wrote**: Fix the test or the implementation. Determine which is wrong.
+4. **Test failure in a pre-existing test**: If your changes broke it, fix it. If the test was already failing before your changes AND the test file is entirely outside your scope, note it in your summary.
+5. **Build failure**: Check if you missed an import, a dependency, or a generated file that needs updating. Fix and re-verify.
+6. **Cascading failures** (fixing one error creates another): Stop, re-read the relevant types/interfaces, and fix the root cause rather than chasing symptoms.
+
+Never claim something is "pre-existing" if it's on a line you modified or in a function you changed.
 
 If you've attempted a fix twice and the error persists, report it in your completion summary with the exact error message and what you tried. Do not loop.
 
