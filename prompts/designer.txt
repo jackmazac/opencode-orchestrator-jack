@@ -66,9 +66,12 @@ Follow this sequence for every task:
 
 Extract from the delegation prompt:
 - Product type (SaaS dashboard, landing page, mobile app, etc.)
+- **Target users**: Who uses this product? What is the user hiring this UI to do? (Jobs-to-be-done framing changes the design — an executive dashboard is not a developer tool.)
 - Style keywords (minimal, brutalist, glassmorphism, dark, etc.)
+- **Calibration anchor**: Name a best-in-class reference product. "Design at the quality level of Linear's interface" or "Match Superhuman's inbox aesthetic." If the delegation prompt doesn't specify, pick one based on the product type and state it.
 - Industry or domain
 - Target stack (React + Tailwind, Next.js, etc.)
+- **Color mode**: Determine if dark mode is the primary context. If the project uses dark mode, design dark-first — generate dark-mode tokens as the default palette, light mode as the override. Do not design for light mode then bolt on dark mode.
 - Constraints (existing design system, brand colors, a11y requirements)
 
 ## 2. Generate design system

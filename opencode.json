@@ -19,13 +19,15 @@
   },
   "agent": {
     "orchestrator": {
-      "description": "Primary agent that plans, ideates, delegates, and synthesizes",
+      "description": "Primary agent that plans, ideates, delegates, and synthesizes — Claude Opus 4.6 1m",
       "mode": "primary",
       "model": "amazon-bedrock/anthropic.claude-opus-4-6-v1-1m",
+      "reasoningEffort": "max",
       "prompt": "{file:./prompts/orchestrator.txt}",
       "permission": {
         "task": {
           "planner": "allow",
+          "executor-genius": "allow",
           "executor-high": "allow",
           "executor-medium": "allow",
           "executor-low": "allow",
@@ -42,9 +44,9 @@
       "prompt": "{file:./prompts/compaction.txt}"
     },
     "planner": {
-      "description": "Drafts implementation plans with complexity assessments. Can explore the codebase.",
+      "description": "Drafts implementation plans with complexity assessments. Can explore the codebase — GPT-5.4 with high reasoning",
       "mode": "subagent",
-      "model": "openai/gpt-5.2",
+      "model": "openai/gpt-5.4",
       "reasoningEffort": "high",
       "prompt": "{file:./prompts/planner.txt}",
       "tools": { "write": false, "edit": false, "bash": true },
@@ -56,17 +58,31 @@
       }
     },
     "debugger-xhigh": {
-      "description": "High-complexity code debugging",
+      "description": "High-complexity code debugging — GPT-5.4 with xhigh reasoning",
       "mode": "subagent",
-      "model": "openai/gpt-5.2",
-      "reasoningEffort": "high",
+      "model": "openai/gpt-5.4",
+      "reasoningEffort": "xhigh",
       "prompt": "{file:./prompts/debugger.txt}",
       "tools": { "write": true, "edit": true, "bash": true }
     },
-    "executor-high": {
-      "description": "High-complexity code execution — highest intelligence",
+    "executor-genius": {
+      "description": "Highest-complexity code execution — Claude Opus 4.6 1m with high reasoning",
       "mode": "subagent",
       "model": "amazon-bedrock/anthropic.claude-opus-4-6-v1-1m",
+      "reasoningEffort": "high",
+      "prompt": "{file:./prompts/executor.txt}",
+      "tools": { "write": true, "edit": true, "bash": true },
+      "permission": {
+        "task": {
+          "explore": "allow"
+        }
+      }
+    },
+    "executor-high": {
+      "description": "High-complexity code execution — GPT-5.4 with high reasoning",
+      "mode": "subagent",
+      "model": "openai/gpt-5.4",
+      "reasoningEffort": "high",
       "prompt": "{file:./prompts/executor.txt}",
       "tools": { "write": true, "edit": true, "bash": true },
       "permission": {
@@ -76,9 +92,10 @@
       }
     },
     "executor-medium": {
-      "description": "Medium-complexity code execution",
+      "description": "Medium-complexity code execution — Claude Sonnet 4.6 1m",
       "mode": "subagent",
       "model": "amazon-bedrock/anthropic.claude-sonnet-4-6-1m",
+      "reasoningEffort": "high",
       "prompt": "{file:./prompts/executor.txt}",
       "tools": { "write": true, "edit": true, "bash": true },
       "permission": {
@@ -88,9 +105,10 @@
       }
     },
     "executor-low": {
-      "description": "Low-complexity code execution",
+      "description": "Low-complexity code execution — GPT-5.4 with medium reasoning",
       "mode": "subagent",
-      "model": "openai/gpt-5.3-codex",
+      "model": "openai/gpt-5.4",
+      "reasoningEffort": "medium",
       "prompt": "{file:./prompts/executor.txt}",
       "tools": { "write": true, "edit": true, "bash": true },
       "permission": {
@@ -100,9 +118,10 @@
       }
     },
     "suborchestrator": {
-      "description": "Manages focused multi-file campaigns — lint fixes, mechanical refactors, migrations",
+      "description": "Manages focused multi-file campaigns — lint fixes, mechanical refactors, migrations — Claude Sonnet 4.6 1m with max reasoning",
       "mode": "subagent",
       "model": "amazon-bedrock/anthropic.claude-sonnet-4-6-1m",
+      "reasoningEffort": "max",
       "prompt": "{file:./prompts/suborchestrator.txt}",
       "tools": { "write": true, "edit": true, "bash": true },
       "permission": {
@@ -113,9 +132,10 @@
       }
     },
     "reviewer": {
-      "description": "Reviews executor output, runs tests, validates against plan",
+      "description": "Reviews executor output, runs tests, validates against plan — GPT-5.4 with high reasoning",
       "mode": "subagent",
-      "model": "openai/gpt-5.2",
+      "model": "openai/gpt-5.4",
+      "reasoningEffort": "high",
       "prompt": "{file:./prompts/reviewer.txt}",
       "tools": { "write": false, "edit": false, "bash": true },
       "permission": {
@@ -125,21 +145,22 @@
       }
     },
     "explore": {
-      "description": "Fast, read-only agent for exploring codebases",
+      "description": "Fast, read-only agent for exploring codebases — Claude Haiku 4.5",
       "mode": "subagent",
       "model": "amazon-bedrock/anthropic.claude-haiku-4-5-20251001-v1:0",
       "prompt": "{file:./prompts/explore.txt}",
       "tools": { "write": false, "edit": false, "bash": true }
     },
     "explore-high": {
-      "description": "Deep codebase exploration for complex analysis",
+      "description": "Deep codebase exploration for complex analysis — GPT-5.4 with high reasoning",
       "mode": "subagent",
-      "model": "openai/gpt-5.3-codex",
+      "model": "openai/gpt-5.4",
+      "reasoningEffort": "high",
       "prompt": "{file:./prompts/explore.txt}",
       "tools": { "write": false, "edit": false, "bash": true }
     },
     "designer": {
-      "description": "UI/UX design specialist — generates design systems and implements UI code using ui-ux-pro-max skill",
+      "description": "UI/UX design specialist — generates design systems and implements UI code using ui-ux-pro-max skill — Claude Sonnet 4.6 1m",
       "mode": "subagent",
       "model": "amazon-bedrock/anthropic.claude-sonnet-4-6-1m",
       "prompt": "{file:./prompts/designer.txt}",
