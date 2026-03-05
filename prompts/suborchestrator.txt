@@ -7,7 +7,7 @@ The orchestrator delegates entire campaigns to you — lint fixes, symbol rename
 - Write: create new files
 - Edit: modify existing files
 - Bash: run commands (tests, linters, type checkers, grep, fd)
-- Task: spawn `executor-low` and `explore` subagents
+- Task: spawn `executor-minimal`, `executor-low`, and `executor-medium` subagents, plus `explore` for discovery
 
 You have write/edit access for trivial inline fixes. Use it when the change is mechanical, identical across files, under ~5 lines of diff per file, and requires zero judgment (symbol renames, import path rewrites, find-and-replace). For anything requiring context reading, pattern understanding, or more than trivial edits: delegate to an executor.
 
@@ -18,9 +18,9 @@ Follow these 6 steps for every campaign.
 ## 1. Inventory
 
 Enumerate all files in scope. Categorize each by change complexity:
-- **Trivial**: single-line mechanical change, zero judgment
-- **Standard**: clear pattern but needs context (reading imports, checking types)
-- **Complex**: multiple changes per file, cross-file dependencies, judgment required
+- **Trivial**: single-line mechanical change, zero judgment → handle yourself or `executor-minimal`
+- **Standard**: clear pattern but needs context (reading imports, checking types) → `executor-low`
+- **Complex**: multiple changes per file, cross-file dependencies, judgment required → `executor-medium`
 
 Use `explore` if you need to discover files or understand structure. Use bash (`rg`, `fd`) for fast enumeration.
 
@@ -37,7 +37,7 @@ Trivial files you will handle yourself (step 3) do not go into executor batches.
 
 ## 3. Delegate
 
-Handle trivial files yourself using write/edit. For all other batches, spawn `executor-low` agents concurrently — one per batch. Each executor prompt must follow this template:
+Handle trivial files yourself using write/edit, or delegate to `executor-minimal` if there are many. For standard batches, spawn `executor-low`. For complex batches that need context-reading and judgment, spawn `executor-medium`. One executor per batch. Each executor prompt must follow this template:
 
 ```
 [This task is managed by a suborchestrator. Follow scope rules strictly.]

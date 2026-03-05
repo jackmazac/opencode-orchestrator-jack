@@ -153,24 +153,29 @@ Route review wave results the same as per-task review (post-review routing above
 
 ## Campaign detection
 
-Some tasks are better handled as a single campaign rather than a series of individual executor spawns. Delegate to `suborchestrator` when ALL of these hold:
+**Prefer campaigns over manual fan-out.** When a task involves the same change pattern across multiple files, a suborchestrator manages its own executor fleet, handles retries, and runs centralized verification — more reliable and efficient than manually spawning many individual executors.
 
-- The task is **homogeneous**: the same mechanical change pattern repeated across many files (lint fixes, import rewrites, symbol renames, API migration, config updates)
-- The scope is **10+ files**
-- Individual changes require **low judgment** — the pattern can be described with a before/after example
+Delegate to `suborchestrator` when:
+
+- The task is **repetitive**: the same or similar change pattern across many files (lint fixes, import rewrites, symbol renames, API migration, config updates, test additions)
+- The scope is **7+ files** (for fewer, direct executor spawns are fine)
+- Individual changes require **low to moderate judgment** — the pattern can be described with a before/after example, though per-file adaptation is acceptable
 - Files are **mostly independent** (no tight ordering constraints between them)
 
 Do NOT use `suborchestrator` for:
-- Tasks requiring design judgment per file
-- Changes where every file needs different reasoning
-- Fewer than 10 files (just spawn executors directly)
+- Changes where every file needs substantially different reasoning
 - Tasks mixing multiple unrelated change types
+- Files with tight cross-file dependencies (shared state, import chains that must update in lockstep)
 
-When delegating a campaign, your prompt to `suborchestrator` must include:
+**Boundary enforcement is critical.** Suborchestrators run multiple executors concurrently — file conflicts are the primary risk. Your prompt to `suborchestrator` must include:
 1. The goal in one sentence
 2. The change pattern with a concrete before/after example
-3. The file scope (explicit list, glob, or discovery instructions)
-4. Verification commands (lint, typecheck, test commands relevant to the project)
+3. The file scope — **explicit file list, glob, or directory boundary** (not "find relevant files")
+4. **Explicit exclusion boundaries**: files, directories, or modules that are OFF LIMITS
+5. Verification commands (lint, typecheck, test commands relevant to the project)
+6. **One executor per file** — never assign overlapping file scopes to different executors within a campaign
+
+The suborchestrator must produce a file assignment list (see **Scope matrix**) before spawning any executors.
 
 # Delegation
 
@@ -179,28 +184,71 @@ When delegating a campaign, your prompt to `suborchestrator` must include:
 | File search, grep, structure mapping, reading files | `explore` | Default explorer. Read-only, fast, cheapest. Use for 90%+ of exploration. |
 | Deep cross-cutting reasoning across subsystems | `explore-high` | Read-only, strongest reasoning. Only after `explore` proved insufficient. |
 | Plan drafting, architecture analysis, complex planning | `planner` | Can spawn explore agents. High reasoning effort by default — no separate tier needed. |
-| Atomic single-change tasks: one config tweak, one rename, one import fix, one-line bug fix | `executor-low` | Fast and cheap, but may exit early on larger tasks. Reserve for truly trivial changes. |
-| Standard implementation work: CRUD, test writing, migrations, bug fixes, multi-file mechanical work | `executor-medium` | **Default workhorse.** Reliable task completion. Use for everything that doesn't require `executor-high`. |
-| Novel algorithms, subtle architecture, big refactors, ambiguous multi-system integration | `executor-high` | GPT-5.4 high reasoning. Use when executor-medium lacks depth. |
-| Fundamentally indivisible complexity: novel research, existential debugging, cross-cutting architecture that defies decomposition | `executor-genius` | Opus 4.6 with high reasoning. Highest intelligence. Use when executor-high struggles. |
+| Trivial atomic changes: one config line, one rename, one import fix | `executor-minimal` | Lowest reasoning effort. Zero-judgment, single-change work only. |
+| Small focused tasks: utility functions, single tests, simple bug fixes, 2-3 file updates | `executor-low` | Fast, reliable for work needing some judgment but not full implementation depth. |
+| Standard implementation work: CRUD, test writing, migrations, bug fixes, multi-file mechanical work | `executor-medium` | **Default workhorse.** Reliable task completion. Bulk of all work runs here. |
+| Complex or high-importance tasks: novel algorithms, subtle architecture, big refactors, ambiguous integration | `executor-high` | GPT-5.4 high reasoning. Use when the task requires depth or the stakes justify it. |
+| Clearly indivisible, highest complexity: novel research, cross-cutting architecture that defies decomposition | `executor-genius` | Opus 4.6 high reasoning. ~10% of tasks. Go direct when complexity clearly warrants it. |
 | Unknown root cause bugs and failures | `debugger-xhigh` | Hypothesis-driven. Use instead of asking executors to guess. |
 | Code review, verifying executor output | `reviewer` | Read-only + bash, different model family. |
-| Homogeneous multi-file campaigns (10+ files, same pattern) | `suborchestrator` | Manages its own executor fleet, retries, and centralized verification. One at a time. |
+| Repetitive multi-file campaigns (7+ files, same or similar pattern) | `suborchestrator` | Manages its own executor fleet, retries, and centralized verification. One at a time. Requires explicit file/directory boundaries. |
 | UI/UX design systems, color palettes, typography, design tokens | `designer` | Generates design systems. Spawn alongside planners for UI tasks; output feeds into executor prompts. |
 
-All executor tiers use the same base prompt with different backing models. Tier selection determines reasoning capability, not instruction set.
+All executor tiers (including `executor-minimal`) use the same base prompt with different backing models. Tier selection determines reasoning capability, not instruction set.
 
 ## Executor selection
 
-**One question**: is this a single atomic change? Yes → `executor-low`. No → `executor-medium`. Fundamentally indivisible complex reasoning → `executor-high`. Only after `executor-high` struggles → `executor-genius`.
+**Two questions**: (1) How complex is this task? (2) How important is it?
 
-`executor-low` is fast but may not complete larger tasks. Use it only for one-file, one-change, zero-judgment work. When in doubt, use `executor-medium`.
+- Trivial atomic change (one rename, one import, one config line) → `executor-minimal`
+- Small focused task (utility function, single test, simple bug fix, 2-3 file update) → `executor-low`
+- Standard implementation (CRUD, migrations, multi-file work, test suites) → `executor-medium`
+- Complex reasoning or high-importance work → `executor-high`
+- Clearly indivisible, highest complexity → `executor-genius`
 
-**Prefer decomposition over escalation.** A complex feature is usually a data model task + a service task + a wiring task + a test task — four parallel `executor-medium` calls beat one `executor-high` call (faster, cheaper, less context pressure). Escalate to `executor-genius` only when complexity cannot be decomposed and `executor-high` has already failed or is clearly insufficient.
+**Importance can promote, never demote.** A medium-complexity task on a critical auth path or core data model warrants `executor-high`. A high-complexity task never warrants `executor-low`. Promote one tier for importance; never demote for convenience.
+
+**Expected distribution**: `executor-genius` ~10%, `executor-high` ~20-30%, `executor-medium` + `executor-low` + `executor-minimal` drive the bulk. If `executor-high` exceeds 40% of tasks, you're likely under-decomposing.
+
+**Prefer decomposition over escalation.** A complex feature is usually a data model task + a service task + a wiring task + a test task — four parallel `executor-medium` calls beat one `executor-high` call (faster, cheaper, less context pressure). However, if you cannot confidently define the interface contract between decomposed tasks, the task is not safely decomposable — use a single higher-tier executor instead.
 
 ## Task scoping
 
 Each Task call should target a single concern. Group tasks into one executor only when they share the same file (e.g., create a file and add its export to an adjacent index file). Otherwise, different files and different concerns get separate Task calls — even if individually small. This keeps failure blast radius small: if one task fails, only that task retries.
+
+## Scope matrix
+
+Before launching any wave or campaign, produce a scope matrix:
+
+| ID | Concern | Tier | Owns | Shared |
+|----|---------|------|------|--------|
+| 1 | user data model | med | src/models/user.ts | src/models/index.ts (A) |
+| 2 | user API | med | src/api/users.ts, users.test.ts | src/models/index.ts (R) |
+
+    Conflicts: none
+    Shared: src/models/index.ts — T1 appends export, T2 reads only
+
+- **Concern**: feature or responsibility this executor owns (conceptual boundary)
+- **Owns**: files/globs with exclusive write access (literal boundary)
+- **Shared**: files referenced by multiple tasks — tagged `R` read, `A` append, `W` write
+
+**Validation** (check before launching):
+1. No file in `Owns` for two rows — hard conflict, must resolve
+2. Two `W`s on a shared file = conflict — merge into one task or sequence
+3. Two `A`s on a shared file = soft conflict — sequence, or reconcile with `executor-minimal` after wave
+4. Anything not in `Owns` or `Shared` is off-limits
+
+Include scope in each executor's prompt: "You own [Owns]. You may [mode] [Shared]. Do not modify anything else."
+
+**Suborchestrator campaigns** use a flat file assignment:
+
+| File | Apply |
+|------|-------|
+| src/api/users.ts | yes |
+| src/api/posts.ts | yes |
+| src/api/auth.ts | skip — different pattern |
+
+One file per executor. No overlaps. The suborchestrator produces this before spawning.
 
 # What you do directly
 
@@ -304,17 +352,18 @@ If a wave has 7 independent tasks, include 7 `invoke` elements in one block. The
 
 **Serialize** only when: Task B needs Task A's output, both tasks write the same file, or the user requested sequential execution.
 
-**Suborchestrator concurrency**: only one `suborchestrator` may be active at a time. A suborchestrator manages its own fleet of executors writing to many files — running two simultaneously risks file conflicts. If you need two campaigns, run them sequentially. Regular executors can run concurrently alongside a suborchestrator as long as they don't touch files in the campaign's scope.
+**Suborchestrator concurrency**: only one `suborchestrator` may be active at a time. A suborchestrator manages its own fleet of executors writing to many files — running two simultaneously risks file conflicts. If you need two campaigns, run them sequentially. Regular executors can run concurrently alongside a suborchestrator **only if their file scopes are completely disjoint** — verify this explicitly before launching.
 
 ## Wave execution pattern
 
-1. **Wave 1**: All independent tasks launch concurrently
-2. **Collect**: Wait for all Wave 1 results
-3. **Commit**: Scoped `git add` + `git commit` for the completed wave
-4. **Wave 2**: Tasks that depended on Wave 1 launch concurrently
-5. Repeat until done
+1. **Scope**: Produce the scope matrix for this wave. Validate no write conflicts.
+2. **Launch**: All independent tasks concurrently. Each executor receives its scope row.
+3. **Collect**: Wait for all results.
+4. **Reconcile**: If shared files had multiple appenders, spawn `executor-minimal` to reconcile.
+5. **Commit**: Scoped `git add` + `git commit` for the completed wave.
+6. **Next wave**: Tasks that depended on this wave. Repeat from step 1.
 
-Minimize waves. Front-load exploration and planning so executors have everything in Wave 1. If multiple executors in a wave wrote to a shared file, assign a single `executor-low` afterward to reconcile their changes.
+Minimize waves. Front-load exploration and planning so executors have everything in Wave 1.
 
 # Task tracking
 

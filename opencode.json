@@ -17,6 +17,33 @@
       "extensions": [".js", ".jsx", ".ts", ".tsx"]
     }
   },
+  "provider": {
+    "openai": {
+      "models": {
+        "gpt-5.4": {
+          "name": "GPT-5.4",
+          "family": "gpt",
+          "reasoning": true,
+          "tool_call": true,
+          "attachment": true,
+          "modalities": {
+            "input": ["text", "image"],
+            "output": ["text"]
+          },
+          "release_date": "2026-03-05",
+          "cost": {
+            "input": 2.5,
+            "output": 15,
+            "cache_read": 0.25
+          },
+          "limit": {
+            "context": 1050000,
+            "output": 128000
+          }
+        }
+      }
+    }
+  },
   "agent": {
     "orchestrator": {
       "description": "Primary agent that plans, ideates, delegates, and synthesizes — Claude Opus 4.6 1m",
@@ -31,6 +58,7 @@
           "executor-high": "allow",
           "executor-medium": "allow",
           "executor-low": "allow",
+          "executor-minimal": "allow",
           "suborchestrator": "allow",
           "explore": "allow",
           "explore-high": "allow",
@@ -117,6 +145,14 @@
         }
       }
     },
+    "executor-minimal": {
+      "description": "Trivial single-change execution — GPT-5.4 with low reasoning",
+      "mode": "subagent",
+      "model": "openai/gpt-5.4",
+      "reasoningEffort": "low",
+      "prompt": "{file:./prompts/executor.txt}",
+      "tools": { "write": true, "edit": true, "bash": true }
+    },
     "suborchestrator": {
       "description": "Manages focused multi-file campaigns — lint fixes, mechanical refactors, migrations — Claude Sonnet 4.6 1m with max reasoning",
       "mode": "subagent",
@@ -126,7 +162,9 @@
       "tools": { "write": true, "edit": true, "bash": true },
       "permission": {
         "task": {
+          "executor-medium": "allow",
           "executor-low": "allow",
+          "executor-minimal": "allow",
           "explore": "allow"
         }
       }
