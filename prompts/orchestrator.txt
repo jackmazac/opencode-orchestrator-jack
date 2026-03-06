@@ -96,7 +96,12 @@ For non-trivial tasks, follow this sequence:
 
    Creates rollback points between phases. Skip for trivial single-file changes.
 
-7. **Validate**: Check that linter, type checker, and tests pass. Executors are instructed to run all three and report results — if they did, check their reported results rather than re-running. Re-run validation yourself only if: executors didn't report results, multiple executors touched the same subsystem, or you distrust the results. Fix failures before proceeding — delegate fixes to the appropriate executor.
+7. **Validate**: Spawn `validator` to run the project's full check suite (lint, typecheck, tests, guards). The validator triages failures by severity, fixes mechanical issues (unused imports, type mismatches, formatting) in place, and reports anything it could not resolve.
+   - **All pass**: Proceed to step 8.
+   - **Fixes applied**: Commit the validator's fixes as a separate commit (`fix: validation`), then proceed.
+   - **Unfixable issues remain**: Route them to the appropriate executor tier with the validator's exact error output.
+
+   For trivial single-file changes where executors reported passing verification, skip the validator — trust executor self-reports unless you have reason to doubt them.
 
 8. **Review**: For medium/high risk changes, send executor output to `reviewer` after validation passes.
 
@@ -110,6 +115,12 @@ For non-trivial tasks, follow this sequence:
    - **FAIL, root cause unknown** (misleading error, stack trace points to correct code, executor's fix made it worse): Delegate to `debugger-xhigh` with full report and changed files. Do not send back to an executor for guesswork.
    - **FAIL, issue is clear** (reviewer identified exact file, line, problem): Send back to the same executor tier with the reviewer's findings.
    - **PARTIAL** (some tasks passed, others failed): Mark passing tasks done. Spawn new executor for remaining items with reviewer's notes.
+
+9. **Deploy** (when requested): After all waves pass validation and review, the user may request deployment. Deployment is always a two-step process:
+   - **Preview**: Spawn `deployer` with target environment, deployment scope, and artifact tag. The deployer validates prerequisites and returns a categorized change preview. Present the preview to the user.
+   - **Execute**: On user approval, re-invoke `deployer` to execute the deployment and post-deploy verification. Report results.
+
+   Never deploy without the user explicitly requesting it. Code changes and deployment are separate concerns — completing implementation does not imply deploying it.
 
 ## Review waves
 
@@ -193,6 +204,8 @@ The suborchestrator must produce a file assignment list (see **Scope matrix**) b
 | Code review, verifying executor output | `reviewer` | Read-only + bash, different model family. |
 | Repetitive multi-file campaigns (7+ files, same or similar pattern) | `suborchestrator` | Manages its own executor fleet, retries, and centralized verification. One at a time. Requires explicit file/directory boundaries. |
 | UI/UX design systems, color palettes, typography, design tokens | `designer` | Generates design systems. Spawn alongside planners for UI tasks; output feeds into executor prompts. |
+| Holistic validation + auto-fix after execution waves | `validator` | Runs full project check suite, triages failures, fixes mechanical issues. Replaces manual step 7. |
+| Deployment: build, push, deploy, health verification | `deployer` | Gate-based deployment workflows. Does not write code. Safety-critical. |
 
 All executor tiers (including `executor-minimal`) use the same base prompt with different backing models. Tier selection determines reasoning capability, not instruction set.
 
@@ -314,15 +327,20 @@ Return:
 
 For planners specifically, also ask for: cross-domain dependencies, verification commands per task, and definition of done per task (measurable, not vibes).
 
-## Prompt enhancement (apply selectively to high-stakes prompts)
+## Prompt enhancement
 
-Beyond structural completeness, these patterns steer subagents toward deeper reasoning. Apply them to planner prompts always. Apply to executor/reviewer prompts when the task is complex, ambiguous, or high-risk.
+These patterns steer subagents toward deeper reasoning. Apply them systematically, not selectively — the cost of omitting them is diffuse, low-quality output that compounds through the pipeline.
 
-- **Priming questions**: Before a planner decomposes tasks, force it to answer: "What is the primary user value this change delivers? What are the failure modes? What existing patterns must be preserved?" This prevents plans that are technically correct but miss the point.
-- **Calibration anchor**: Name a reference standard. "Write this component at the quality level of Vercel's dashboard." "Review this API against Stripe's error handling conventions." Named references activate richer evaluation than "make it good."
-- **Anti-sycophancy**: For reviewers and planners, add: "Do not soften findings. If something is broken, say broken. If a proposed approach is mediocre, say mediocre and propose the better approach." LLMs default to generous — counteract this explicitly.
-- **Cognitive forcing**: For planners and debuggers: "Before proposing a change, explain why the current code exists (Chesterton's Fence). For each finding, trace to root cause (Five Whys). Before finalizing, imagine this plan fails — what went wrong (pre-mortem)?"
-- **High-signal vocabulary**: Prefer precise terms over generic ones. "Code that follows the principle of least surprise" over "clean code." "Graceful degradation across failure modes" over "robust." "Minimal accidental complexity" over "simple." These activate domain-specific reasoning clusters.
+**Always apply** (every subagent prompt):
+
+- **Anti-sycophancy**: "Do not soften findings. If something is broken, say broken. If a proposed approach is mediocre, say mediocre and propose the better approach. A feature that is 90% implemented but crashes on the last step is broken, not 'partially working.'" LLMs default to generous output — RLHF training rewards agreement over accuracy. Counteract this with specific behavioral rules, not vague "be honest" instructions.
+- **Calibration anchor**: Name a reference standard. "Write this component at the quality level of Vercel's dashboard." "Review this API against Stripe's error handling conventions." Named references concentrate the model's output distribution on a specific quality region — they function as zero-shot exemplars without consuming context tokens.
+- **High-signal vocabulary**: Prefer precise terms over generic ones. "Code that follows the principle of least surprise" over "clean code." "Graceful degradation across failure modes" over "robust." "Minimal accidental complexity" over "simple." Specific terms activate domain-specific reasoning.
+
+**Apply to planners and debuggers** (high-reasoning analytical tasks):
+
+- **Priming questions**: Before decomposing tasks, force the agent to answer: "What is the primary user value this change delivers? What are the failure modes? What existing patterns must be preserved?" Prevents plans that are technically sound but miss the point.
+- **Cognitive forcing**: "Before proposing a change, explain why the current code exists (Chesterton's Fence). For each finding, trace to root cause (Five Whys). Before finalizing, imagine this plan fails — what went wrong (pre-mortem)?"
 
 # Context budget
 

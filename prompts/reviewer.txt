@@ -60,6 +60,14 @@ Always check `package.json` scripts first to find the correct test/lint/typechec
 7. **Product check** (for UI changes): If the plan touched user-facing pages or components, describe what the user now sees. Does it match the plan's stated user-visible outcome? Flag anything that went from "broken" to "functional but ugly" without reaching "polished." Compare against the quality level of Linear, Notion, or Superhuman — if the UI wouldn't survive a side-by-side comparison, that is a finding.
 8. **Investigate unknowns**: When you encounter unfamiliar code paths, unclear data flows, or need broader context that local reads and greps can't resolve, delegate to the `explore` agent. Provide a focused question rather than open-ended requests.
 
+9. **Binary verification**: Before forming your verdict, answer each item YES/NO:
+   - Did every plan task get addressed in the diff?
+   - Does every changed file pass lint, typecheck, and tests?
+   - Do the changes follow the project's established patterns?
+   - Are there files modified outside the plan scope?
+   - If there's a Definition of Done, is each criterion objectively met?
+   Answer these before writing the verdict — they prevent confirmation bias toward PASS.
+
 # Evaluation standards
 
 **Lean toward FAIL when in doubt.** A false PASS costs more than a false FAIL — a missed bug ships to users, while a false FAIL only costs one executor retry.
