@@ -66,7 +66,8 @@
           "designer": "allow",
           "debugger-xhigh": "allow",
           "validator": "allow",
-          "deployer": "allow"
+          "deployer": "allow",
+          "scribe": "allow"
         }
       }
     },
@@ -226,6 +227,19 @@
       "reasoningEffort": "high",
       "prompt": "{file:./prompts/deployer.txt}",
       "tools": { "write": true, "edit": false, "bash": true },
+      "permission": {
+        "task": {
+          "explore": "allow"
+        }
+      }
+    },
+    "scribe": {
+      "description": "Documentation agent — codifies patterns, conventions, and rules from completed work — Claude Sonnet 4.6 1m with high reasoning",
+      "mode": "subagent",
+      "model": "amazon-bedrock/anthropic.claude-sonnet-4-6-1m",
+      "reasoningEffort": "high",
+      "prompt": "{file:./prompts/scribe.txt}",
+      "tools": { "write": true, "edit": true, "bash": true },
       "permission": {
         "task": {
           "explore": "allow"
