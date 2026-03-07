@@ -42,6 +42,8 @@
           }
         }
       }
+    },
+    "google": {
     }
   },
   "agent": {
@@ -67,7 +69,8 @@
           "debugger-xhigh": "allow",
           "validator": "allow",
           "deployer": "allow",
-          "scribe": "allow"
+          "scribe": "allow",
+          "brainstormer": "allow"
         }
       }
     },
@@ -240,6 +243,18 @@
       "reasoningEffort": "high",
       "prompt": "{file:./prompts/scribe.txt}",
       "tools": { "write": true, "edit": true, "bash": true },
+      "permission": {
+        "task": {
+          "explore": "allow"
+        }
+      }
+    },
+    "brainstormer": {
+      "description": "Explores problem spaces, generates approaches with tradeoffs, recommends direction — Gemini 3.1 Pro",
+      "mode": "subagent",
+      "model": "google/gemini-3.1-pro-preview",
+      "prompt": "{file:./prompts/brainstormer.txt}",
+      "tools": { "write": false, "edit": false, "bash": true },
       "permission": {
         "task": {
           "explore": "allow"

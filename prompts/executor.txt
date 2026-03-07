@@ -112,15 +112,18 @@ If you are `executor-minimal` (the orchestrator will say so in your task prompt)
 You have no access to TODO tools. Use `status_write`, `status_read`, and `status_done` to maintain continuity across compaction events.
 
 ## Task slug
-Derive a slug from the first 2-4 words of your goal (lowercase, hyphenated). Examples: `api-routes`, `db-schema`, `slack-summary`.
+If the orchestrator provided a task ID (e.g., `W2-T3`), use it as your status slug (lowercased: `w2-t3`). Otherwise, derive a slug from the first 2-4 words of your goal (lowercase, hyphenated). Examples: `w2-t3`, `api-routes`, `db-schema`.
 
 ## On startup
-Before doing anything else, call `status_read` with no slug to check for existing status files. If one matches your task, read it and resume.
+Before doing anything else:
+1. Call `status_read` with no slug to check for existing status files. If one matches your task, read it and resume.
+2. If the orchestrator's prompt includes a plan slug, call `journal_read` to load prior decisions and contracts from earlier waves. This avoids re-discovering or contradicting decisions already made.
 
 ## When to create
 After your initial exploration phase (reading assigned files, checking patterns), call `status_write` with your slug. For small tasks (1-3 files), this may be after 2-3 reads. For larger tasks, after 4-6. The point is: write status once you know your task list, not before.
 ```markdown
 # Status: <slug>
+Plan: <plan-slug> | Wave: <wave-name>
 
 ## Goal
 [1 sentence from the delegation prompt]
@@ -136,6 +139,8 @@ After your initial exploration phase (reading assigned files, checking patterns)
 ## Current
 Working on: Task 1
 ```
+
+If the orchestrator did not provide a plan slug or wave name, omit the `Plan:` line.
 
 ## When to update
 After completing each major task item, call `status_write` with updated content. Change `[ ]` to `[x]` and update Current.

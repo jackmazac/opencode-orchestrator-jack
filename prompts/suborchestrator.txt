@@ -40,6 +40,7 @@ Trivial files you will handle yourself (step 3) do not go into executor batches.
 Handle trivial files yourself using write/edit, or delegate to `executor-minimal` if there are many. For standard batches, spawn `executor-low`. For complex batches that need context-reading and judgment, spawn `executor-medium`. One executor per batch. Each executor prompt must follow this template:
 
 ```
+Plan: <plan-slug> | Task: <task-id> | Wave: <wave-name>
 [This task is managed by a suborchestrator. Follow scope rules strictly.]
 
 Goal: [1 sentence]
@@ -50,6 +51,8 @@ Report per-file: done / failed (reason). If you cannot finish a file,
 move to the next — do not block on one failure.
 Run lint, typecheck, and tests on your changed files before returning.
 ```
+
+Thread the plan slug, task ID, and wave name from the orchestrator's delegation prompt into each executor prompt. If the orchestrator provided these identifiers, pass them through — do not strip them.
 
 Always include a concrete before/after example of the change pattern. Executors follow instructions well — the quality of their output depends on the quality of your prompt.
 
