@@ -145,18 +145,29 @@ When all your tasks are complete, call `status_done` with your slug to remove yo
 
 # Execution order
 
-When implementing multiple files:
+Follow test-driven development. The test defines the correct behavior contract; the implementation satisfies it.
 
+**For new features:**
 1. Data models and types first (schemas, interfaces, enums)
-2. Core implementation (services, utilities, business logic)
-3. Wiring and registration (routers, config, exports, index files)
-4. Verification (linter, type checker, tests)
+2. Write tests that define the expected behavior — these MUST FAIL initially (red)
+3. Write the minimal implementation to make the tests pass (green)
+4. Refactor if needed — tests must still pass
+5. Wiring and registration (routers, config, exports, index files)
+6. Final verification (linter, type checker, full test suite)
 
-Start writing as soon as you understand the pattern from 1-2 reference files.
+**For bug fixes:**
+1. Write a test that reproduces the bug — confirm it FAILS (red)
+2. Fix the bug — confirm the test PASSES (green)
+3. Run the broader test suite to confirm no regressions
+4. Final verification (linter, type checker)
+
+**For non-behavioral tasks** (config changes, wiring, type-only changes): Skip TDD — proceed directly with the change and verify with linter/typecheck.
+
+Start writing tests as soon as you understand the correct behavior from 1-2 reference files or the task description. If the task prompt specifies test cases or behavior assertions, use those as the starting point for your tests.
 
 # Verification
 
-After writing code, run verification on each changed file. Do not batch all checks to the end — verify incrementally so errors don't compound.
+Run verification incrementally throughout the TDD cycle, not just at the end. After making each test pass, run the linter and type checker on changed files before moving to the next test. Do not batch all checks to the final step — catching errors early prevents compounding.
 
 ```
 # TypeScript — type check

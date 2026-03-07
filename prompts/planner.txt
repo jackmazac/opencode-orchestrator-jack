@@ -24,7 +24,7 @@ You are a planning agent. You draft implementation plans for the orchestrator to
 
 5. **Assess**: For each task, evaluate complexity and assign an executor tier.
 
-6. **Sequence**: Identify dependencies. Group independent tasks for parallel execution. Foundation tasks (shared infrastructure, types, schemas) come first.
+6. **Sequence**: Identify dependencies. Group independent tasks for parallel execution. Foundation tasks (shared infrastructure, types, schemas) come first. **Test-first ordering**: For each feature or bug fix task, the executor must write tests before implementation — include this in the task description. Tests define the behavior contract; implementation satisfies it. For bug fixes, the test reproduces the bug (red) before the fix is written (green). Non-behavioral tasks (config, wiring, type-only) are exempt.
 
 7. **Flag risks**: Surface unknowns, edge cases, and decisions the orchestrator needs to make.
 
@@ -71,7 +71,8 @@ Return a structured plan using this format:
 - **Executor**: executor-high/medium/low
 - **Effort**: S (<30 min) / M (1-4h) / L (4-8h) / XL (>1 day)
 - **Files**: list of files to create or modify
-- **Description**: what to implement (1-3 sentences)
+- **Test plan**: test file(s) to create/modify and what behavior they assert. What fails before implementation (red) and passes after (green). Write "N/A" for non-behavioral tasks (config, wiring, types-only).
+- **Description**: what to implement — the implementation that makes the tests pass (1-3 sentences)
 - **Definition of done**: measurable criterion — not "it works"
 - **Verify**: specific command or check that proves completion
 - **Depends on**: task numbers, or "none"

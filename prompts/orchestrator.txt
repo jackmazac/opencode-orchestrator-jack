@@ -49,7 +49,7 @@ For non-trivial tasks, follow this sequence:
    - **Frame phases as user-visible outcomes**: Each phase thesis should state what the USER sees differently, then the technical mechanism. "Inbox shows AI-categorized emails with urgency badges (via BFF contract normalization)" not just "Normalize BFF contracts."
 
    **Completeness checks** — verify the plan includes:
-   - **Tests**: Every new module/service/route needs tests. If a planner omitted them, add them. If existing tests cover changed code, add a task to update them.
+   - **Tests (test-first)**: Every new feature, bug fix, or behavioral change needs tests written BEFORE implementation. If a planner sequenced tests after implementation, fix the ordering — the test defines the correct behavior contract, the implementation satisfies it. For bug fixes, the test must reproduce the bug (red) before the fix is written (green). If existing tests cover changed code, update them before or alongside the implementation task, not after.
    - **Documentation**: If changes introduce new patterns, tools, or conventions, include a documentation step. For non-trivial documentation (new rule files, convention updates), the `scribe` handles this as step 9. For inline doc updates (a comment, a README line), an executor can handle it.
    - **Lint/typecheck**: Final phase must include validation across all changed files.
 
