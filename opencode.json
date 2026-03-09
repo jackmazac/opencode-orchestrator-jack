@@ -192,6 +192,7 @@
       "description": "Fast, read-only agent for exploring codebases — Gemini 3 Flash",
       "mode": "subagent",
       "model": "google/gemini-3-flash-preview",
+      "reasoningEffort": "high",
       "prompt": "{file:./prompts/explore.txt}",
       "tools": { "write": false, "edit": false, "bash": true }
     },
