@@ -165,7 +165,7 @@
       "model": "amazon-bedrock/anthropic.claude-sonnet-4-6-1m",
       "reasoningEffort": "max",
       "prompt": "{file:./prompts/suborchestrator.txt}",
-      "tools": { "write": true, "edit": true, "bash": true },
+      "tools": { "write": false, "edit": false, "bash": true },
       "permission": {
         "task": {
           "executor-medium": "allow",
