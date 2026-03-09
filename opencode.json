@@ -189,9 +189,9 @@
       }
     },
     "explore": {
-      "description": "Fast, read-only agent for exploring codebases — Claude Haiku 4.5",
+      "description": "Fast, read-only agent for exploring codebases — Gemini 3 Flash",
       "mode": "subagent",
-      "model": "amazon-bedrock/anthropic.claude-haiku-4-5-20251001-v1:0",
+      "model": "google/gemini-3-flash-preview",
       "prompt": "{file:./prompts/explore.txt}",
       "tools": { "write": false, "edit": false, "bash": true }
     },
@@ -254,6 +254,7 @@
       "mode": "subagent",
       "model": "google/gemini-3.1-pro-preview",
       "prompt": "{file:./prompts/brainstormer.txt}",
+      "reasoningEffort": "high",
       "tools": { "write": false, "edit": false, "bash": true },
       "permission": {
         "task": {
