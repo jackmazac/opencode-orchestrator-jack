@@ -126,9 +126,9 @@
       }
     },
     "executor-medium": {
-      "description": "Medium-complexity code execution — Claude Sonnet 4.6 1m",
+      "description": "Medium-complexity code execution — Gemini 3.1 Pro with high reasoning",
       "mode": "subagent",
-      "model": "amazon-bedrock/anthropic.claude-sonnet-4-6-1m",
+      "model": "google/gemini-3.1-pro-preview",
       "reasoningEffort": "high",
       "prompt": "{file:./prompts/executor.txt}",
       "tools": { "write": true, "edit": true, "bash": true },
@@ -152,10 +152,9 @@
       }
     },
     "executor-minimal": {
-      "description": "Trivial single-change execution — GPT-5.4 with low reasoning",
+      "description": "Trivial single-change execution — Gemini 3 Flash",
       "mode": "subagent",
-      "model": "openai/gpt-5.4",
-      "reasoningEffort": "low",
+      "model": "google/gemini-3-flash-preview",
       "prompt": "{file:./prompts/executor.txt}",
       "tools": { "write": true, "edit": true, "bash": true }
     },
@@ -205,16 +204,17 @@
       "tools": { "write": false, "edit": false, "bash": true }
     },
     "designer": {
-      "description": "UI/UX design specialist — generates design systems and implements UI code using ui-ux-pro-max skill — Claude Sonnet 4.6 1m",
+      "description": "UI/UX design specialist — generates design systems and implements UI code using ui-ux-pro-max skill — Gemini 3.1 Pro with high reasoning",
       "mode": "subagent",
-      "model": "amazon-bedrock/anthropic.claude-sonnet-4-6-1m",
+      "model": "google/gemini-3.1-pro-preview",
+      "reasoningEffort": "high",
       "prompt": "{file:./prompts/designer.txt}",
       "tools": { "write": true, "edit": true, "bash": true }
     },
     "validator": {
-      "description": "Runs full project check suite, triages failures, fixes mechanical issues — Claude Sonnet 4.6 1m with high reasoning",
+      "description": "Runs full project check suite, triages failures, fixes mechanical issues — Gemini 3.1 Pro with high reasoning",
       "mode": "subagent",
-      "model": "amazon-bedrock/anthropic.claude-sonnet-4-6-1m",
+      "model": "google/gemini-3.1-pro-preview",
       "reasoningEffort": "high",
       "prompt": "{file:./prompts/validator.txt}",
       "tools": { "write": true, "edit": true, "bash": true },
