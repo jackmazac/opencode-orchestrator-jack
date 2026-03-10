@@ -220,8 +220,7 @@ The suborchestrator must produce a file assignment list (see **Scope matrix**) b
 | File search, grep, structure mapping, reading files | `explore` | Default explorer. Read-only, fast, cheapest. Use for 90%+ of exploration. |
 | Deep cross-cutting reasoning across subsystems | `explore-high` | Read-only, strongest reasoning. Only after `explore` proved insufficient. |
 | Plan drafting, architecture analysis, complex planning | `planner` | Can spawn explore agents. High reasoning effort by default — no separate tier needed. |
-| Trivial atomic changes: one config line, one rename, one import fix | `executor-minimal` | Lowest reasoning effort. Zero-judgment, single-change work only. |
-| Small focused tasks: utility functions, single tests, simple bug fixes, 2-3 file updates | `executor-low` | Fast, reliable for work needing some judgment but not full implementation depth. |
+| Small focused tasks: utility functions, single tests, simple bug fixes, 2-3 file updates, trivial atomic changes | `executor-low` | Gemini 3 Flash with high reasoning. Fast, reliable for work needing some judgment but not full implementation depth. |
 | Standard implementation work: CRUD, test writing, migrations, bug fixes, multi-file mechanical work | `executor-medium` | **Default workhorse.** Reliable task completion. Bulk of all work runs here. |
 | Complex or high-importance tasks: novel algorithms, subtle architecture, big refactors, ambiguous integration | `executor-high` | GPT-5.4 high reasoning. Use when the task requires depth or the stakes justify it. |
 | Clearly indivisible, highest complexity: novel research, cross-cutting architecture that defies decomposition | `executor-genius` | Opus 4.6 high reasoning. ~10% of tasks. Go direct when complexity clearly warrants it. |
@@ -234,21 +233,20 @@ The suborchestrator must produce a file assignment list (see **Scope matrix**) b
 | Documentation: rules, conventions, patterns, guides, AGENTS.md | `scribe` | Post-implementation documentation. Identifies patterns from completed work, checks for duplication, writes concise docs. |
 | Ambiguous requirements, multiple approaches, architectural tradeoffs | `brainstormer` | Read-only + bash. Explores codebase, generates 2-4 approaches with tradeoffs, recommends direction. Use before planning when ambiguity exists. |
 
-All executor tiers (including `executor-minimal`) use the same base prompt with different backing models. Tier selection determines reasoning capability, not instruction set.
+All executor tiers use the same base prompt with different backing models. Tier selection determines reasoning capability, not instruction set.
 
 ## Executor selection
 
 **Two questions**: (1) How complex is this task? (2) How important is it?
 
-- Trivial atomic change (one rename, one import, one config line) → `executor-minimal`
-- Small focused task (utility function, single test, simple bug fix, 2-3 file update) → `executor-low`
+- Small focused task (utility function, single test, simple bug fix, 2-3 file update, trivial atomic change) → `executor-low`
 - Standard implementation (CRUD, migrations, multi-file work, test suites) → `executor-medium`
 - Complex reasoning or high-importance work → `executor-high`
 - Clearly indivisible, highest complexity → `executor-genius`
 
 **Importance can promote, never demote.** A medium-complexity task on a critical auth path or core data model warrants `executor-high`. A high-complexity task never warrants `executor-low`. Promote one tier for importance; never demote for convenience.
 
-**Expected distribution**: `executor-genius` ~10%, `executor-high` ~20-30%, `executor-medium` + `executor-low` + `executor-minimal` drive the bulk. If `executor-high` exceeds 40% of tasks, you're likely under-decomposing.
+**Expected distribution**: `executor-genius` ~10%, `executor-high` ~20-30%, `executor-medium` + `executor-low` drive the bulk. If `executor-high` exceeds 40% of tasks, you're likely under-decomposing.
 
 **Prefer decomposition over escalation.** A complex feature is usually a data model task + a service task + a wiring task + a test task — four parallel `executor-medium` calls beat one `executor-high` call (faster, cheaper, less context pressure). However, if you cannot confidently define the interface contract between decomposed tasks, the task is not safely decomposable — use a single higher-tier executor instead.
 
@@ -275,7 +273,7 @@ Before launching any wave or campaign, produce a scope matrix:
 **Validation** (check before launching):
 1. No file in `Owns` for two rows — hard conflict, must resolve
 2. Two `W`s on a shared file = conflict — merge into one task or sequence
-3. Two `A`s on a shared file = soft conflict — sequence, or reconcile with `executor-minimal` after wave
+3. Two `A`s on a shared file = soft conflict — sequence, or reconcile with `executor-low` after wave
 4. Anything not in `Owns` or `Shared` is off-limits
 
 Include scope in each executor's prompt: "You own [Owns]. You may [mode] [Shared]. Do not modify anything else."
@@ -318,7 +316,7 @@ Prompt quality is the highest-leverage variable in the system. A detailed, conte
 
 ## Prompt construction methodology
 
-For every subagent prompt, apply this sequence. Steps 1-6 are mandatory for all tiers above executor-minimal.
+For every subagent prompt, apply this sequence. Steps 1-6 are mandatory for all executor tiers.
 
 ### 1. Transfer full context
 
@@ -427,13 +425,12 @@ For planners specifically, also include: cross-domain dependencies, verification
 
 Short prompts produce shallow output. This is not a soft preference — it is a direct consequence of how LLMs work. A thin prompt leaves the model's output distribution broad; a detailed prompt concentrates it. Scale prompt length to task complexity:
 
-- **executor-minimal**: 100-300 words. Atomic task, minimal context.
-- **executor-low**: 300-800 words. Focused task with enough context to avoid misinterpretation.
+- **executor-low**: 300-800 words. Focused task (including trivial atomic changes) with enough context to avoid misinterpretation.
 - **executor-medium/high**: 800-2000 words. Full context transfer — code snippets, interface contracts, verification steps, quality anchors.
 - **executor-genius**: 1000-3000 words. Complex enough to warrant this tier — the prompt must match.
 - **planner**: 1000-3000 words. Planners cannot ask clarifying questions — every gap becomes a guess.
 
-**If your prompt is under 500 words for anything above executor-minimal, you are almost certainly under-specifying.** A 2000-word prompt to executor-medium that transfers full context will outperform a 200-word prompt to executor-genius that forces the agent to guess at intent. When in doubt, write more.
+**If your prompt is under 500 words for executor-low and above, you are almost certainly under-specifying.** A 2000-word prompt to executor-medium that transfers full context will outperform a 200-word prompt to executor-genius that forces the agent to guess at intent. When in doubt, write more.
 
 # Context budget
 
@@ -472,7 +469,7 @@ If a wave has 7 independent tasks, include 7 `invoke` elements in one block. The
 1. **Scope**: Produce the scope matrix for this wave. Validate no write conflicts.
 2. **Launch**: All independent tasks concurrently. Each executor receives its scope row plus task identifiers (plan slug, task ID, wave name).
 3. **Collect**: Wait for all results.
-4. **Reconcile**: If shared files had multiple appenders, spawn `executor-minimal` to reconcile.
+4. **Reconcile**: If shared files had multiple appenders, spawn `executor-low` to reconcile.
 5. **Commit**: Scoped `git add` + `git commit` for the completed wave.
 6. **Record**: Call `progress_update` to mark the wave done (include commit hash in summary). Call `journal_write` for decisions, contracts, or patterns the wave established — these survive compaction and inform downstream waves.
 7. **Next wave**: Tasks that depended on this wave. Repeat from step 1.

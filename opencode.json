@@ -60,7 +60,6 @@
           "executor-high": "allow",
           "executor-medium": "allow",
           "executor-low": "allow",
-          "executor-minimal": "allow",
           "suborchestrator": "allow",
           "explore": "allow",
           "explore-high": "allow",
@@ -126,9 +125,9 @@
       }
     },
     "executor-medium": {
-      "description": "Medium-complexity code execution — Gemini 3.1 Pro with high reasoning",
+      "description": "Medium-complexity code execution — Claude Sonnet 4.6 1m",
       "mode": "subagent",
-      "model": "google/gemini-3.1-pro-preview",
+      "model": "amazon-bedrock/anthropic.claude-sonnet-4-6-1m",
       "reasoningEffort": "high",
       "prompt": "{file:./prompts/executor.txt}",
       "tools": { "write": true, "edit": true, "bash": true },
@@ -139,10 +138,10 @@
       }
     },
     "executor-low": {
-      "description": "Low-complexity code execution — GPT-5.4 with medium reasoning",
+      "description": "Low-complexity code execution — Gemini 3 Flash with high reasoning",
       "mode": "subagent",
-      "model": "openai/gpt-5.4",
-      "reasoningEffort": "medium",
+      "model": "google/gemini-3-flash-preview",
+      "reasoningEffort": "high",
       "prompt": "{file:./prompts/executor.txt}",
       "tools": { "write": true, "edit": true, "bash": true },
       "permission": {
@@ -150,13 +149,6 @@
           "explore": "allow"
         }
       }
-    },
-    "executor-minimal": {
-      "description": "Trivial single-change execution — Gemini 3 Flash",
-      "mode": "subagent",
-      "model": "google/gemini-3-flash-preview",
-      "prompt": "{file:./prompts/executor.txt}",
-      "tools": { "write": true, "edit": true, "bash": true }
     },
     "suborchestrator": {
       "description": "Manages focused multi-file campaigns — lint fixes, mechanical refactors, migrations — Claude Sonnet 4.6 1m with max reasoning",
@@ -169,7 +161,6 @@
         "task": {
           "executor-medium": "allow",
           "executor-low": "allow",
-          "executor-minimal": "allow",
           "explore": "allow"
         }
       }
