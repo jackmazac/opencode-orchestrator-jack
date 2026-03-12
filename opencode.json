@@ -13,8 +13,14 @@
       "disabled": true
     },
     "oxfmt": {
-      "command": ["oxfmt", "$FILE"],
+      "command": ["bun", "x", "oxfmt", "$FILE"],
       "extensions": [".js", ".jsx", ".ts", ".tsx"]
+    }
+  },
+  "lsp": {
+    "oxlint": {
+      "command": ["bun", "x", "oxlint", "--lsp"],
+      "extensions": [".ts", ".tsx", ".js", ".jsx", ".mjs", ".cjs", ".mts", ".cts", ".vue", ".astro", ".svelte"]
     }
   },
   "provider": {
@@ -48,9 +54,9 @@
   },
   "agent": {
     "orchestrator": {
-      "description": "Primary agent that plans, ideates, delegates, and synthesizes — Claude Opus 4.6 1m",
+      "description": "Primary agent that plans, ideates, delegates, and synthesizes — Claude Sonnet 4.6 1m",
       "mode": "primary",
-      "model": "amazon-bedrock/anthropic.claude-opus-4-6-v1-1m",
+      "model": "amazon-bedrock/anthropic.claude-sonnet-4-6-1m",
       "reasoningEffort": "max",
       "prompt": "{file:./prompts/orchestrator.txt}",
       "permission": {
@@ -138,9 +144,9 @@
       }
     },
     "executor-low": {
-      "description": "Low-complexity code execution — Gemini 3 Flash with high reasoning",
+      "description": "Low-complexity code execution — Gemini 3.1 Pro with high reasoning",
       "mode": "subagent",
-      "model": "google/gemini-3-flash-preview",
+      "model": "google/gemini-3.1-pro-preview",
       "reasoningEffort": "high",
       "prompt": "{file:./prompts/executor.txt}",
       "tools": { "write": true, "edit": true, "bash": true },
@@ -195,9 +201,9 @@
       "tools": { "write": false, "edit": false, "bash": true }
     },
     "designer": {
-      "description": "UI/UX design specialist — generates design systems and implements UI code using ui-ux-pro-max skill — Gemini 3.1 Pro with high reasoning",
+      "description": "UI/UX design specialist — generates design systems and implements UI code using ui-ux-pro-max skill — Claude Sonnet 4.6 1m",
       "mode": "subagent",
-      "model": "google/gemini-3.1-pro-preview",
+      "model": "amazon-bedrock/anthropic.claude-sonnet-4-6-1m",
       "reasoningEffort": "high",
       "prompt": "{file:./prompts/designer.txt}",
       "tools": { "write": true, "edit": true, "bash": true }
