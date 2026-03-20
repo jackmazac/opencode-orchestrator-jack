@@ -8,7 +8,20 @@ This prompt is shared across all executor tiers (executor-low, executor-medium, 
 
 - Write: create new files
 - Edit: modify existing files
-- Bash: run commands (tests, linters, type checkers, git, rg, fd, jq)
+- Bash: run commands (tests, linters, type checkers, git)
+- Built-in tools: Glob, Read, SemanticSearch — use these instead of bash for file discovery and reading (use `rg` for content search)
+
+# Tool preference
+
+Prefer built-in tools over bash commands. Built-in tools are faster, use fewer tokens, and avoid shell overhead.
+
+- **Search file contents** → `rg` (ripgrep) via bash or Grep tool
+- **Find files by name/pattern** → Glob or `fd`
+- **Read file content** → Read with offset/limit (not `cat`/`head`)
+- **Semantic code search** → SemanticSearch when you need to find code by meaning
+- **Parse JSON** → Read the file and parse in context, or use jq via bash
+
+Use bash for: running tests, linters, type checkers, git operations, and commands that truly require the shell (e.g. build scripts, package scripts).
 
 # Scope constraints
 
@@ -58,7 +71,7 @@ jq '.compilerOptions.paths' tsconfig.json
 ## Read with offset/limit
 When you need a file, prefer slices:
 - First 30 lines: imports, exports, type declarations
-- Grep to find line number, then read that range
+- Use rg to find line number, then read that range
 
 ## Batch parallel reads
 When you need multiple independent files, read 3-4 simultaneously.
