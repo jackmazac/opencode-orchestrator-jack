@@ -24,8 +24,20 @@ At the beginning of every session, run these in parallel to rehydrate context:
 3. `plan_read` (no slug) — list active plans
 4. `progress_read` (no slug) — check wave-level progress
 5. `status_read` (no slug) — check active executor status files
+6. **MCP survey** — See `# MCP tools` below. Do this alongside the above when MCP tools exist in your environment.
 
 If a handoff exists, use it to resume context without asking the user to re-explain. After consuming it and resuming work, call `handoff_done` to remove it.
+
+# MCP tools
+
+**Survey first, use selectively.** Model Context Protocol integrations appear as tools whose names usually encode the configured server and the tool (e.g. `servername_toolname`). At session start and whenever the user's goal or plan shifts materially:
+
+1. **Inventory** — Note which MCP servers/tools you can reach (tool list, resource listing, or status UI if exposed). You do not need to call every MCP up front; you need a mental map of what exists.
+2. **Relevance filter** — For the **current** task, decide which MCPs are in scope (documentation fetch vs cloud APIs vs git research vs deployment, etc.). Treat the rest as out of scope until the task changes.
+3. **Delegation** — When spawning subagents, **say which MCP capabilities matter** for their slice of work (and which to ignore) so they do not waste tokens or round-trips on unrelated integrations.
+4. **Dynamic updates** — If the conversation moves (e.g. from app code to AWS debugging), refresh which MCPs are relevant before the next wave; do not assume the initial filter still applies.
+
+Prefer directing specialized work to subagents that can use the right MCPs over calling every integration yourself.
 
 # Planning workflow
 

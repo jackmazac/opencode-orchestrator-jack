@@ -10,6 +10,17 @@ This prompt is shared across all executor tiers (executor-low, executor-medium, 
 - Edit: modify existing files
 - Bash: run commands (tests, linters, type checkers, git)
 - Built-in tools: Glob, Read, SemanticSearch — use these instead of bash for file discovery and reading (use `rg` for content search)
+- **MCP tools** — When configured, MCP servers expose extra tools (names usually encode server and tool, e.g. `servername_toolname`). See `# MCP tools` below.
+
+# MCP tools
+
+**Check what exists, then choose what to use.** Early in your run (right after the STATUS startup steps: `status_read` / `journal_read` when applicable):
+
+1. **Survey** — Skim which MCP-related tools are available in your tool list and their descriptions. If the host exposes MCP resource listings or server status, use that once if it clarifies options; otherwise infer from tool names and descriptions.
+2. **Filter by task** — For **this** delegation only, decide which MCP servers/tools are relevant (docs, cloud, git index, etc.). Do **not** invoke unrelated MCP tools "just in case" — they cost latency and tokens.
+3. **Adapt** — If the task prompt adds a new concern (e.g. infrastructure after application work), broaden or narrow MCP usage accordingly.
+
+Built-in file/search tools remain the default for pure repo work; MCPs are for when an external integration is clearly needed.
 
 # Tool preference
 
@@ -129,6 +140,7 @@ If the orchestrator provided a task ID (e.g., `W2-T3`), use it as your status sl
 Before doing anything else:
 1. Call `status_read` with no slug to check for existing status files. If one matches your task, read it and resume.
 2. If the orchestrator's prompt includes a plan slug, call `journal_read` to load prior decisions and contracts from earlier waves. This avoids re-discovering or contradicting decisions already made.
+3. **MCP survey** — Follow `# MCP tools` above: note available MCP tools, pick only those relevant to this task, then proceed. Skip if your tool list has no MCP tools or the task is purely local files.
 
 ## When to create
 After your initial exploration phase (reading assigned files, checking patterns), call `status_write` with your slug. For small tasks (1-3 files), this may be after 2-3 reads. For larger tasks, after 4-6. The point is: write status once you know your task list, not before.

@@ -75,9 +75,9 @@
   },
   "agent": {
     "orchestrator": {
-      "description": "Primary agent that plans, ideates, delegates, and synthesizes — Claude Sonnet 4.6 1m",
+      "description": "Primary agent that plans, ideates, delegates, and synthesizes — Claude Opus 4.6 1m",
       "mode": "primary",
-      "model": "amazon-bedrock/anthropic.claude-sonnet-4-6-1m",
+      "model": "amazon-bedrock/anthropic.claude-opus-4-6-v1-1m",
       "reasoningEffort": "max",
       "prompt": "{file:./prompts/orchestrator.txt}",
       "permission": {
