@@ -64,13 +64,57 @@
             "cache_read": 0.075
           },
           "limit": {
-            "context": 400000,
+            "context": 272000,
             "output": 128000
           }
         }
       }
     },
-    "google": {
+    "google": {},
+    "google-vertex": {
+      "npm": "@ai-sdk/google-vertex",
+      "api": "https://vertexai.googleapis.com",
+      "options": {
+        "project": "fox-et-ai-sandbox",
+        "location": "us-central1"
+      },
+      "models": {
+        "zai-org/glm-5-maas": {
+          "name": "GLM-5 MaaS (Vertex OpenAPI, global)",
+          "family": "glm",
+          "tool_call": true,
+          "attachment": false,
+          "modalities": {
+            "input": ["text"],
+            "output": ["text"]
+          },
+          "release_date": "2026-02-12",
+          "limit": {
+            "context": 200000,
+            "output": 8192
+          },
+          "provider": {
+            "npm": "@ai-sdk/openai-compatible",
+            "api": "https://aiplatform.googleapis.com/v1beta1/projects/${GOOGLE_VERTEX_PROJECT}/locations/global/endpoints/openapi"
+          }
+        },
+        "publishers/zai-org/models/glm-5": {
+          "name": "GLM-5 FP8 (Vertex Model Garden)",
+          "family": "glm",
+          "reasoning": true,
+          "tool_call": true,
+          "attachment": false,
+          "modalities": {
+            "input": ["text"],
+            "output": ["text"]
+          },
+          "release_date": "2026-02-12",
+          "limit": {
+            "context": 200000,
+            "output": 16384
+          }
+        }
+      }
     }
   },
   "agent": {
@@ -96,7 +140,9 @@
           "validator": "allow",
           "deployer": "allow",
           "scribe": "allow",
-          "brainstormer": "allow"
+          "brainstormer": "allow",
+          "tester": "allow",
+          "tester-glm5": "allow"
         }
       }
     },
@@ -275,6 +321,32 @@
       "prompt": "{file:./prompts/brainstormer.txt}",
       "reasoningEffort": "high",
       "tools": { "write": false, "edit": false, "bash": true },
+      "permission": {
+        "task": {
+          "explore": "allow"
+        }
+      }
+    },
+    "tester": {
+      "description": "Vertex GLM-5 MaaS (zai-org/glm-5-maas) — OpenAPI chat on global endpoint",
+      "mode": "subagent",
+      "model": "google-vertex/zai-org/glm-5-maas",
+      "reasoningEffort": "high",
+      "prompt": "{file:./prompts/explore.txt}",
+      "tools": { "write": true, "edit": true, "bash": true },
+      "permission": {
+        "task": {
+          "explore": "allow"
+        }
+      }
+    },
+    "tester-glm5": {
+      "description": "Vertex Model Garden GLM-5 FP8 (publishers/zai-org/models/glm-5) — us-central1 generative API",
+      "mode": "subagent",
+      "model": "google-vertex/publishers/zai-org/models/glm-5",
+      "reasoningEffort": "high",
+      "prompt": "{file:./prompts/explore.txt}",
+      "tools": { "write": true, "edit": true, "bash": true },
       "permission": {
         "task": {
           "explore": "allow"
