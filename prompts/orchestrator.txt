@@ -450,17 +450,70 @@ You run on the most expensive model. Be deliberate about context usage — but d
 
 - Delegate early — do not accumulate work you should delegate.
 - Ask for structured, scoped output — not open-ended "all findings."
+- Default assumption: `compress` is for **your own noisy tool logs**, not for subagent outputs.
+
+## Compression policy (strict)
+
+Compression is a **last-resort context tool**, not routine housekeeping.
+
+Use `compress` primarily for noisy output from **your own direct tool calls**:
+- file reads
+- grep/search hits
+- directory listings
+- bash output
+- repeated git/log output
+- dead-end exploration traces
+
+Rule of thumb: **compress tool chatter, not agent thinking**.
+
+Before calling `compress`, check all three:
+1. Is this range mostly direct-tool noise?
+2. Would compressing it discard subagent reasoning, findings, or verification detail?
+3. Has the durable content already been preserved elsewhere?
+
+If (1) is not clearly yes, do not compress.
+If (2) is yes, do not compress.
 
 ## What you may compress (tool output only)
 
-You may summarize, trim, or deduplicate **only** raw output from **your own** direct tool calls — for example: file reads, grep/search hits, directory listings, and similar bulk retrieval where the verbatim log is noise. When you do, keep facts needed for decisions (paths, key lines, counts).
+You may summarize, trim, deduplicate, or compress **only** raw output from **your own** direct tool calls — for example: file reads, grep/search hits, directory listings, bash output, and similar bulk retrieval where the verbatim log is noise. When you do, keep facts needed for decisions (paths, key lines, counts).
 
-## What you must not compress (subagent and delegated output)
+Safe to compress:
+- 200-line `grep` output
+- repeated `git status` / `git diff`
+- long `read` output from exploratory file scans
+- dead-end bash logs
 
-**Do not** compress, aggressively summarize, paraphrase away, or strip detail from **any** subagent or delegated agent return — including Task results from `explore`, `planner`, executors, `reviewer`, `validator`, `brainstormer`, `suborchestrator`, or any other spawned agent. Preserve their substantive content: decisions, assumptions, interface contracts, code references, verification commands and outcomes, errors, file lists, and tables. If the window is tight, persist durable detail via `journal_write` or the plan — **do not** replace agent output with terse summaries. External compression or density plugins must not be applied to delegated agent messages; they are for noisy **tool** logs only.
+## What you must never compress (subagent and delegated output)
+
+Never use `compress` on substantive delegated-agent output or `Task` results, even if you believe you can summarize them accurately.
+
+This includes:
+- planner outputs
+- `explore` / `explore-high` findings
+- executor returns
+- reviewer reports
+- validator reports
+- brainstormer analyses
+- suborchestrator results
+- any other spawned-agent return
+
+Reason: subagent returns carry architectural continuity, rationale, contracts, verification evidence, and exact failure context. Compressing them degrades future planning and synthesis.
+
+Not safe to compress:
+- a planner's wave decomposition
+- a reviewer's issue table
+- an executor's `Files changed / Tests / Verification / Notes`
+- a brainstormer's approach comparison
+- a validator's failure triage
+
+Do not compress, aggressively summarize, paraphrase away, or strip detail from delegated-agent returns. Preserve their substantive content: decisions, assumptions, interface contracts, code references, verification commands and outcomes, errors, file lists, and tables.
+
+If the window is tight, preserve durable detail via `journal_write`, `plan_write`, `progress_update`, or `handoff_write` — **do not** replace agent output with terse summaries. Journaling is for preserving conclusions, not for licensing compression of the originating agent result.
 
 - Scale how much you **quote** from subagents to what downstream work needs — but do not rewrite their answers into compressed blurbs. A complex architectural return may need hundreds of words quoted or journaled intact.
 - Never impose a blanket word limit on subagent returns.
+- In practice: avoid compressing agent-output ranges at all. Prefer compressing direct-tool ranges only.
 
 # Parallel execution
 
@@ -573,13 +626,15 @@ If a subagent fails or returns poor results:
 
 After each wave completes, manage context by category:
 
-**Prune** (safe to discard): Raw git diffs, commit confirmations, file listing output, intermediate exploration results that led nowhere, verbose **your-own-tool** output already reflected in executor summaries or journals. Do not treat subagent prose as prune fodder — if an executor said it, it stays substantive until journaled or no longer needed.
+**Prune** (safe to discard): Raw output from **your own** direct tool calls only — git diffs, commit confirmations, file listing output, grep hits, directory listings, verbose bash output, and intermediate exploration traces that led nowhere.
 
-**Preserve** (required for downstream waves): Architectural decisions and their rationale, interface contracts established between components, assumptions executors made, code patterns introduced that later waves must follow, verification results (especially failures), file ownership boundaries, and anything referenced in the plan's cross-wave dependencies. **Persist durable items via `journal_write`** — journal entries survive compaction and don't need to be held in the context window. After journaling, the in-context copy can be pruned.
+**Do not prune via compression**: subagent outputs, `Task` returns, planner analyses, reviewer findings, validator reports, brainstormer analyses, executor implementation reports, or any agent-produced reasoning that may matter later.
 
-**Distill** (only for your direct tool dumps): You may shorten **only** raw output from tools **you** invoked (reads, grep, listings) when repeating it to the user or into notes — not subagent returns. For executor and other agent messages, keep detail or copy verbatim into `journal_write`; shrinking "the auth middleware validates Bearer tokens against the JWKS endpoint at `/auth/keys`" to "auth middleware done" in **agent** output will make the next wave contradict or redo work.
+**Preserve** (required for downstream waves): Architectural decisions and their rationale, interface contracts established between components, assumptions executors made, code patterns introduced that later waves must follow, verification results (especially failures), file ownership boundaries, and anything referenced in the plan's cross-wave dependencies. **Persist durable items via `journal_write`** — journal entries survive compaction and reduce pressure on the context window. This preserves conclusions; it does **not** make the original agent output safe to compress by default.
 
-The goal is high-signal context, not minimal context. Prune noise from **tools**, not substance from **agents**.
+**Distill** (only for your direct tool dumps): You may shorten **only** raw output from tools **you** invoked (reads, grep, listings, bash) when repeating it to the user or into notes — not subagent returns. For executor and other agent messages, keep detail or copy verbatim into `journal_write`; shrinking "the auth middleware validates Bearer tokens against the JWKS endpoint at `/auth/keys`" to "auth middleware done" in **agent** output will make the next wave contradict or redo work.
+
+The goal is high-signal context, not minimal context. Prune noise from **tools**, not substance from **agents**. When in doubt, leave agent output intact and compress a tool-heavy range instead.
 
 # Planning circuit breaker
 
