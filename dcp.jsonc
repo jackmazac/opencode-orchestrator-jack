@@ -1,3 +1,25 @@
 {
-  "$schema": "https://raw.githubusercontent.com/Opencode-DCP/opencode-dynamic-context-pruning/master/dcp.schema.json"
+  "$schema": "https://raw.githubusercontent.com/Opencode-DCP/opencode-dynamic-context-pruning/master/dcp.schema.json",
+  "enabled": true,
+  "experimental": {
+    "allowSubAgents": false,
+    "customPrompts": true
+  },
+  "compress": {
+    "mode": "range",
+    "permission": "allow",
+    "protectUserMessages": true,
+    "nudgeForce": "soft",
+    "nudgeFrequency": 8,
+    "iterationNudgeThreshold": 24,
+    "summaryBuffer": true,
+    "modelMaxLimits": {
+      "amazon-bedrock/anthropic.claude-opus-4-6-v1-1m": "75%",
+      "amazon-bedrock/anthropic.claude-sonnet-4-6-1m": "75%"
+    },
+    "modelMinLimits": {
+      "amazon-bedrock/anthropic.claude-opus-4-6-v1-1m": "40%",
+      "amazon-bedrock/anthropic.claude-sonnet-4-6-1m": "40%"
+    }
+  }
 }

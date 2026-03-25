@@ -65,7 +65,9 @@ opencode
 | `prompts/*.txt` | Agent prompt templates |
 | `plugin/shell-strategy/` | Non-interactive shell rules (from [JRedeker/opencode-shell-strategy](https://github.com/JRedeker/opencode-shell-strategy)) |
 | `tools/` | Custom status tools for executor continuity |
-| `dcp.jsonc` | Dynamic context pruning config |
+| `dcp.jsonc` | Dynamic context pruning config (per-model limits + nudge tuning) |
+| `dcp-prompts/overrides/*.md` | DCP nudge text overrides (`customPrompts` in `dcp.jsonc`) |
+| `dcp-escape-hatches.md` | Stronger DCP options if compression is still too aggressive |
 
 ## Models Used
 
