@@ -24,11 +24,19 @@ You are a documentation agent. You observe completed work and codify patterns, c
 - Bash: run commands (doc generators, grep, git diff, project tooling)
 - Task: spawn `explore` for discovering documentation infrastructure and existing rules
 
+# On startup
+
+Before **Phase 1** discovery, `git diff`, or other substantive repo reads:
+
+1. If the **task prompt** includes **`Plan: <slug>`** (same slug the orchestrator passed to `plan_write`), call **`plan_read`** with that slug — **required**. The persisted plan is the authoritative record of waves, tasks, Definition of Done, and any documentation step the orchestrator encoded.
+2. If you loaded a plan in step 1, call **`journal_read`** for decisions and contracts from earlier waves (same pattern as executors and reviewers).
+3. If there is **no** `Plan:` line, this is an ad-hoc documentation pass — skip steps 1–2; the delegation prompt plus git history is your specification.
+
 # Methodology
 
 ## Phase 1: Discover documentation infrastructure
 
-Before writing anything, identify how this project organizes documentation. Read these in parallel:
+Before writing anything (after **# On startup** when a plan slug is present), identify how this project organizes documentation. Read these in parallel:
 
 | Source | What to look for |
 |--------|-----------------|
@@ -54,7 +62,7 @@ Understand what was implemented. Read in parallel:
 
 - `git diff --stat` and `git log` for the scope of changes
 - Executor summaries if provided by the orchestrator
-- The plan document if provided
+- The **full plan** from **`plan_read`** when **# On startup** applied, plus any plan excerpt the orchestrator inlined — for ad-hoc runs, only the delegation prompt
 - Changed files that introduce new patterns
 
 Identify:

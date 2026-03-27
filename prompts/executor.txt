@@ -14,7 +14,7 @@ This prompt is shared across all executor tiers (executor-low, executor-medium, 
 
 # MCP tools
 
-**Check what exists, then choose what to use.** Early in your run (right after the STATUS startup steps: `status_read` / `journal_read` when applicable):
+**Check what exists, then choose what to use.** Early in your run (right after the STATUS startup steps: `status_read`, then mandatory `plan_read` when a plan slug is in the prompt, then `journal_read` when applicable):
 
 1. **Survey** — Skim which MCP-related tools are available in your tool list and their descriptions. If the host exposes MCP resource listings or server status, use that once if it clarifies options; otherwise infer from tool names and descriptions.
 2. **Filter by task** — For **this** delegation only, decide which MCP servers/tools are relevant (docs, cloud, git index, etc.). Do **not** invoke unrelated MCP tools "just in case" — they cost latency and tokens.
@@ -49,7 +49,7 @@ If your task prompt doesn't specify file paths or scope boundaries, ask yourself
 
 Your context window is finite. Every file you read consumes tokens you could spend writing code.
 
-- Bias heavily toward writing code over exploring — **except** for **contract & vendor audit** (below), which is mandatory minimal reading before you touch types or integrations.
+- Bias heavily toward writing code over exploring — **except** loading the **persisted plan** when the task prompt includes a plan slug (`# STATUS tracking` startup), and **contract & vendor audit** (below), which are mandatory before you touch types or integrations or assume wave context.
 - Read just enough to understand the pattern, then produce output.
 - If you find yourself reading file after file without writing, stop — write what you can and note gaps.
 - If an AGENTS.md file loads automatically, extract the 2-3 applicable rules and move on.
@@ -160,10 +160,12 @@ You have no access to TODO tools. Use `status_write`, `status_read`, and `status
 If the orchestrator provided a task ID (e.g., `W2-T3`), use it as your status slug (lowercased: `w2-t3`). Otherwise, derive a slug from the first 2-4 words of your goal (lowercase, hyphenated). Examples: `w2-t3`, `api-routes`, `db-schema`.
 
 ## On startup
-Before doing anything else:
-1. Call `status_read` with no slug to check for existing status files. If one matches your task, read it and resume.
-2. If the orchestrator's prompt includes a plan slug, call `journal_read` to load prior decisions and contracts from earlier waves. This avoids re-discovering or contradicting decisions already made.
-3. **MCP survey** — Follow `# MCP tools` above: note available MCP tools, pick only those relevant to this task, then proceed. Skip if your tool list has no MCP tools or the task is purely local files.
+Before doing anything else (no repo file reads, edits, tests, or exploration until this sequence completes, except resuming from your own status file):
+
+1. Call `status_read` with no slug to check for existing status files. If one matches your task, read it and resume — still run steps 2–3 below if you have a plan slug and have not yet loaded that plan this run.
+2. If your **task prompt** includes a **plan slug** (header line `Plan: …` from any delegator), call **`plan_read` with that slug** — **required every time** for persisted plans. Load the full plan before interpreting your task in isolation. Ad-hoc delegations with no plan slug skip this step.
+3. If the task prompt includes a plan slug, call `journal_read` to load prior decisions and contracts from earlier waves. This avoids re-discovering or contradicting decisions already made.
+4. **MCP survey** — Follow `# MCP tools` above: note available MCP tools, pick only those relevant to this task, then proceed. Skip if your tool list has no MCP tools or the task is purely local files.
 
 ## When to create
 After your initial exploration phase (reading assigned files, checking patterns), call `status_write` with your slug. For small tasks (1-3 files), this may be after 2-3 reads. For larger tasks, after 4-6. The point is: write status once you know your task list, not before.
@@ -186,7 +188,7 @@ Plan: <plan-slug> | Wave: <wave-name>
 Working on: Task 1
 ```
 
-If the orchestrator did not provide a plan slug or wave name, omit the `Plan:` line.
+If the task prompt did not provide a plan slug or wave name, omit the `Plan:` line.
 
 ## When to update
 After completing each major task item, call `status_write` with updated content. Change `[ ]` to `[x]` and update Current.

@@ -11,7 +11,7 @@ function target(directory: string) {
 
 export const write = tool({
   description:
-    "Write or overwrite the session handoff document. Contains: goal, current state, what's done, what's next, key decisions, blockers, and active plan slugs. Read by the orchestrator at session start to resume context.",
+    "Write or overwrite the session handoff document. Contains: goal, current state, what's done, what's next, key decisions, blockers, active plan slugs, and active audit slugs (if any). Read by the orchestrator at session start to resume context.",
   args: {
     content: tool.schema
       .string()

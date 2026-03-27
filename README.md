@@ -64,10 +64,21 @@ opencode
 | `opencode.json` | Main config: agents, models, prompts |
 | `prompts/*.txt` | Agent prompt templates |
 | `plugin/shell-strategy/` | Non-interactive shell rules (from [JRedeker/opencode-shell-strategy](https://github.com/JRedeker/opencode-shell-strategy)) |
-| `tools/` | Custom status tools for executor continuity |
+| `tools/` | OpenCode plugin tools: plans, audits, progress, journal, handoff, executor status (see below) |
 | `dcp.jsonc` | Dynamic context pruning config (per-model limits + nudge tuning) |
 | `dcp-prompts/overrides/*.md` | DCP nudge text overrides (`customPrompts` in `dcp.jsonc`) |
 | `dcp-escape-hatches.md` | Stronger DCP options if compression is still too aggressive |
+
+### Persisted artifacts (`tools/`)
+
+| File | Tools (typical names) | Storage |
+|------|----------------------|---------|
+| `plan.ts` | `plan_write`, `plan_read`, `plan_done` | `.opencode/plans/<slug>.md` — subagents load via `plan_read` (`Plan:` header in prompts) |
+| `audit.ts` | `audit_write`, `audit_read`, `audit_done` | `.opencode/audits/<slug>.md` — **orchestrator only**; subagents do not call `audit_read`; inline slice context in `task` prompts |
+| `progress.ts` | `progress_update`, `progress_read`, `progress_done` | `.opencode/progress/<plan_slug>.json` — wave state per plan |
+| `audit-progress.ts` | `audit_progress_update`, `audit_progress_read`, `audit_progress_done` | `.opencode/audit-progress/<audit_slug>.json` — wave state per persisted audit |
+
+Slug rules and 32KB markdown cap match the plan tools. See `prompts/orchestrator.txt` (`## Persisted audits`) for when to use audits vs plans.
 
 ## Models Used
 

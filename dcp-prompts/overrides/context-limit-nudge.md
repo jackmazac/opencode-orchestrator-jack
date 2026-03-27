@@ -9,7 +9,7 @@ Do not include in compress ranges:
 Do include when appropriate:
 - Your own direct tool noise: bulk file reads, grep or search hit dumps, directory listings, verbose bash or git output, dead-end exploration traces
 
-If durable conclusions from subagents must survive compaction, persist them with `plan_write`, `journal_write`, `progress_update`, or `handoff_write` before or instead of erasing verbatim Task output.
+If durable conclusions from subagents must survive compaction, persist them with `plan_write`, `audit_write`, `journal_write`, `progress_update`, `audit_progress_update`, or `handoff_write` before or instead of erasing verbatim Task output.
 
 RANGE STRATEGY
 Prefer one large closed slice of safe tool-only history when that yields a clean summary. Split only when boundaries would mix protected agent output with safe tool noise.

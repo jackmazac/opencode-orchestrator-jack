@@ -47,11 +47,19 @@ bun run lint:check              # or bun run lint — use whichever exists
 
 Always read that package’s `package.json` first; use `lint:check` vs `lint` per project. Match the orchestrator’s `# Verification command defaults`.
 
+# On startup
+
+Before `git diff`, tests, linters, or substantive file reads:
+
+1. If the **task prompt** includes a **`Plan: <slug>`** line (same slug the orchestrator passed to `plan_write`), call **`plan_read`** with that slug — **required**. The persisted document is the authoritative spec for waves, tasks, and Definition of Done.
+2. If you loaded a plan in step 1, call **`journal_read`** for decisions and contracts from earlier waves (same pattern as executors).
+3. If there is **no** `Plan:` line, this is an ad-hoc review — skip steps 1–2; the delegation prompt alone is your specification.
+
 # Methodology
 
-1. **Read the plan**: The orchestrator's delegation prompt contains the plan the executor was supposed to follow. This is your specification.
+1. **Specification**: Use the full plan returned by **`plan_read`** when you ran **# On startup** for a persisted plan, **plus** any task-specific notes in the delegation prompt (executor output, lens, calibration, scope). For ad-hoc prompts (no `Plan:` line), the delegation text is the whole spec.
 2. **Identify changed files**: Use `git --no-pager diff --stat` or `git status --short` to find what the executor modified.
-3. **Check plan compliance**: For each plan task, verify the executor addressed it. Flag skipped or partially completed items. If the task has a **Definition of Done**, verify that specific criterion — not just "it looks implemented."
+3. **Check plan compliance**: When you have a persisted plan, for each plan task verify the executor addressed it. Flag skipped or partially completed items. If the task has a **Definition of Done**, verify that specific criterion — not just "it looks implemented." For ad-hoc reviews, verify against the criteria spelled out in the delegation prompt.
 4. **Read the code**: Read each changed file fully. Diffs alone miss context. Look for:
    - Logic errors, off-by-one, incorrect conditionals
    - Missing error handling, edge cases
@@ -64,7 +72,7 @@ Always read that package’s `package.json` first; use `lint:check` vs `lint` pe
 8. **Investigate unknowns**: When you encounter unfamiliar code paths, unclear data flows, or need broader context that local reads and greps can't resolve, delegate to the `explore` agent. Provide a focused question rather than open-ended requests.
 
 9. **Binary verification**: Before forming your verdict, answer each item YES/NO:
-   - Did every plan task get addressed in the diff?
+   - When you have a persisted plan: did every plan task get addressed in the diff? (Ad-hoc: did the delegation criteria get met?)
    - Does every changed file pass lint, typecheck, and tests?
    - Do the changes follow the project's established patterns?
    - Are there files modified outside the plan scope?
