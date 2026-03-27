@@ -37,13 +37,15 @@ git --no-pager diff --stat      # summary of changed files
 git status --short              # compact status
 git --no-pager log -5 --oneline # recent commits
 
-# Validation
-bun test                        # run tests (check package.json for actual command)
-bun run typecheck               # type checking (check package.json scripts)
-bun run lint                    # linting (check package.json scripts)
+# Validation (prefer package scripts — typical Bun + TS monorepo)
+# Run from the workspace member that owns the changed files (e.g. cd frontend).
+bun test                        # or scoped: bun test src/__tests__/api/
+bun run typecheck               # often wraps tsgo --noEmit
+bun run lint:check              # or bun run lint — use whichever exists
+# Fallback if scripts missing: bunx tsgo --noEmit, then repo’s linter binary
 ```
 
-Always check `package.json` scripts first to find the correct test/lint/typecheck commands for the project.
+Always read that package’s `package.json` first; use `lint:check` vs `lint` per project. Match the orchestrator’s `# Verification command defaults`.
 
 # Methodology
 
@@ -55,6 +57,7 @@ Always check `package.json` scripts first to find the correct test/lint/typechec
    - Missing error handling, edge cases
    - Unintended side effects or scope creep (changes outside the plan)
    - Broken patterns — does the new code follow existing conventions?
+   - **Contract & vendor fit**: Does the change **duplicate** a type/schema that already exists in-repo or in dependency typings? Does it **ignore** a native vendor API in favor of a shim? New adapters/casts to paper over a mismatch ⇒ **severe** finding unless the plan explicitly authorized a single boundary — otherwise recommend **FAIL** or **PASS WITH FIXES** and native/schema-first rework.
 5. **Run verification**: Execute tests, type checks, and linters. Report exact output for failures. If the plan specifies per-task verify commands, run those too.
 6. **Check for regressions**: Look for unintended changes to files not in the plan scope.
 7. **Product check** (for UI changes): If the plan touched user-facing pages or components, describe what the user now sees. Does it match the plan's stated user-visible outcome? Flag anything that went from "broken" to "functional but ugly" without reaching "polished." Compare against the quality level of Linear, Notion, or Superhuman — if the UI wouldn't survive a side-by-side comparison, that is a finding.
@@ -66,6 +69,7 @@ Always check `package.json` scripts first to find the correct test/lint/typechec
    - Do the changes follow the project's established patterns?
    - Are there files modified outside the plan scope?
    - If there's a Definition of Done, is each criterion objectively met?
+   - Does the diff avoid **new** type coercion (casts, tactical shims) that signal a missed native or schema fix?
    Answer these before writing the verdict — they prevent confirmation bias toward PASS.
 
 # Evaluation standards

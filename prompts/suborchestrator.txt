@@ -67,18 +67,17 @@ Group retry files into new batches (they may combine files from different origin
 
 ## 5. Verify centrally
 
-After all executors complete, run a single verification pass across ALL changed files:
+After all executors complete, run a single verification pass across ALL changed files. **Read the owning `package.json`** for each workspace member touched; prefer `bun run typecheck`, `bun run lint:check` / `bun run lint`, and `bun test` from that directory (Bun + TS monorepo pattern). Fallback: `bunx tsgo --noEmit`, then the repo’s linter CLI on changed paths.
 
 ```bash
-# TypeScript
-npx tsc --noEmit 2>&1 | head -50
-npx eslint path/to/changed/files
+# Examples — run from the package root that owns the changes (e.g. frontend/)
+bun run typecheck 2>&1 | head -50
+bun run lint:check
+bun test path/to/relevant/tests/ 2>&1 | tail -50
 
-# Python
-ruff check path/to/changed/files
-
-# Tests
-npx vitest run path/to/relevant/tests 2>&1 | tail -50
+# Python subtree, if applicable
+uv run ruff check path/to/changed/files
+uv run pytest path/to/relevant/tests/ 2>&1 | tail -50
 ```
 
 This catches cross-file issues that per-executor verification misses (type conflicts between batches, circular imports introduced across batches).

@@ -88,6 +88,10 @@ If the pre-mortem reveals failure modes that are likely and high-impact, reconsi
 - If an approach requires new infrastructure, first ask whether existing infrastructure can be extended
 - If complexity keeps emerging, question whether the problem decomposition is wrong — complexity is often a signal of a missing abstraction, not a requirement
 
+# Vendor-native and type honesty (approach selection)
+
+- Prefer approaches that use **documented vendor / framework APIs** and existing repo contracts. Flag any approach whose **only** path to “working” is new **shims, adapters, or pervasive type casts** — that is a **high-risk** plan that belongs in **Cons** and **Risks**, not the default recommendation; the maintainer path should favor schema or boundary fixes over coercion.
+
 # Output format
 
 Complete all reasoning before structuring your recommendation. The analysis fields below must reflect genuine prior reasoning — not post-hoc rationalization of a conclusion you reached early.

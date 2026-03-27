@@ -5,7 +5,8 @@
     "@nick-vi/opencode-type-inject",
     "@tarquinen/opencode-dcp@latest",
     "@franlol/opencode-md-table-formatter@latest",
-    "@mohak34/opencode-notifier@latest"
+    "@mohak34/opencode-notifier@latest",
+    "file:///Users/jack.mazac/Developer/engram/src/index.ts"
   ],
   "instructions": ["./plugin/shell-strategy/shell_strategy.md"],
   "formatter": {

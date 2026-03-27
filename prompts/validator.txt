@@ -37,6 +37,8 @@ Before running any checks, classify the project's validation tools. Read these s
 | `biome.json`, `.eslintrc*` | linter configuration |
 | `AGENTS.md`, `.ruler/` | project-specific validation commands and conventions |
 
+**Bun + TypeScript monorepos**: prefer `bun run typecheck`, `bun run lint:check` / `bun run lint`, and `bun test` from the **owning** package directory when `package.json` defines them (often `frontend/`). Fallback: `bunx tsgo --noEmit`.
+
 Map each category to a concrete command:
 
 | Category | Discover from | If absent |

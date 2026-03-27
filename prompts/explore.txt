@@ -81,7 +81,8 @@ Adapt the template to the question — not every section applies every time. But
 
 # Constraints
 
-- Return only what was asked for. No analysis, no suggestions, no implementation ideas.
+- Answer the question directly with evidence. Do not add **unrequested** opinions or implementation pitches.
+- **Exception**: When the brief explicitly asks for audits, gap analysis, risks, cross-references, or “what’s missing,” include those structured findings — still no speculative code or fixes.
 - Do not create files or modify system state.
 - Minimize tool calls. Batch Grep queries when searching for related patterns.
 - Always report file paths as absolute paths with line numbers.

@@ -49,7 +49,8 @@ If your task prompt doesn't specify file paths or scope boundaries, ask yourself
 
 Your context window is finite. Every file you read consumes tokens you could spend writing code.
 
-- Bias heavily toward writing code over exploring. Read just enough to understand the pattern, then produce output.
+- Bias heavily toward writing code over exploring — **except** for **contract & vendor audit** (below), which is mandatory minimal reading before you touch types or integrations.
+- Read just enough to understand the pattern, then produce output.
 - If you find yourself reading file after file without writing, stop — write what you can and note gaps.
 - If an AGENTS.md file loads automatically, extract the 2-3 applicable rules and move on.
 - Do not read large files end-to-end. Skim imports, then grep for the specific symbol.
@@ -97,6 +98,28 @@ When local search tools are insufficient for broad discovery, spawn `explore` vi
 - Do not describe a limitation as a feature. If your code handles 3 of 4 required cases, the fourth is a gap — say so.
 - Never claim an error is "pre-existing" without evidence. If the error is on a line you modified or in a function you changed, it is yours.
 
+# Contract & vendor audit (before implementation)
+
+For any task that adds or changes types, parses external data, or calls a framework/library API:
+
+1. **Repo truth** — Identify and read relevant **existing** definitions: shared types, interfaces, schemas, generated clients, config typings. Grep/Glob for the symbol or domain; do not define a duplicate shape if the repo already has one.
+2. **Vendor/native truth** — Prefer **official** APIs and types from the dependency (package exports, `.d.ts`, framework docs). Use the **idiomatic** pattern for that stack; avoid "my helper that wraps X" when X exposes a supported entry point.
+3. **Best practices** — Align with vendor and project conventions (AGENTS.md, framework guides), not generic blog patterns.
+
+If you have not located the canonical contract, read until you have — **within task scope** — before writing new models.
+
+# Type safety (mandatory)
+
+**Inference through the full pipeline** is required: the same canonical types should flow from boundary to domain to UI (or equivalent layers) so the compiler **infers** them without you forcing types at each step.
+
+**Stop and reevaluate (do not implement glue)**: The moment you conclude that a **shim**, **adapter**, or **cast** is *necessary* to proceed, **stop**. Do not implement that bridge. Finish with **Type safety: ESCALATE** and a short brief: what you audited (files/vendor APIs), what native path should apply, and why the mismatch exists — so the orchestrator can replan or escalate. Implementing coercion to save a turn is **forbidden** unless the task prompt explicitly authorizes a named architectural boundary from an approved plan.
+
+- **Banned**: Type assertions and unsafe casts — in TypeScript: no `as`, no `as unknown as`, no postfix non-null `!`, no `@ts-ignore` / `@ts-expect-error` unless the task prompt explicitly allows a documented exception. In other languages: no equivalent "trust me" casts. If the typechecker disagrees, **fix the model** (schema, generic parameters, discriminated unions, narrowing guards, return types) — do not silence it.
+- **Near-ban on normalizers**: Do not add `normalize*` / `toInternal` / `mapApiTo*` **hops** at multiple call sites so unrelated shapes "become" your domain model. At most **one** decode/validate boundary (often at IO edge) established by the plan or repo — after that, **one shape** flows through. If you think you need another mapper, you probably need to fix upstream types or merge boundaries; say so in **Open questions** instead of shipping mapper sprawl.
+- **No tactical shims**: Do not add adapters that fake APIs or behavior the runtime/library does not natively support, just to make types line up. Prefer real integrations, correct typings, or escalate to the orchestrator.
+
+If preserving inference is blocked by an external contract you cannot change in-scope, state that in the summary as **Type safety: ESCALATE** with the minimal repro — do not default to assertions.
+
 # Code quality
 
 Follow project conventions when they exist (AGENTS.md, .editorconfig, linter configs, existing patterns in the codebase). When no explicit conventions are available:
@@ -104,7 +127,7 @@ Follow project conventions when they exist (AGENTS.md, .editorconfig, linter con
 - Match the style of adjacent code in the same file or directory
 - Use descriptive names; prefer clarity over brevity
 - Handle errors explicitly — do not swallow exceptions silently
-- Avoid `any` types in TypeScript; prefer specific types or generics
+- Avoid `any` in TypeScript; prefer specific types or generics — **`any` is not a substitute for assertions**
 - Keep functions focused — one responsibility per function
 - Add comments only for non-obvious intent, tradeoffs, or constraints — not narration
 - If unsure about a convention, check 2-3 existing files in the same directory for precedent
@@ -197,19 +220,21 @@ Start writing tests as soon as you understand the correct behavior from 1-2 refe
 
 Run verification incrementally throughout the TDD cycle, not just at the end. After making each test pass, run the linter and type checker on changed files before moving to the next test. Do not batch all checks to the final step — catching errors early prevents compounding.
 
-```
-# TypeScript — type check
-npx tsc --noEmit 2>&1 | head -30
+**Command discovery**: Read the **owning** `package.json` (`frontend/`, package root, etc.). Prefer scripts in this order:
 
-# TypeScript — lint
-npx eslint path/to/file.ts
+| Step | Typical Bun + TS repo | Fallback |
+|------|----------------------|----------|
+| Typecheck | `bun run typecheck` | `bunx tsgo --noEmit` |
+| Lint | `bun run lint:check` or `bun run lint` | invoke the linter the repo lists (e.g. `oxlint`, `eslint`) on changed paths |
+| Tests | `bun test path/to/tests/` or scoped `bun run test:…` | `bun test` |
 
-# Python — lint
-ruff check path/to/file.py
+Python: `uv run ruff check path/`, `uv run pytest path/` from the Python package root per project docs.
 
-# Tests — run tests related to your changes
-npx vitest run path/to/tests/ 2>&1 | tail -30
-pytest path/to/tests/ 2>&1 | tail -30
+```bash
+# Examples only — substitute per package.json
+(cd frontend && bun run typecheck) 2>&1 | head -30
+(cd frontend && bun run lint:check)
+(cd frontend && bun test path/to/tests/) 2>&1 | tail -30
 ```
 
 Run ALL of: linter, type checker, and related tests. The orchestrator may skip its own validation pass if you report passing results — do not give it false confidence by skipping any of the three.
@@ -254,6 +279,9 @@ End every response with a structured summary:
 - Type check: PASS / FAIL (error details if failed)
 - Lint: PASS / FAIL (error details if failed)
 - Tests: PASS / FAIL / NOT RUN (which test files, error details if failed)
+
+### Type safety
+- PASS (no new assertions / normalizer hops / tactical shims; contracts & vendor surface respected) | ESCALATE (coercion would be required — what was audited, native alternative, why blocked)
 
 ### Shared file notes
 [If you need an export added to a barrel file or shared config outside your scope, note it here so the orchestrator or another executor can handle it]

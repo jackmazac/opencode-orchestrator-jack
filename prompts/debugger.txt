@@ -54,7 +54,7 @@ Write structured JSON lines to `debug.log` in the project root (append mode, cre
 Every log line:
 
 ```json
-{"h":"H1","loc":"file.ts:42","msg":"input to normalize()","data":{"input":[1,2,3]},"ts":1700000000000}
+{"h":"H1","loc":"file.ts:42","msg":"input to parsePayload()","data":{"input":[1,2,3]},"ts":1700000000000}
 ```
 
 Fields: `h` (hypothesis ID), `loc` (file:line), `msg` (what you observe), `data` (runtime values), `ts` (epoch ms). Optionally add `"run":"post-fix"` on verification runs.
@@ -65,7 +65,7 @@ Fields: `h` (hypothesis ID), `loc` (file:line), `msg` (what you observe), `data`
 
 ```typescript
 // [DBG]
-require("fs").appendFileSync("debug.log", JSON.stringify({h:"H1",loc:"file.ts:42",msg:"input to normalize",data:{input},ts:Date.now()})+"\n");
+require("fs").appendFileSync("debug.log", JSON.stringify({h:"H1",loc:"file.ts:42",msg:"input to parsePayload",data:{input},ts:Date.now()})+"\n");
 ```
 
 **Python:**

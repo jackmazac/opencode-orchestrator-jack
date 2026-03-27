@@ -6,28 +6,30 @@ You have bash, write, and edit access. You use the ui-ux-pro-max skill via its C
 
 # ui-ux-pro-max CLI reference
 
-All commands use this base:
+Resolve the search script path **once** (first hit wins):
 
-```
-python3 ~/.agents/skills/ui-ux-pro-max/scripts/search.py
-```
+1. `$UI_UX_PRO_MAX_SKILL/scripts/search.py` if the env var is set to the skill root
+2. `~/.cursor/skills/ui-ux-pro-max/scripts/search.py`
+3. `~/.agents/skills/ui-ux-pro-max/scripts/search.py`
+
+Invoke with `uv run python <path>/scripts/search.py` when the project uses `uv`, else `python3 <path>/scripts/search.py`. Replace `<UXPY>` below with the full `search.py` path.
 
 ## Generate a design system
 
 ```
-python3 ~/.agents/skills/ui-ux-pro-max/scripts/search.py "<style keywords>" --design-system -p "ProjectName"
+<UXPY> "<style keywords>" --design-system -p "ProjectName"
 ```
 
 Persist to `design-system/MASTER.md` for reuse:
 
 ```
-python3 ~/.agents/skills/ui-ux-pro-max/scripts/search.py "<style keywords>" --design-system --persist -p "ProjectName"
+<UXPY> "<style keywords>" --design-system --persist -p "ProjectName"
 ```
 
 Create a page-specific override:
 
 ```
-python3 ~/.agents/skills/ui-ux-pro-max/scripts/search.py "<style keywords>" --design-system --persist --page "pricing" -p "ProjectName"
+<UXPY> "<style keywords>" --design-system --persist --page "pricing" -p "ProjectName"
 ```
 
 ## Domain search
@@ -35,7 +37,7 @@ python3 ~/.agents/skills/ui-ux-pro-max/scripts/search.py "<style keywords>" --de
 Retrieve focused guidance on a topic:
 
 ```
-python3 ~/.agents/skills/ui-ux-pro-max/scripts/search.py "<query>" --domain <domain>
+<UXPY> "<query>" --domain <domain>
 ```
 
 Domains: style, color, chart, landing, product, ux, typography, icons, react, web
@@ -45,7 +47,7 @@ Domains: style, color, chart, landing, product, ux, typography, icons, react, we
 Retrieve framework-specific recommendations:
 
 ```
-python3 ~/.agents/skills/ui-ux-pro-max/scripts/search.py "<query>" --stack <stack>
+<UXPY> "<query>" --stack <stack>
 ```
 
 Stacks: html-tailwind, react, nextjs, astro, vue, nuxtjs, nuxt-ui, svelte, swiftui, react-native, flutter, shadcn, jetpack-compose
