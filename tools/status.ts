@@ -5,6 +5,7 @@ import fs from "node:fs"
 
 const SLUG_RE = /^[a-z0-9][a-z0-9-]{0,30}$/
 const MAX_CONTENT = 4000
+const READ_CAP = 2000
 const DIR = path.join(process.cwd(), ".opencode", "status")
 
 function validate(slug: string) {
@@ -49,7 +50,7 @@ export const write = tool({
 
 export const read = tool({
   description:
-    "Read executor status files. Call with no slug to get a compact summary of all active status files (slug, current task, last updated). Call with a slug to read the full content of a specific status file.",
+    "Read executor status files. Call with no slug to list all active status files (slug, current task, updated). Call with a slug to read a status file (truncated to ~2KB).",
   args: {
     slug: tool.schema
       .string()
@@ -64,7 +65,11 @@ export const read = tool({
       const dest = target(args.slug)
       if (!(await Bun.file(dest).exists())) return `no status file for ${args.slug}`
       const mtime = fs.statSync(dest).mtime.toISOString()
-      return `Last updated: ${mtime}\n\n${await Bun.file(dest).text()}`
+      const raw = await Bun.file(dest).text()
+      const body = raw.length > READ_CAP
+        ? raw.slice(0, READ_CAP) + `\n\n[truncated — ${raw.length - READ_CAP} chars omitted]`
+        : raw
+      return `Last updated: ${mtime}\n\n${body}`
     }
     if (!fs.existsSync(DIR)) return "no status files"
     const entries = (await readdir(DIR)).filter(f => f.endsWith(".md")).sort()

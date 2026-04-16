@@ -5,6 +5,7 @@ import fs from "node:fs"
 
 const SLUG_RE = /^[a-z0-9][a-z0-9-]{0,30}$/
 const MAX_CONTENT = 32_000
+const READ_CAP = 3000
 
 function validate(slug: string) {
   if (!SLUG_RE.test(slug))
@@ -19,6 +20,11 @@ function dir(directory: string) {
 
 function target(directory: string, slug: string) {
   return path.join(dir(directory), `${slug}.md`)
+}
+
+function cap(text: string, limit: number) {
+  if (text.length <= limit) return text
+  return text.slice(0, limit) + `\n\n[truncated — ${text.length - limit} chars omitted, use plan_read for full]`
 }
 
 export const write = tool({
@@ -52,12 +58,16 @@ export const write = tool({
 
 export const read = tool({
   description:
-    "Read persisted plan files. Call with no slug to get a compact summary of all saved plans (slug, title, last updated). Call with a slug to read the full content of a specific plan.",
+    "Read persisted plan files. Call with no slug to list all saved plans (slug, title, updated). Call with a slug to read a plan (truncated to ~3KB — use section arg for targeted reads of large plans).",
   args: {
     slug: tool.schema
       .string()
       .optional()
       .describe("Plan slug to read. Omit to list all persisted plan files."),
+    section: tool.schema
+      .string()
+      .optional()
+      .describe("Heading text to extract a single section from the plan (e.g. 'Task queue'). Returns only that section."),
   },
   async execute(args, context) {
     if (args.slug) {
@@ -65,7 +75,19 @@ export const read = tool({
       const dest = target(context.directory, args.slug)
       if (!(await Bun.file(dest).exists())) return `no plan file for ${args.slug}`
       const mtime = fs.statSync(dest).mtime.toISOString()
-      return `Last updated: ${mtime}\n\n${await Bun.file(dest).text()}`
+      const raw = await Bun.file(dest).text()
+      if (args.section) {
+        const re = new RegExp(`^(#{1,3})\\s+${args.section.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "im")
+        const start = raw.search(re)
+        if (start === -1) return `section "${args.section}" not found in ${args.slug}`
+        const match = raw.slice(start).match(/^(#{1,3})\s/)
+        const level = match ? match[1].length : 2
+        const rest = raw.slice(start + 1)
+        const end = rest.search(new RegExp(`^#{1,${level}}\\s`, "m"))
+        const body = end === -1 ? raw.slice(start) : raw.slice(start, start + 1 + end)
+        return `Last updated: ${mtime}\n\n${cap(body.trim(), READ_CAP)}`
+      }
+      return `Last updated: ${mtime} (${raw.length} chars)\n\n${cap(raw, READ_CAP)}`
     }
     const base = dir(context.directory)
     if (!fs.existsSync(base)) return "no plan files"
@@ -83,7 +105,7 @@ export const read = tool({
             .find(line => line.startsWith("# "))
             ?.slice(2)
             .trim() || "(untitled plan)"
-        return `${slug} | ${title} | updated ${mtime}`
+        return `${slug} | ${title} | ${text.length} chars | updated ${mtime}`
       }),
     )
     return lines.join("\n")

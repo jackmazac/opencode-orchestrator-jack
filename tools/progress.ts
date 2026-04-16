@@ -66,7 +66,7 @@ export const update = tool({
 
 export const read = tool({
   description:
-    "Read wave-level progress. Call with a plan slug to see all waves for that plan. Call without a slug to list all plans with progress summaries.",
+    "Read wave-level progress. Call with a plan slug to see waves for that plan (last 10). Call without a slug to list all plans with progress summaries.",
   args: {
     plan_slug: tool.schema
       .string()
@@ -81,11 +81,20 @@ export const read = tool({
       const dest = target(context.directory, args.plan_slug)
       if (!fs.existsSync(dest)) return `no progress for ${args.plan_slug}`
       const data = JSON.parse(await Bun.file(dest).text())
-      return Object.entries(data.waves)
-        .map(([id, w]: [string, Record<string, string>]) =>
-          `${id} | ${w.status}${w.summary ? ` | ${w.summary}` : ""} | ${w.updated}`,
-        )
+      const all = Object.entries(data.waves)
+      const skipped = Math.max(0, all.length - 10)
+      const shown = all.slice(-10)
+      const completed = all.filter(
+        ([, w]: [string, Record<string, string>]) => w.status === "done",
+      ).length
+      const header = `${args.plan_slug}: ${completed}/${all.length} waves done${skipped > 0 ? ` (showing last 10, ${skipped} omitted)` : ""}`
+      const body = shown
+        .map(([id, w]: [string, Record<string, string>]) => {
+          const sum = w.summary ? ` | ${w.summary.slice(0, 80)}` : ""
+          return `${id} | ${w.status}${sum}`
+        })
         .join("\n")
+      return `${header}\n${body}`
     }
     const base = dir(context.directory)
     if (!fs.existsSync(base)) return "no progress files"

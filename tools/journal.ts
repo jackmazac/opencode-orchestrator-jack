@@ -5,6 +5,8 @@ import fs from "node:fs"
 
 const TYPES = ["decision", "contract", "discovery", "pattern"] as const
 const MAX_ENTRY = 2000
+const READ_DEFAULT = 5
+const READ_ENTRY_CAP = 300
 
 function target(directory: string) {
   return path.join(directory, ".opencode", "journal.jsonl")
@@ -48,13 +50,13 @@ export const write = tool({
 
 export const read = tool({
   description:
-    "Read the persistent decision journal. Returns all entries or the last N entries. Each entry has a timestamp, type, and content.",
+    "Read the persistent decision journal. Returns the last N entries (default 5). Each entry has a timestamp, type, and content. Entries are truncated to 300 chars.",
   args: {
     last_n: tool.schema
       .number()
       .optional()
       .describe(
-        "Return only the last N entries. Omit to return all.",
+        "Return only the last N entries (default 5).",
       ),
   },
   async execute(args, context) {
@@ -62,13 +64,20 @@ export const read = tool({
     if (!fs.existsSync(dest)) return "no journal entries"
     const lines = (await Bun.file(dest).text()).trim().split("\n").filter(Boolean)
     if (lines.length === 0) return "no journal entries"
-    const entries = args.last_n ? lines.slice(-args.last_n) : lines
-    return entries
+    const n = args.last_n ?? READ_DEFAULT
+    const skipped = Math.max(0, lines.length - n)
+    const entries = lines.slice(-n)
+    const header = `${lines.length} total entries${skipped > 0 ? ` (showing last ${n}, ${skipped} omitted)` : ""}`
+    const body = entries
       .map((line) => {
         const e = JSON.parse(line)
-        return `[${e.ts}] ${e.type}: ${e.content}`
+        const text = e.content.length > READ_ENTRY_CAP
+          ? e.content.slice(0, READ_ENTRY_CAP) + "…"
+          : e.content
+        return `[${e.ts}] ${e.type}: ${text}`
       })
-      .join("\n\n")
+      .join("\n")
+    return `${header}\n${body}`
   },
 })
 
