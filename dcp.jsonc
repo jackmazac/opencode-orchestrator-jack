@@ -10,8 +10,8 @@
     "permission": "allow",
     "protectUserMessages": true,
     "nudgeForce": "strong",
-    "nudgeFrequency": 3,
-    "iterationNudgeThreshold": 10,
+    "nudgeFrequency": 8,
+    "iterationNudgeThreshold": 20,
     "summaryBuffer": true,
     "modelMaxLimits": {
       "amazon-bedrock/anthropic.claude-opus-4-6-v1-1m": "60%",

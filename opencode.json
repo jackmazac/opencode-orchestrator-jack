@@ -60,9 +60,9 @@
   },
   "agent": {
     "orchestrator": {
-      "description": "Primary agent that plans, ideates, delegates, and synthesizes — Claude Opus 4.6 1m",
+      "description": "Primary agent that plans, ideates, delegates, and synthesizes — Claude Opus 4.7 1m",
       "mode": "primary",
-      "model": "amazon-bedrock/anthropic.claude-opus-4-6-v1-1m",
+      "model": "amazon-bedrock/anthropic.claude-opus-4-7-1m",
       "reasoningEffort": "max",
       "prompt": "{file:./prompts/orchestrator.txt}",
       "permission": {
@@ -119,9 +119,9 @@
       }
     },
     "executor-genius": {
-      "description": "Highest-complexity code execution — Claude Opus 4.6 1m with high reasoning",
+      "description": "Highest-complexity code execution — Claude Opus 4.7 1m with high reasoning",
       "mode": "subagent",
-      "model": "amazon-bedrock/anthropic.claude-opus-4-6-v1-1m",
+      "model": "amazon-bedrock/anthropic.claude-opus-4-7-1m",
       "reasoningEffort": "high",
       "prompt": "{file:./prompts/executor.txt}",
       "tools": {
