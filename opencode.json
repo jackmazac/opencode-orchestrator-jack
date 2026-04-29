@@ -89,9 +89,9 @@
       "prompt": "{file:./prompts/compaction.txt}"
     },
     "planner": {
-      "description": "Drafts implementation plans with complexity assessments. Can explore the codebase — GPT-5.4 with high reasoning",
+      "description": "Drafts implementation plans with complexity assessments. Can explore the codebase — GPT-5.5 with high reasoning",
       "mode": "subagent",
-      "model": "openai/gpt-5.4",
+      "model": "openai/gpt-5.5",
       "reasoningEffort": "high",
       "prompt": "{file:./prompts/planner.txt}",
       "tools": {
@@ -107,9 +107,9 @@
       }
     },
     "debugger-xhigh": {
-      "description": "High-complexity code debugging — GPT-5.4 with xhigh reasoning",
+      "description": "High-complexity code debugging — GPT-5.5 with xhigh reasoning",
       "mode": "subagent",
-      "model": "openai/gpt-5.4",
+      "model": "openai/gpt-5.5",
       "reasoningEffort": "xhigh",
       "prompt": "{file:./prompts/debugger.txt}",
       "tools": {
@@ -136,9 +136,9 @@
       }
     },
     "executor-high": {
-      "description": "High-complexity code execution — GPT-5.4 with high reasoning",
+      "description": "High-complexity code execution — GPT-5.5 with high reasoning",
       "mode": "subagent",
-      "model": "openai/gpt-5.4",
+      "model": "openai/gpt-5.5",
       "reasoningEffort": "high",
       "prompt": "{file:./prompts/executor.txt}",
       "tools": {
@@ -206,9 +206,9 @@
       }
     },
     "reviewer": {
-      "description": "Reviews executor output, runs tests, validates against plan — GPT-5.4 with high reasoning",
+      "description": "Reviews executor output, runs tests, validates against plan — GPT-5.5 with high reasoning",
       "mode": "subagent",
-      "model": "openai/gpt-5.4",
+      "model": "openai/gpt-5.5",
       "reasoningEffort": "high",
       "prompt": "{file:./prompts/reviewer.txt}",
       "tools": {
@@ -235,9 +235,9 @@
       }
     },
     "explore-high": {
-      "description": "Deep codebase exploration for complex analysis — GPT-5.4 with high reasoning",
+      "description": "Deep codebase exploration for complex analysis — GPT-5.5 with high reasoning",
       "mode": "subagent",
-      "model": "openai/gpt-5.4",
+      "model": "openai/gpt-5.5",
       "reasoningEffort": "high",
       "prompt": "{file:./prompts/explore.txt}",
       "tools": {
@@ -259,9 +259,9 @@
       }
     },
     "validator": {
-      "description": "Runs full project check suite, triages failures, fixes mechanical issues — GPT-5.4 with medium reasoning",
+      "description": "Runs full project check suite, triages failures, fixes mechanical issues — GPT-5.5 with medium reasoning",
       "mode": "subagent",
-      "model": "openai/gpt-5.4",
+      "model": "openai/gpt-5.5",
       "reasoningEffort": "medium",
       "prompt": "{file:./prompts/validator.txt}",
       "tools": {
@@ -276,9 +276,9 @@
       }
     },
     "deployer": {
-      "description": "Gate-based deployment workflows with safety verification — GPT-5.4 with high reasoning",
+      "description": "Gate-based deployment workflows with safety verification — GPT-5.5 with high reasoning",
       "mode": "subagent",
-      "model": "openai/gpt-5.4",
+      "model": "openai/gpt-5.5",
       "reasoningEffort": "high",
       "prompt": "{file:./prompts/deployer.txt}",
       "tools": {
@@ -293,9 +293,9 @@
       }
     },
     "scribe": {
-      "description": "Documentation agent — codifies patterns, conventions, and rules from completed work — GPT-5.4 with medium reasoning",
+      "description": "Documentation agent — codifies patterns, conventions, and rules from completed work — GPT-5.5 with medium reasoning",
       "mode": "subagent",
-      "model": "openai/gpt-5.4",
+      "model": "openai/gpt-5.5",
       "reasoningEffort": "medium",
       "prompt": "{file:./prompts/scribe.txt}",
       "tools": {
