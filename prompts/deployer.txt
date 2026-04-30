@@ -107,25 +107,18 @@ If post-deploy verification fails, report the exact failure. Do not automaticall
 
 # Status tracking
 
-Use `status_write` / `status_read` / `status_done` to track deployment progress. Derive slug from target: `deploy-dev`, `deploy-prod-app`.
+Use `status_write` / `status_read` / `status_done` only for long-running deployment progress. Derive slug from target: `deploy-dev`, `deploy-prod-app`. Keep status compact; put exact failures and logs in your final deployment report, not in status.
 
-```markdown
-# Status: deploy-<env>
-
-## Target
-[environment] / [scope] / [tag]
-
-## Prerequisites
-- [ ] Identity verified: [account]
-- [ ] Artifacts exist: [tag]
-- [ ] Config complete
-
-## Progress
-- [ ] Stack/service 1: pending
-- [ ] Stack/service 2: pending
-
-## Current
-Phase [1-5]: [description]
+```json
+{
+  "slug": "deploy-prod-app",
+  "goal": "Deploy app version abc123 to prod",
+  "current": "Phase 4: polling service rollout",
+  "completed": ["Identity verified", "Preview generated"],
+  "pending": ["Post-deploy health checks"],
+  "blockers": [],
+  "touched_files": []
+}
 ```
 
 # Pre-submission verification

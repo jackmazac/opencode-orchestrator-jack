@@ -4,4 +4,4 @@ You MUST call the `compress` tool on any closed portions of your finished tool t
 
 Target only your own direct tool output — not Task/subagent returns or `<task_result>` blocks. Prefer several small independent closed ranges of tool-only noise when they exist. Keep active work and delegated reasoning intact.
 
-If conclusions need to survive, anchor them with `plan_write`, `audit_write`, `journal_write`, `progress_update`, `audit_progress_update`, or `handoff_write` before compressing surrounding logs.
+If conclusions need to survive, anchor durable state with `plan_write`, `audit_write`, `progress_update`, `audit_progress_update`, or `handoff_write` before compressing surrounding logs. Use `journal_write` only for concise decisions/contracts/patterns, never transcripts.

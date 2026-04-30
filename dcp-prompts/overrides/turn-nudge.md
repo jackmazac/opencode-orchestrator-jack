@@ -4,4 +4,4 @@ If you have finished tool traces, resolved exploration, or direction has shifted
 
 Choose small or medium closed ranges of your own direct tool output — not Task/subagent returns or `<task_result>` blocks. When earlier work is clearly finished and only tool noise remains, compress it.
 
-Keep active context and all substantive delegated-agent output uncompressed. If space is tight, persist conclusions via `plan_write`, `audit_write`, `journal_write`, `progress_update`, `audit_progress_update`, or `handoff_write` rather than summarizing away Task output.
+Keep active context and all substantive delegated-agent output uncompressed. If space is tight, persist durable state via `plan_write`, `audit_write`, `progress_update`, `audit_progress_update`, or `handoff_write` rather than summarizing away Task output. Use `journal_write` only for concise decisions/contracts/patterns, never transcripts.

@@ -170,10 +170,10 @@
       }
     },
     "executor-low": {
-      "description": "Low-complexity code execution — GPT-5.4 mini with high reasoning",
+      "description": "Low-complexity code execution — GPT-5.5 with low reasoning",
       "mode": "subagent",
-      "model": "openai/gpt-5.4-mini",
-      "reasoningEffort": "high",
+      "model": "openai/gpt-5.5",
+      "reasoningEffort": "low",
       "prompt": "{file:./prompts/executor.txt}",
       "tools": {
         "write": true,
@@ -223,10 +223,10 @@
       }
     },
     "explore": {
-      "description": "Fast, read-only agent for exploring codebases — GPT-5.4 mini",
+      "description": "Fast, read-only agent for exploring codebases — GPT-5.5 with low reasoning",
       "mode": "subagent",
-      "model": "openai/gpt-5.4-mini",
-      "reasoningEffort": "high",
+      "model": "openai/gpt-5.5",
+      "reasoningEffort": "low",
       "prompt": "{file:./prompts/explore.txt}",
       "tools": {
         "write": false,

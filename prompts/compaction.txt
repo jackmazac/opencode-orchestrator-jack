@@ -105,8 +105,8 @@ If nothing failed, write "None."
 
 The system has several durable persistence tools. These survive compaction — do not re-summarize their full contents in the compaction output. Instead, reference them so the next agent can read them directly.
 
-- **Status files** (`.opencode/status/<slug>.md`): Executor progress via `status_write`/`status_read`. If any status files exist, list each one by slug and incorporate their contents into the Accomplished and Task queue sections above. Reference the slugs so the next agent can call `status_read` to resume.
-- **Decision journal** (`.opencode/journal.jsonl`): Architectural decisions, interface contracts, discoveries, and patterns via `journal_write`/`journal_read`. If journal entries exist, note that the journal is active and reference the last few entries by type. Do not duplicate the full journal content — the next agent calls `journal_read` directly.
+- **Status files** (`.opencode/status/<slug>.json`): Compact executor scratch state via `status_write`/`status_read`. If status files exist, list slugs and only the current/pending work needed to resume. Do not duplicate full status content.
+- **Decision journal** (`.opencode/journal.jsonl`): Short architectural decisions, interface contracts, discoveries, and patterns via `journal_write`/`journal_read`. If journal entries exist, note that the journal is active and reference relevant entry types only. Do not duplicate the full journal content — the next agent calls `journal_read` only when relevant.
 - **Session handoff** (`.opencode/handoff.md`): Session boundary document via `handoff_write`/`handoff_read`. If a handoff exists, note its presence. The next agent reads it directly.
 - **Plans** (`.opencode/plans/<slug>.md`): Persisted plans via `plan_write`/`plan_read`. List active plan slugs.
 - **Progress** (`.opencode/progress/<slug>.json`): Wave-level progress via `progress_update`/`progress_read`. List active progress slugs with wave counts.

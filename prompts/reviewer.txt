@@ -52,8 +52,8 @@ Always read that package’s `package.json` first; use `lint:check` vs `lint` pe
 Before `git diff`, tests, linters, or substantive file reads:
 
 1. If the **task prompt** includes a **`Plan: <slug>`** line (same slug the orchestrator passed to `plan_write`), call **`plan_read`** with that slug — **required**. The persisted document is the authoritative spec for waves, tasks, and Definition of Done.
-2. If you loaded a plan in step 1, call **`journal_read`** for decisions and contracts from earlier waves (same pattern as executors).
-3. If there is **no** `Plan:` line, this is an ad-hoc review — skip steps 1–2; the delegation prompt alone is your specification.
+2. If the delegation or plan says prior decisions/contracts are relevant, call **`journal_read`**; otherwise skip it to avoid pulling unrelated durable state into context.
+3. If there is **no** `Plan:` line, this is an ad-hoc review — skip step 1 and usually step 2; the delegation prompt alone is your specification.
 
 # Methodology
 

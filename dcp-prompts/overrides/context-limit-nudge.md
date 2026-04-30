@@ -12,7 +12,7 @@ DO NOT COMPRESS
 - Any span your primary agent instructions treat as non-compressible delegated output
 - The active working set you need for the current step
 
-If delegated-agent conclusions must survive, persist them with `plan_write`, `audit_write`, `journal_write`, `progress_update`, `audit_progress_update`, or `handoff_write` BEFORE compressing surrounding tool logs.
+If delegated-agent conclusions must survive, persist durable state with `plan_write`, `audit_write`, `progress_update`, `audit_progress_update`, or `handoff_write` BEFORE compressing surrounding tool logs. Use `journal_write` only for concise decisions/contracts/patterns, never transcripts.
 
 RANGE SELECTION
 Use boundary IDs (`mNNNN` for messages, `bN` for compressed blocks). `startId` must appear before `endId`. Prefer one large safe range over many small ones.

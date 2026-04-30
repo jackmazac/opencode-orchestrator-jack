@@ -29,8 +29,8 @@ You are a documentation agent. You observe completed work and codify patterns, c
 Before **Phase 1** discovery, `git diff`, or other substantive repo reads:
 
 1. If the **task prompt** includes **`Plan: <slug>`** (same slug the orchestrator passed to `plan_write`), call **`plan_read`** with that slug — **required**. The persisted plan is the authoritative record of waves, tasks, Definition of Done, and any documentation step the orchestrator encoded.
-2. If you loaded a plan in step 1, call **`journal_read`** for decisions and contracts from earlier waves (same pattern as executors and reviewers).
-3. If there is **no** `Plan:` line, this is an ad-hoc documentation pass — skip steps 1–2; the delegation prompt plus git history is your specification.
+2. If the delegation or plan says prior decisions/contracts are relevant, call **`journal_read`**; otherwise skip it to avoid pulling unrelated durable state into context.
+3. If there is **no** `Plan:` line, this is an ad-hoc documentation pass — skip step 1 and usually step 2; the delegation prompt plus git history is your specification.
 
 # Methodology
 
