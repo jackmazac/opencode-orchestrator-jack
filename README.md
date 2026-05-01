@@ -37,7 +37,7 @@ bun install
 
 ### 3. Configure providers
 
-Create `~/.config/opencode/.env` (or set env vars) with your API keys:
+Create `~/.config/opencode/.env` (or set env vars) with your API keys. See `.env.example` for names OpenCode interpolates via `{env:…}` in `opencode.json`.
 
 ```bash
 # OpenAI (for gpt-5.2, gpt-5.3-codex)
@@ -49,6 +49,9 @@ OPENAI_API_KEY=sk-...
 AWS_ACCESS_KEY_ID=...
 AWS_SECRET_ACCESS_KEY=...
 AWS_REGION=us-east-1
+
+# Motif MCP (required if you use the `motif` MCP server)
+E2E_AUTH_SECRET=...
 ```
 
 ### 4. Run OpenCode
@@ -63,7 +66,7 @@ opencode
 |------|---------|
 | `opencode.json` | Main config: agents, models, prompts |
 | `prompts/*.txt` | Agent prompt templates |
-| `plugin/shell-strategy/` | Non-interactive shell rules (from [JRedeker/opencode-shell-strategy](https://github.com/JRedeker/opencode-shell-strategy)) |
+| `plugin/shell-strategy/shell_strategy.md` | Vendored copy of [JRedeker/opencode-shell-strategy](https://github.com/JRedeker/opencode-shell-strategy) (`shell_strategy.md` + `LICENSE` in that folder) |
 | `tools/` | OpenCode plugin tools: plans, audits, progress, journal, handoff, executor status (see below) |
 | `dcp.jsonc` | Dynamic context pruning config (per-model limits + nudge tuning) |
 | `dcp-prompts/overrides/*.md` | DCP nudge text overrides (`customPrompts` in `dcp.jsonc`) |

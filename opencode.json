@@ -62,7 +62,7 @@
     "orchestrator": {
       "description": "Primary agent that plans, ideates, delegates, and synthesizes — Claude Opus 4.7 1m",
       "mode": "primary",
-      "model": "amazon-bedrock/anthropic.claude-opus-4-7-1m",
+      "model": "amazon-bedrock/anthropic.claude-opus-4-7",
       "reasoningEffort": "max",
       "prompt": "{file:./prompts/orchestrator.txt}",
       "permission": {
@@ -121,7 +121,7 @@
     "executor-genius": {
       "description": "Highest-complexity code execution — Claude Opus 4.7 1m with high reasoning",
       "mode": "subagent",
-      "model": "amazon-bedrock/anthropic.claude-opus-4-7-1m",
+      "model": "amazon-bedrock/anthropic.claude-opus-4-7",
       "reasoningEffort": "high",
       "prompt": "{file:./prompts/executor.txt}",
       "tools": {
@@ -155,7 +155,7 @@
     "executor-medium": {
       "description": "Medium-complexity code execution — Claude Sonnet 4.6 1m",
       "mode": "subagent",
-      "model": "amazon-bedrock/anthropic.claude-sonnet-4-6-1m",
+      "model": "amazon-bedrock/anthropic.claude-sonnet-4-6",
       "reasoningEffort": "high",
       "prompt": "{file:./prompts/executor.txt}",
       "tools": {
@@ -189,7 +189,7 @@
     "suborchestrator": {
       "description": "Manages focused multi-file campaigns — lint fixes, mechanical refactors, migrations — Claude Sonnet 4.6 1m with max reasoning",
       "mode": "subagent",
-      "model": "amazon-bedrock/anthropic.claude-sonnet-4-6-1m",
+      "model": "amazon-bedrock/anthropic.claude-sonnet-4-6",
       "reasoningEffort": "max",
       "prompt": "{file:./prompts/suborchestrator.txt}",
       "tools": {
@@ -238,7 +238,7 @@
       "description": "Deep codebase exploration for complex analysis — GPT-5.5 with high reasoning",
       "mode": "subagent",
       "model": "openai/gpt-5.5",
-      "reasoningEffort": "high",
+      "reasoningEffort": "medium",
       "prompt": "{file:./prompts/explore.txt}",
       "tools": {
         "write": false,
@@ -249,7 +249,7 @@
     "designer": {
       "description": "UI/UX design specialist — generates design systems and implements UI code using ui-ux-pro-max skill — Claude Sonnet 4.6 1m",
       "mode": "subagent",
-      "model": "amazon-bedrock/anthropic.claude-sonnet-4-6-1m",
+      "model": "amazon-bedrock/anthropic.claude-sonnet-4-6",
       "reasoningEffort": "high",
       "prompt": "{file:./prompts/designer.txt}",
       "tools": {
@@ -484,6 +484,19 @@
         "--mcp"
       ],
       "enabled": true
+    },
+    "motif": {
+      "type": "local",
+      "command": [
+        "bun",
+        "run",
+        "/Users/jack.mazac/Developer/execintel/tools/mcp-bridge/src/index.ts"
+      ],
+      "environment": {
+        "MCP_TARGET_URL": "https://dev.motif.fox/api/mcp",
+        "MCP_AUTH_MODE": "e2e",
+        "E2E_AUTH_SECRET": "{env:E2E_AUTH_SECRET}"
+      }
     }
   }
 }
