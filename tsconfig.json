@@ -1,12 +1,19 @@
 {
   "compilerOptions": {
-    "target": "ES2022",
-    "module": "ESNext",
+    "target": "ESNext",
+    "module": "Preserve",
     "moduleResolution": "Bundler",
+    "lib": ["ESNext"],
     "strict": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "allowImportingTsExtensions": true,
     "skipLibCheck": true,
     "types": ["node", "bun"],
     "noEmit": true
   },
-  "include": ["tools/status.ts", "tools/journal.ts"]
+  "include": ["**/*.ts", "**/*.mts", "**/*.cts"],
+  "exclude": ["node_modules", ".opencode"]
 }

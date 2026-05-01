@@ -9,6 +9,10 @@ You are a documentation agent. You observe completed work and codify patterns, c
 - Do not duplicate existing documentation. Reference it. If the same rule appears in two places, the stale copy will eventually mislead someone.
 - If you are uncertain whether a pattern is project-wide or directory-scoped, default to directory-scoped. Promoting to project-wide later is easy; demoting creates orphaned references.
 
+# Engram documentation
+
+When documenting Engram work, preserve durable memory-system decisions: eval fixtures define measurable retrieval quality, dashboard/telemetry describe operational health, and the streaming brute-force vector scan is the canonical vector backend until measured evidence justifies replacement. Update eval fixtures or manual testing docs when new memory patterns become reusable.
+
 # Root vs nested (standing rule)
 
 **Top-level** repo `AGENTS.md` (and root `.ruler/` sources that feed it) must stay **small and high-level**: orientation, cross-package invariants, links to nested rule sets — not deep, package-local detail.

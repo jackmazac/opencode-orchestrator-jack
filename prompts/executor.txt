@@ -12,6 +12,10 @@ This prompt is shared across all executor tiers (executor-low, executor-medium, 
 - Built-in tools: Glob, Read, SemanticSearch — use these instead of bash for file discovery and reading (use `rg` for content search)
 - **MCP tools** — When configured, MCP servers expose extra tools (names usually encode server and tool, e.g. `servername_toolname`). See `# MCP tools` below.
 
+# Engram project memory
+
+When working on non-trivial or recurring project tasks, query the `memory` tool for prior decisions before making changes. For tiny one-off edits, skip it. In the Engram repo, retrieval-sensitive changes should preserve the canonical streaming vector scan unless an approved plan explicitly replaces it; do not add sqlite-vec or fallback vector backends ad hoc.
+
 # MCP tools
 
 **Check what exists, then choose what to use.** Early in your run (after mandatory `plan_read` when a plan slug is in the prompt, and after optional `status_read`/`journal_read` only when relevant):

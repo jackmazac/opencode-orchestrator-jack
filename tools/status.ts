@@ -4,11 +4,10 @@ import { mkdir, readdir } from "node:fs/promises";
 import fs from "node:fs";
 
 const SLUG_RE = /^[a-z0-9][a-z0-9-]{0,30}$/;
-const FIELD_CAP = 240;
-const CURRENT_CAP = 180;
-const LIST_ITEM_CAP = 160;
-const LIST_LIMIT = 8;
 const READ_LIMIT = 10;
+const READ_FIELD_CAP = 240;
+const READ_LIST_ITEM_CAP = 160;
+const READ_LIST_ITEM_LIMIT = 8;
 
 type Status = {
   slug: string;
@@ -42,15 +41,22 @@ function legacyTarget(directory: string, slug: string) {
   return path.join(dir(directory), `${slug}.md`);
 }
 
-function cap(text: string | undefined, limit = FIELD_CAP) {
+function rel(directory: string, file: string) {
+  return path.relative(directory, file);
+}
+
+function cap(text: string | undefined, limit = READ_FIELD_CAP) {
   if (!text) return undefined;
   const clean = text.replace(/\s+/g, " ").trim();
   return clean.length > limit ? `${clean.slice(0, limit)}...` : clean;
 }
 
-function capList(items: string[] | undefined) {
-  if (!items) return undefined;
-  return items.slice(0, LIST_LIMIT).map((item) => cap(item, LIST_ITEM_CAP) || "");
+function renderList(items: string[]) {
+  const shown = items
+    .slice(0, READ_LIST_ITEM_LIMIT)
+    .map((item) => cap(item, READ_LIST_ITEM_CAP) || "");
+  const omitted = items.length - shown.length;
+  return `${shown.join("; ") || "none"}${omitted > 0 ? `; ... (${omitted} omitted)` : ""}`;
 }
 
 function emptyStatus(slug: string): Status {
@@ -70,16 +76,17 @@ async function loadStatus(directory: string, slug: string) {
   return { ...emptyStatus(slug), ...JSON.parse(await Bun.file(dest).text()) };
 }
 
-function render(status: Status) {
+function render(status: Status, file?: string) {
   const lines = [
+    ...(file ? [`File: ${file}`] : []),
     `Last updated: ${status.updated}`,
-    `Goal: ${status.goal || "(not set)"}`,
-    `Plan: ${status.plan || "(none)"}${status.wave ? ` | Wave: ${status.wave}` : ""}`,
-    `Current: ${status.current || "(not set)"}`,
-    `Completed (${status.completed.length}): ${status.completed.join("; ") || "none"}`,
-    `Pending (${status.pending.length}): ${status.pending.join("; ") || "none"}`,
-    `Blockers (${status.blockers.length}): ${status.blockers.join("; ") || "none"}`,
-    `Touched files (${status.touched_files.length}): ${status.touched_files.join("; ") || "none"}`,
+    `Goal: ${cap(status.goal) || "(not set)"}`,
+    `Plan: ${cap(status.plan, 80) || "(none)"}${status.wave ? ` | Wave: ${cap(status.wave, 80)}` : ""}`,
+    `Current: ${cap(status.current, 180) || "(not set)"}`,
+    `Completed (${status.completed.length}): ${renderList(status.completed)}`,
+    `Pending (${status.pending.length}): ${renderList(status.pending)}`,
+    `Blockers (${status.blockers.length}): ${renderList(status.blockers)}`,
+    `Touched files (${status.touched_files.length}): ${renderList(status.touched_files)}`,
   ];
   return lines.join("\n");
 }
@@ -91,40 +98,40 @@ export const write = tool({
     slug: tool.schema
       .string()
       .describe("Task slug: 2-4 lowercase hyphenated words identifying this task"),
-    goal: tool.schema.string().optional().describe("One-sentence goal, max ~240 chars"),
+    goal: tool.schema.string().optional().describe("One-sentence goal"),
     plan: tool.schema.string().optional().describe("Plan slug, if any"),
     wave: tool.schema.string().optional().describe("Wave or task id, if any"),
-    current: tool.schema.string().optional().describe("Current activity, max ~180 chars"),
+    current: tool.schema.string().optional().describe("Current activity"),
     completed: tool.schema
       .array(tool.schema.string())
       .optional()
-      .describe("Completed task labels; max 8 retained"),
+      .describe("Completed task labels; displayed compactly on read"),
     pending: tool.schema
       .array(tool.schema.string())
       .optional()
-      .describe("Pending task labels; max 8 retained"),
+      .describe("Pending task labels; displayed compactly on read"),
     blockers: tool.schema
       .array(tool.schema.string())
       .optional()
-      .describe("Active blockers; max 8 retained"),
+      .describe("Active blockers; displayed compactly on read"),
     touched_files: tool.schema
       .array(tool.schema.string())
       .optional()
-      .describe("Relevant file paths touched or owned; max 8 retained"),
+      .describe("Relevant file paths touched or owned; displayed compactly on read"),
   },
   async execute(args, context) {
     validate(args.slug);
     const existing = await loadStatus(context.directory, args.slug);
     const next: Status = {
       ...existing,
-      goal: cap(args.goal) ?? existing.goal,
-      plan: cap(args.plan, 80) ?? existing.plan,
-      wave: cap(args.wave, 80) ?? existing.wave,
-      current: cap(args.current, CURRENT_CAP) ?? existing.current,
-      completed: capList(args.completed) ?? existing.completed,
-      pending: capList(args.pending) ?? existing.pending,
-      blockers: capList(args.blockers) ?? existing.blockers,
-      touched_files: capList(args.touched_files) ?? existing.touched_files,
+      goal: args.goal ?? existing.goal,
+      plan: args.plan ?? existing.plan,
+      wave: args.wave ?? existing.wave,
+      current: args.current ?? existing.current,
+      completed: args.completed ?? existing.completed,
+      pending: args.pending ?? existing.pending,
+      blockers: args.blockers ?? existing.blockers,
+      touched_files: args.touched_files ?? existing.touched_files,
       updated: new Date().toISOString(),
     };
     await mkdir(dir(context.directory), { recursive: true });
@@ -132,7 +139,7 @@ export const write = tool({
     const tmp = `${dest}.tmp`;
     await Bun.write(tmp, JSON.stringify(next, null, 2));
     fs.renameSync(tmp, dest);
-    return `status updated: ${args.slug} (${next.completed.length} done, ${next.pending.length} pending, ${next.blockers.length} blockers)`;
+    return `status updated: ${args.slug} (${next.completed.length} done, ${next.pending.length} pending, ${next.blockers.length} blockers)\nfile: ${rel(context.directory, dest)}`;
   },
 });
 
@@ -151,7 +158,7 @@ export const read = tool({
       validate(args.slug);
       const dest = target(context.directory, args.slug);
       if (!fs.existsSync(dest)) return `no status file for ${args.slug}`;
-      return render(JSON.parse(await Bun.file(dest).text()));
+      return render(JSON.parse(await Bun.file(dest).text()), rel(context.directory, dest));
     }
     if (!fs.existsSync(base)) return "no status files";
     const entries = (await readdir(base))
@@ -167,7 +174,7 @@ export const read = tool({
       shown.map(async ({ file }) => {
         const full = path.join(base, file);
         const status: Status = JSON.parse(await Bun.file(full).text());
-        return `${status.slug} | ${status.current || "(no current task)"} | ${status.completed.length}/${status.completed.length + status.pending.length} done | updated ${status.updated}`;
+        return `${status.slug} | ${status.current || "(no current task)"} | ${status.completed.length}/${status.completed.length + status.pending.length} done | updated ${status.updated} | file ${rel(context.directory, full)}`;
       }),
     );
     const omitted = entries.length - shown.length;
@@ -193,21 +200,24 @@ export const done = tool({
       const removed = [];
       if (fs.existsSync(dest)) {
         await Bun.file(dest).delete();
-        removed.push(dest);
+        removed.push(rel(context.directory, dest));
       }
       if (fs.existsSync(legacy)) {
         await Bun.file(legacy).delete();
-        removed.push(legacy);
+        removed.push(rel(context.directory, legacy));
       }
-      return removed.length ? `removed ${args.slug}` : `no status file for ${args.slug}`;
+      return removed.length
+        ? `removed ${args.slug}\nfiles:\n${removed.join("\n")}`
+        : `no status file for ${args.slug}`;
     }
     if (!fs.existsSync(base)) return "no status files to clean";
     const entries = (await readdir(base)).filter((f) => f.endsWith(".json") || f.endsWith(".md"));
     if (entries.length === 0) return "no status files to clean";
-    await Promise.all(entries.map((f) => Bun.file(path.join(base, f)).delete()));
+    const files = entries.map((f) => path.join(base, f));
+    await Promise.all(files.map((file) => Bun.file(file).delete()));
     try {
       if ((await readdir(base)).length === 0) fs.rmdirSync(base);
     } catch {}
-    return `removed ${entries.length} status files`;
+    return `removed ${entries.length} status files\nfiles:\n${files.map((file) => rel(context.directory, file)).join("\n")}`;
   },
 });

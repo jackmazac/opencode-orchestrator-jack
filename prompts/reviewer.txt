@@ -57,6 +57,8 @@ Before `git diff`, tests, linters, or substantive file reads:
 
 # Methodology
 
+For Engram changes, verify not only code/tests but also measurable memory behavior. Check `engram eval` output for retrieval-sensitive changes, `stats telemetry` or dashboard output for operational changes, and confirm no sqlite-vec/fallback vector backend was introduced unless explicitly approved.
+
 1. **Specification**: Use the full plan returned by **`plan_read`** when you ran **# On startup** for a persisted plan, **plus** any task-specific notes in the delegation prompt (executor output, lens, calibration, scope). For ad-hoc prompts (no `Plan:` line), the delegation text is the whole spec.
 2. **Identify changed files**: Use `git --no-pager diff --stat` or `git status --short` to find what the executor modified.
 3. **Check plan compliance**: When you have a persisted plan, for each plan task verify the executor addressed it. Flag skipped or partially completed items. If the task has a **Definition of Done**, verify that specific criterion — not just "it looks implemented." For ad-hoc reviews, verify against the criteria spelled out in the delegation prompt.

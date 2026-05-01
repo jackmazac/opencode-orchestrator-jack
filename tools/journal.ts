@@ -4,7 +4,6 @@ import { mkdir } from "node:fs/promises";
 import fs from "node:fs";
 
 const TYPES = ["decision", "contract", "discovery", "pattern"] as const;
-const MAX_ENTRY = 800;
 const READ_DEFAULT = 3;
 const READ_MAX = 10;
 const READ_ENTRY_CAP = 200;
@@ -13,37 +12,35 @@ function target(directory: string) {
   return path.join(directory, ".opencode", "journal.jsonl");
 }
 
+function rel(directory: string, file: string) {
+  return path.relative(directory, file);
+}
+
 export const write = tool({
   description:
     "Append an entry to the persistent decision journal. Use to record architectural decisions, interface contracts, discoveries, and established patterns that downstream waves or future sessions need. Entries are immutable once written.",
   args: {
     type: tool.schema.string().describe("Entry type: decision | contract | discovery | pattern"),
-    content: tool.schema
-      .string()
-      .describe("Durable conclusion only, not transcript text (max 800 chars)"),
+    content: tool.schema.string().describe("Durable conclusion only, not transcript text"),
   },
   async execute(args, context) {
     if (!TYPES.includes(args.type as (typeof TYPES)[number]))
       throw new Error(`invalid type "${args.type}" — use: ${TYPES.join(", ")}`);
-    const content =
-      args.content.length > MAX_ENTRY
-        ? args.content.slice(0, MAX_ENTRY) + " [truncated]"
-        : args.content;
     const dest = target(context.directory);
     await mkdir(path.dirname(dest), { recursive: true });
     const entry = JSON.stringify({
       ts: new Date().toISOString(),
       type: args.type,
-      content,
+      content: args.content,
     });
     fs.appendFileSync(dest, entry + "\n");
-    return `journal: appended ${args.type} entry`;
+    return `journal: appended ${args.type} entry\nfile: ${rel(context.directory, dest)}`;
   },
 });
 
 export const read = tool({
   description:
-    "Read the persistent decision journal. Returns the last N entries (default 5). Each entry has a timestamp, type, and content. Entries are truncated to 300 chars.",
+    "Read the persistent decision journal. Returns the last N entries (default 5). Each entry has a timestamp, type, and content. Entries are soft-truncated on read.",
   args: {
     last_n: tool.schema.number().optional().describe("Return only the last N entries (default 5)."),
   },
@@ -57,7 +54,7 @@ export const read = tool({
     const skipped = Math.max(0, lines.length - n);
     const entries = lines.slice(-n);
     const clamped = requested > READ_MAX ? `, requested ${requested} clamped to ${READ_MAX}` : "";
-    const header = `${lines.length} total entries${skipped > 0 ? ` (showing last ${n}, ${skipped} omitted${clamped})` : clamped ? ` (${clamped.slice(2)})` : ""}`;
+    const header = `File: ${rel(context.directory, dest)}\n${lines.length} total entries${skipped > 0 ? ` (showing last ${n}, ${skipped} omitted${clamped})` : clamped ? ` (${clamped.slice(2)})` : ""}`;
     const body = entries
       .map((line) => {
         const e = JSON.parse(line);
@@ -77,6 +74,6 @@ export const done = tool({
     const dest = target(context.directory);
     if (!fs.existsSync(dest)) return "no journal to clean";
     await Bun.file(dest).delete();
-    return "journal cleared";
+    return `journal cleared\nfile: ${rel(context.directory, dest)}`;
   },
 });

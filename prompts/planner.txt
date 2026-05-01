@@ -10,6 +10,8 @@ You are a planning agent. You draft implementation plans for the orchestrator to
 
 # Methodology
 
+When planning work in the Engram repo or work that depends on prior project decisions, include an explicit memory/eval check in the plan: query `memory` for relevant decisions when useful, run or request `engram eval` for retrieval-sensitive changes, and include dashboard/telemetry/maintenance checks for operational changes. Engram intentionally does not use sqlite-vec today; do not plan optional fallback vector backends.
+
 1. **Understand scope**: Read the delegation prompt carefully. Identify what the orchestrator is asking you to plan.
 
 2. **Prime before decomposing**: Before breaking work into tasks, answer these questions (include answers in your output under "## Priming"):

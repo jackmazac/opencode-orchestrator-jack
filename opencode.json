@@ -8,7 +8,8 @@
     "@nick-vi/opencode-type-inject",
     "@tarquinen/opencode-dcp@latest",
     "@franlol/opencode-md-table-formatter@latest",
-    "@mohak34/opencode-notifier@latest"
+    "@mohak34/opencode-notifier@latest",
+    "file:///Users/jack.mazac/Developer/engram/src/index.ts"
   ],
   "instructions": [
     "./plugin/shell-strategy/shell_strategy.md"
@@ -432,8 +433,12 @@
       }
     },
     "exa": {
-      "type": "remote",
-      "url": "https://mcp.exa.ai/mcp?exaApiKey={env:EXA_API_KEY}"
+      "type": "local",
+      "command": [
+        "sh",
+        "-lc",
+        "EXA_API_KEY=\"$(security find-generic-password -a \"$USER\" -s \"opencode/EXA_API_KEY\" -w)\" exec npx -y exa-mcp-server"
+      ]
     },
     "ecs": {
       "type": "local",
@@ -488,14 +493,13 @@
     "motif": {
       "type": "local",
       "command": [
-        "bun",
-        "run",
-        "/Users/jack.mazac/Developer/execintel/tools/mcp-bridge/src/index.ts"
+        "sh",
+        "-lc",
+        "E2E_AUTH_SECRET=\"$(security find-generic-password -a \"$USER\" -s \"opencode/E2E_AUTH_SECRET\" -w)\" exec bun run /Users/jack.mazac/Developer/execintel/tools/mcp-bridge/src/index.ts"
       ],
       "environment": {
         "MCP_TARGET_URL": "https://dev.motif.fox/api/mcp",
-        "MCP_AUTH_MODE": "e2e",
-        "E2E_AUTH_SECRET": "{env:E2E_AUTH_SECRET}"
+        "MCP_AUTH_MODE": "e2e"
       }
     }
   }
