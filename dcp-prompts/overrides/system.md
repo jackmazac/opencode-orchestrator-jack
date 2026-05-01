@@ -10,6 +10,7 @@ Your context window is finite. Every token of stale content displaces a token of
 COMPRESS WHEN
 - A section is closed: research done, implementation verified, exploration exhausted, dead-end reached
 - Tool output has been consumed: file reads, grep results, directory listings, bash output — once you have extracted what you need, the raw output is waste
+- Delegated output is cold: at least 6 turns old, already synthesized or acted on, no longer needed verbatim, and all carry-forward facts can be preserved in the compression summary
 - Earlier work is no longer relevant to the active task
 - You are iterating and generating tool-heavy traces that will not be referenced again
 
@@ -17,6 +18,11 @@ DO NOT COMPRESS IF
 - Raw context is still needed for precise references or edits in the immediate next steps
 - The target content is actively in progress
 - You need exact code, error messages, or file contents right now
+- Delegated output is fresh or warm: returned within the last 6 turns, not yet synthesized, still relevant to the current wave, tied to unresolved failures, or needed as exact reviewer/planner/executor evidence
+- Delegated output is pinned: exact errors, reviewer issue tables, API contracts, verification commands/results, plan wave definitions not persisted elsewhere, or unresolved assumptions
+
+DELEGATED OUTPUT RULE
+Subagent and Task returns are protected while fresh, warm, or pinned. After they are cold, you may compress them only if your summary preserves the carry-forward facts: agent/type, original goal, decisions/contracts, files, commands, errors, verification, open issues, and why the raw output is no longer needed.
 
 URGENCY RULES
 - When a nudge tells you to compress, you MUST call the `compress` tool. Do not acknowledge and continue without compressing.

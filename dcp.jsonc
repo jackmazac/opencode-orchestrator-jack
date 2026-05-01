@@ -5,10 +5,15 @@
     "allowSubAgents": true,
     "customPrompts": true
   },
+  "turnProtection": {
+    "enabled": true,
+    "turns": 6
+  },
   "compress": {
     "mode": "range",
     "permission": "allow",
     "protectUserMessages": true,
+    "protectedTools": ["task", "skill", "todowrite", "todoread"],
     "nudgeForce": "soft",
     "nudgeFrequency": 8,
     "iterationNudgeThreshold": 20,
