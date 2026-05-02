@@ -13,7 +13,7 @@ DO NOT COMPRESS
 - Pinned delegated output: exact errors, reviewer issue tables, API contracts, verification commands/results, plan wave definitions not persisted elsewhere, or unresolved assumptions
 - The active working set you need for the current step
 
-If delegated-agent conclusions must survive, persist durable state with `plan_write`, `audit_write`, `progress_update`, `audit_progress_update`, or `handoff_write` BEFORE compressing surrounding tool logs or cold delegated output. Use `journal_write` only for concise decisions/contracts/patterns, never transcripts.
+If delegated-agent conclusions must survive, persist durable state with `persist_subplan`, `persist_final_plan`, `audit_write`, `progress_update`, `audit_progress_update`, or `handoff_write` BEFORE compressing surrounding tool logs or cold delegated output. Use `journal_write` only for concise decisions/contracts/patterns, never transcripts.
 
 RANGE SELECTION
 Use boundary IDs (`mNNNN` for messages, `bN` for compressed blocks). `startId` must appear before `endId`. Prefer one large safe range over many small ones.

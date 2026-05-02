@@ -108,7 +108,8 @@ The system has several durable persistence tools. These survive compaction — d
 - **Status files** (`.opencode/status/<slug>.json`): Compact executor scratch state via `status_write`/`status_read`. If status files exist, list slugs and only the current/pending work needed to resume. Do not duplicate full status content.
 - **Decision journal** (`.opencode/journal.jsonl`): Short architectural decisions, interface contracts, discoveries, and patterns via `journal_write`/`journal_read`. If journal entries exist, note that the journal is active and reference relevant entry types only. Do not duplicate the full journal content — the next agent calls `journal_read` only when relevant.
 - **Session handoff** (`.opencode/handoff.md`): Session boundary document via `handoff_write`/`handoff_read`. If a handoff exists, note its presence. The next agent reads it directly.
-- **Plans** (`.opencode/plans/<slug>.md`): Persisted plans via `plan_write`/`plan_read`. List active plan slugs.
+- **Subplans** (`.opencode/subplans/<slug>.md`): Planner draft plans via `persist_subplan`/`read_subplan`. List active subplan slugs only when planning is active or being resumed.
+- **Final plans** (`.opencode/plans/<slug>.md`): Canonical orchestrator-approved plans via `persist_final_plan`/`read_final_plan`. List active final plan slugs.
 - **Progress** (`.opencode/progress/<slug>.json`): Wave-level progress via `progress_update`/`progress_read`. List active progress slugs with wave counts.
 
 ---

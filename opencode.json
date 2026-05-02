@@ -9,7 +9,9 @@
     "@tarquinen/opencode-dcp@latest",
     "@franlol/opencode-md-table-formatter@latest",
     "@mohak34/opencode-notifier@latest",
-    "file:///Users/jack.mazac/Developer/engram/src/index.ts"
+    "file:///Users/jack.mazac/Developer/engram/src/index.ts",
+    "file:///Users/jack.mazac/Developer/opencode-conductor/src/index.ts",
+    "@codemem/plugin"
   ],
   "instructions": [
     "./plugin/shell-strategy/shell_strategy.md"
@@ -67,6 +69,12 @@
       "reasoningEffort": "max",
       "prompt": "{file:./prompts/orchestrator.txt}",
       "permission": {
+        "persist_subplan": "deny",
+        "read_subplan": "allow",
+        "discard_subplan": "allow",
+        "persist_final_plan": "allow",
+        "read_final_plan": "allow",
+        "discard_final_plan": "allow",
         "task": {
           "planner": "allow",
           "executor-genius": "allow",
@@ -101,6 +109,12 @@
         "bash": true
       },
       "permission": {
+        "persist_subplan": "allow",
+        "read_subplan": "allow",
+        "discard_subplan": "deny",
+        "persist_final_plan": "deny",
+        "read_final_plan": "deny",
+        "discard_final_plan": "deny",
         "task": {
           "explore": "allow",
           "explore-high": "allow"
@@ -131,6 +145,12 @@
         "bash": true
       },
       "permission": {
+        "persist_subplan": "deny",
+        "read_subplan": "deny",
+        "discard_subplan": "deny",
+        "persist_final_plan": "deny",
+        "read_final_plan": "allow",
+        "discard_final_plan": "deny",
         "task": {
           "explore": "allow"
         }
@@ -148,6 +168,12 @@
         "bash": true
       },
       "permission": {
+        "persist_subplan": "deny",
+        "read_subplan": "deny",
+        "discard_subplan": "deny",
+        "persist_final_plan": "deny",
+        "read_final_plan": "allow",
+        "discard_final_plan": "deny",
         "task": {
           "explore": "allow"
         }
@@ -165,6 +191,12 @@
         "bash": true
       },
       "permission": {
+        "persist_subplan": "deny",
+        "read_subplan": "deny",
+        "discard_subplan": "deny",
+        "persist_final_plan": "deny",
+        "read_final_plan": "allow",
+        "discard_final_plan": "deny",
         "task": {
           "explore": "allow"
         }
@@ -182,6 +214,12 @@
         "bash": true
       },
       "permission": {
+        "persist_subplan": "deny",
+        "read_subplan": "deny",
+        "discard_subplan": "deny",
+        "persist_final_plan": "deny",
+        "read_final_plan": "allow",
+        "discard_final_plan": "deny",
         "task": {
           "explore": "allow"
         }
@@ -218,6 +256,12 @@
         "bash": true
       },
       "permission": {
+        "persist_subplan": "deny",
+        "read_subplan": "deny",
+        "discard_subplan": "deny",
+        "persist_final_plan": "deny",
+        "read_final_plan": "allow",
+        "discard_final_plan": "deny",
         "task": {
           "explore": "allow"
         }
@@ -305,6 +349,12 @@
         "bash": true
       },
       "permission": {
+        "persist_subplan": "deny",
+        "read_subplan": "deny",
+        "discard_subplan": "deny",
+        "persist_final_plan": "deny",
+        "read_final_plan": "allow",
+        "discard_final_plan": "deny",
         "task": {
           "explore": "allow"
         }

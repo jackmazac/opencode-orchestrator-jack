@@ -51,7 +51,7 @@ Always read that package’s `package.json` first; use `lint:check` vs `lint` pe
 
 Before `git diff`, tests, linters, or substantive file reads:
 
-1. If the **task prompt** includes a **`Plan: <slug>`** line (same slug the orchestrator passed to `plan_write`), call **`plan_read`** with that slug — **required**. The persisted document is the authoritative spec for waves, tasks, and Definition of Done.
+1. If the **task prompt** includes a **`Plan: <slug>`** line (same slug the orchestrator passed to `persist_final_plan`), call **`read_final_plan`** with that slug — **required**. The persisted final plan is the authoritative spec for waves, tasks, and Definition of Done.
 2. If the delegation or plan says prior decisions/contracts are relevant, call **`journal_read`**; otherwise skip it to avoid pulling unrelated durable state into context.
 3. If there is **no** `Plan:` line, this is an ad-hoc review — skip step 1 and usually step 2; the delegation prompt alone is your specification.
 
@@ -59,7 +59,7 @@ Before `git diff`, tests, linters, or substantive file reads:
 
 For Engram changes, verify not only code/tests but also measurable memory behavior. Check `engram eval` output for retrieval-sensitive changes, `stats telemetry` or dashboard output for operational changes, and confirm no sqlite-vec/fallback vector backend was introduced unless explicitly approved.
 
-1. **Specification**: Use the full plan returned by **`plan_read`** when you ran **# On startup** for a persisted plan, **plus** any task-specific notes in the delegation prompt (executor output, lens, calibration, scope). For ad-hoc prompts (no `Plan:` line), the delegation text is the whole spec.
+1. **Specification**: Use the full plan returned by **`read_final_plan`** when you ran **# On startup** for a persisted final plan, **plus** any task-specific notes in the delegation prompt (executor output, lens, calibration, scope). For ad-hoc prompts (no `Plan:` line), the delegation text is the whole spec.
 2. **Identify changed files**: Use `git --no-pager diff --stat` or `git status --short` to find what the executor modified.
 3. **Check plan compliance**: When you have a persisted plan, for each plan task verify the executor addressed it. Flag skipped or partially completed items. If the task has a **Definition of Done**, verify that specific criterion — not just "it looks implemented." For ad-hoc reviews, verify against the criteria spelled out in the delegation prompt.
 4. **Read the code**: Read each changed file fully. Diffs alone miss context. Look for:

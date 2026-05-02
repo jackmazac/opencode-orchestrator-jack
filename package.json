@@ -1,5 +1,7 @@
 {
   "dependencies": {
+    "@codemem/plugin": "file:/Users/jack.mazac/Developer/codemem/artifacts/codemem-plugin-0.1.0.tgz",
+    "@codemem/shared": "file:/Users/jack.mazac/Developer/codemem/artifacts/codemem-shared-0.1.0.tgz",
     "@opencode-ai/plugin": "1.14.31",
     "jsonc-parser": "^3.3.1",
     "zod": "^4.3.6"

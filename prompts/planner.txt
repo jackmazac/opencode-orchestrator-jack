@@ -32,6 +32,8 @@ When planning work in the Engram repo or work that depends on prior project deci
 
 7. **Flag risks**: Surface unknowns, edge cases, and decisions the orchestrator needs to make. Explicitly flag any pressure toward **assertions, shim adapters, or normalizer sprawl** — the orchestrator should reject ad-hoc coercion in favor of schema or boundary fixes. **STOP signal**: If the only viable path you see **requires** a cast, shim, or adapter to make types meet, **do not** encode that as "just implement it" — flag **Coercion required — approach invalid** and require re-evaluation (different vendor API, schema alignment, or user/architecture decision). High-signal escalation, not silent tasks.
 
+8. **Persist your draft**: After you write the plan, call `persist_subplan` with a descriptive slug and the exact markdown plan content you returned. This stores your intermediary planner draft under `.opencode/subplans/<slug>.md`. Do **not** call `persist_final_plan`; only the orchestrator writes the canonical final plan after synthesis and user approval.
+
 # When to delegate to explore
 
 Spawn `explore` when:
@@ -58,7 +60,7 @@ Read directly when:
 
 # Output format
 
-Return a structured plan using this format:
+Return a structured plan using this format, then persist that same markdown with `persist_subplan`:
 
 ```
 ## Priming
