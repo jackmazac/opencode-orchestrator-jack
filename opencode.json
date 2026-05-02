@@ -10,7 +10,7 @@
     "@franlol/opencode-md-table-formatter@latest",
     "@mohak34/opencode-notifier@latest",
     "file:///Users/jack.mazac/Developer/engram/src/index.ts",
-    "file:///Users/jack.mazac/Developer/opencode-conductor/src/index.ts",
+    "opencode-conductor",
     "@codemem/plugin"
   ],
   "instructions": [
@@ -67,7 +67,7 @@
       "mode": "primary",
       "model": "amazon-bedrock/anthropic.claude-opus-4-7",
       "reasoningEffort": "max",
-      "prompt": "{file:./prompts/orchestrator.txt}",
+      "prompt": "{file:./node_modules/opencode-conductor/prompts/orchestrator.txt}",
       "permission": {
         "persist_subplan": "deny",
         "read_subplan": "allow",
@@ -75,6 +75,7 @@
         "persist_final_plan": "allow",
         "read_final_plan": "allow",
         "discard_final_plan": "allow",
+        "explore_fast": "allow",
         "task": {
           "planner": "allow",
           "executor-genius": "allow",
@@ -95,14 +96,14 @@
       }
     },
     "compaction": {
-      "prompt": "{file:./prompts/compaction.txt}"
+      "prompt": "{file:./node_modules/opencode-conductor/prompts/compaction.txt}"
     },
     "planner": {
       "description": "Drafts implementation plans with complexity assessments. Can explore the codebase — GPT-5.5 with high reasoning",
       "mode": "subagent",
       "model": "openai/gpt-5.5",
       "reasoningEffort": "high",
-      "prompt": "{file:./prompts/planner.txt}",
+      "prompt": "{file:./node_modules/opencode-conductor/prompts/planner.txt}",
       "tools": {
         "write": false,
         "edit": false,
@@ -115,6 +116,7 @@
         "persist_final_plan": "deny",
         "read_final_plan": "deny",
         "discard_final_plan": "deny",
+        "explore_fast": "allow",
         "task": {
           "explore": "allow",
           "explore-high": "allow"
@@ -126,7 +128,7 @@
       "mode": "subagent",
       "model": "openai/gpt-5.5",
       "reasoningEffort": "xhigh",
-      "prompt": "{file:./prompts/debugger.txt}",
+      "prompt": "{file:./node_modules/opencode-conductor/prompts/debugger.txt}",
       "tools": {
         "write": true,
         "edit": true,
@@ -138,7 +140,7 @@
       "mode": "subagent",
       "model": "amazon-bedrock/anthropic.claude-opus-4-7",
       "reasoningEffort": "high",
-      "prompt": "{file:./prompts/executor.txt}",
+      "prompt": "{file:./node_modules/opencode-conductor/prompts/executor.txt}",
       "tools": {
         "write": true,
         "edit": true,
@@ -151,6 +153,7 @@
         "persist_final_plan": "deny",
         "read_final_plan": "allow",
         "discard_final_plan": "deny",
+        "explore_fast": "allow",
         "task": {
           "explore": "allow"
         }
@@ -161,7 +164,7 @@
       "mode": "subagent",
       "model": "openai/gpt-5.5",
       "reasoningEffort": "high",
-      "prompt": "{file:./prompts/executor.txt}",
+      "prompt": "{file:./node_modules/opencode-conductor/prompts/executor.txt}",
       "tools": {
         "write": true,
         "edit": true,
@@ -174,6 +177,7 @@
         "persist_final_plan": "deny",
         "read_final_plan": "allow",
         "discard_final_plan": "deny",
+        "explore_fast": "allow",
         "task": {
           "explore": "allow"
         }
@@ -184,7 +188,7 @@
       "mode": "subagent",
       "model": "amazon-bedrock/anthropic.claude-sonnet-4-6",
       "reasoningEffort": "high",
-      "prompt": "{file:./prompts/executor.txt}",
+      "prompt": "{file:./node_modules/opencode-conductor/prompts/executor.txt}",
       "tools": {
         "write": true,
         "edit": true,
@@ -197,6 +201,7 @@
         "persist_final_plan": "deny",
         "read_final_plan": "allow",
         "discard_final_plan": "deny",
+        "explore_fast": "allow",
         "task": {
           "explore": "allow"
         }
@@ -207,7 +212,7 @@
       "mode": "subagent",
       "model": "openai/gpt-5.5",
       "reasoningEffort": "low",
-      "prompt": "{file:./prompts/executor.txt}",
+      "prompt": "{file:./node_modules/opencode-conductor/prompts/executor.txt}",
       "tools": {
         "write": true,
         "edit": true,
@@ -220,6 +225,7 @@
         "persist_final_plan": "deny",
         "read_final_plan": "allow",
         "discard_final_plan": "deny",
+        "explore_fast": "allow",
         "task": {
           "explore": "allow"
         }
@@ -230,13 +236,14 @@
       "mode": "subagent",
       "model": "amazon-bedrock/anthropic.claude-sonnet-4-6",
       "reasoningEffort": "max",
-      "prompt": "{file:./prompts/suborchestrator.txt}",
+      "prompt": "{file:./node_modules/opencode-conductor/prompts/suborchestrator.txt}",
       "tools": {
         "write": false,
         "edit": false,
         "bash": true
       },
       "permission": {
+        "explore_fast": "allow",
         "task": {
           "executor-medium": "allow",
           "executor-low": "allow",
@@ -249,7 +256,7 @@
       "mode": "subagent",
       "model": "openai/gpt-5.5",
       "reasoningEffort": "high",
-      "prompt": "{file:./prompts/reviewer.txt}",
+      "prompt": "{file:./node_modules/opencode-conductor/prompts/reviewer.txt}",
       "tools": {
         "write": false,
         "edit": false,
@@ -262,6 +269,7 @@
         "persist_final_plan": "deny",
         "read_final_plan": "allow",
         "discard_final_plan": "deny",
+        "explore_fast": "allow",
         "task": {
           "explore": "allow"
         }
@@ -272,7 +280,7 @@
       "mode": "subagent",
       "model": "openai/gpt-5.5",
       "reasoningEffort": "low",
-      "prompt": "{file:./prompts/explore.txt}",
+      "prompt": "{file:./node_modules/opencode-conductor/prompts/explore.txt}",
       "tools": {
         "write": false,
         "edit": false,
@@ -283,8 +291,8 @@
       "description": "Deep codebase exploration for complex analysis — GPT-5.5 with high reasoning",
       "mode": "subagent",
       "model": "openai/gpt-5.5",
-      "reasoningEffort": "medium",
-      "prompt": "{file:./prompts/explore.txt}",
+      "reasoningEffort": "high",
+      "prompt": "{file:./node_modules/opencode-conductor/prompts/explore.txt}",
       "tools": {
         "write": false,
         "edit": false,
@@ -296,7 +304,7 @@
       "mode": "subagent",
       "model": "amazon-bedrock/anthropic.claude-sonnet-4-6",
       "reasoningEffort": "high",
-      "prompt": "{file:./prompts/designer.txt}",
+      "prompt": "{file:./node_modules/opencode-conductor/prompts/designer.txt}",
       "tools": {
         "write": true,
         "edit": true,
@@ -308,13 +316,14 @@
       "mode": "subagent",
       "model": "openai/gpt-5.5",
       "reasoningEffort": "medium",
-      "prompt": "{file:./prompts/validator.txt}",
+      "prompt": "{file:./node_modules/opencode-conductor/prompts/validator.txt}",
       "tools": {
         "write": true,
         "edit": true,
         "bash": true
       },
       "permission": {
+        "explore_fast": "allow",
         "task": {
           "explore": "allow"
         }
@@ -325,13 +334,14 @@
       "mode": "subagent",
       "model": "openai/gpt-5.5",
       "reasoningEffort": "high",
-      "prompt": "{file:./prompts/deployer.txt}",
+      "prompt": "{file:./node_modules/opencode-conductor/prompts/deployer.txt}",
       "tools": {
         "write": true,
         "edit": false,
         "bash": true
       },
       "permission": {
+        "explore_fast": "allow",
         "task": {
           "explore": "allow"
         }
@@ -342,7 +352,7 @@
       "mode": "subagent",
       "model": "openai/gpt-5.5",
       "reasoningEffort": "medium",
-      "prompt": "{file:./prompts/scribe.txt}",
+      "prompt": "{file:./node_modules/opencode-conductor/prompts/scribe.txt}",
       "tools": {
         "write": true,
         "edit": true,
@@ -355,6 +365,7 @@
         "persist_final_plan": "deny",
         "read_final_plan": "allow",
         "discard_final_plan": "deny",
+        "explore_fast": "allow",
         "task": {
           "explore": "allow"
         }
@@ -364,7 +375,7 @@
       "description": "Explores problem spaces, generates approaches with tradeoffs, recommends direction — Gemini 3.1 Pro",
       "mode": "subagent",
       "model": "google/gemini-3.1-pro-preview",
-      "prompt": "{file:./prompts/brainstormer.txt}",
+      "prompt": "{file:./node_modules/opencode-conductor/prompts/brainstormer.txt}",
       "reasoningEffort": "high",
       "tools": {
         "write": false,
@@ -372,6 +383,7 @@
         "bash": true
       },
       "permission": {
+        "explore_fast": "allow",
         "task": {
           "explore": "allow"
         }
