@@ -17,6 +17,7 @@ import { access, copyFile, cp, mkdir, rm, stat, symlink } from "node:fs/promises
 import * as os from "node:os";
 import * as path from "node:path";
 import { type Plugin, tool } from "@opencode-ai/plugin";
+import { wrapPlugin } from "@jackmazac/opencode-host-adapter";
 import type { Event } from "@opencode-ai/sdk";
 import type { OpencodeClient } from "./kdco-primitives/types";
 
@@ -177,7 +178,10 @@ interface LaunchExecutableValidationOptions {
   pathExists?: (absolutePath: string) => Promise<boolean>;
 }
 
-export function isPathLikeCommand(command: string): boolean {
+export function isPathLikeCommand(command: unknown): boolean {
+  if (typeof command !== "string") {
+    return false;
+  }
   return command.includes("/") || command.includes("\\");
 }
 
@@ -217,11 +221,20 @@ async function pathPointsToLaunchableBinary(absolutePath: string): Promise<boole
   }
 }
 
-export async function ensureLaunchContextExecutable(
+async function ensureLaunchContextExecutable(
   launchContext: ActiveLaunchContext,
   baseDirectory: string,
   options: LaunchExecutableValidationOptions = {},
 ): Promise<ActiveLaunchContext> {
+  if (
+    !launchContext ||
+    typeof launchContext !== "object" ||
+    !("mode" in launchContext) ||
+    (launchContext.mode !== "ocx" && launchContext.mode !== "plain")
+  ) {
+    return { mode: "plain" };
+  }
+
   if (launchContext.mode === "plain") {
     return launchContext;
   }
@@ -257,7 +270,7 @@ export async function ensureLaunchContextExecutable(
   };
 }
 
-export async function validateOcxProfileAvailability(
+async function validateOcxProfileAvailability(
   ocxBin: string,
   profile: string,
 ): Promise<Result<void, string>> {
@@ -283,11 +296,16 @@ export async function validateOcxProfileAvailability(
   }
 }
 
-export async function ensureLaunchContextProfile(
+async function ensureLaunchContextProfile(
   launchContext: ActiveLaunchContext,
   validateProfileAvailability: ValidateProfileAvailability = validateOcxProfileAvailability,
 ): Promise<void> {
-  if (launchContext.mode === "plain") {
+  if (
+    !launchContext ||
+    typeof launchContext !== "object" ||
+    !("mode" in launchContext) ||
+    launchContext.mode !== "ocx"
+  ) {
     return;
   }
 
@@ -378,7 +396,7 @@ interface FinalizeWorktreeLaunchOptions {
   deleteForkedSessionFn?: (sessionId: string) => Promise<void>;
 }
 
-export async function finalizeWorktreeLaunch(
+async function finalizeWorktreeLaunch(
   options: FinalizeWorktreeLaunchOptions,
 ): Promise<TerminalResult> {
   const openTerminalFn = options.openTerminalFn ?? openTerminal;
@@ -1176,4 +1194,4 @@ export const WorktreePlugin: Plugin = async (ctx) => {
   };
 };
 
-export default WorktreePlugin;
+export default wrapPlugin(WorktreePlugin, { name: "worktree" });

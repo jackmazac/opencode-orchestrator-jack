@@ -173,6 +173,7 @@ export async function initStateDb(projectRoot: string): Promise<Database> {
 	`)
 
 	ensureSessionLaunchMetadataColumns(db)
+	cleanupOrphanLaunchMetadata(db)
 
 	db.exec(`
 		CREATE TABLE IF NOT EXISTS pending_operations (
@@ -185,6 +186,31 @@ export async function initStateDb(projectRoot: string): Promise<Database> {
 	`)
 
 	return db
+}
+
+/**
+ * Normalize legacy session rows that recorded launch_mode='ocx' but lost
+ * their ocx_bin or profile (e.g. wrote literal string "undefined" or NULL).
+ *
+ * Without this, opencode's plugin loader probes worktree's exported helpers
+ * with malformed rows and surfaces a "Configured OCX binary 'undefined'"
+ * error at load time. We downgrade those rows to plain mode so the next
+ * launch falls back to a clean state instead of throwing.
+ */
+function cleanupOrphanLaunchMetadata(db: Database): void {
+	db.exec(`
+		UPDATE sessions
+		SET launch_mode = 'plain', ocx_bin = NULL, profile = NULL
+		WHERE launch_mode = 'ocx'
+		  AND (
+		    ocx_bin IS NULL
+		    OR ocx_bin = ''
+		    OR ocx_bin = 'undefined'
+		    OR profile IS NULL
+		    OR profile = ''
+		    OR profile = 'undefined'
+		  )
+	`)
 }
 
 function ensureSessionLaunchMetadataColumns(db: Database): void {

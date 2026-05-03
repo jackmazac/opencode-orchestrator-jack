@@ -1,9 +1,12 @@
 {
   "dependencies": {
-    "@codemem/plugin": "file:/Users/jack.mazac/Developer/codemem/artifacts/codemem-plugin-0.1.0.tgz",
+    "@codemem/plugin": "file:/Users/jack.mazac/Developer/codemem/artifacts/codemem-plugin-0.1.1.tgz",
     "@codemem/shared": "file:/Users/jack.mazac/Developer/codemem/artifacts/codemem-shared-0.1.0.tgz",
+    "@jackmazac/opencode-conductor": "file:/Users/jack.mazac/Developer/opencode-conductor",
+    "@jackmazac/opencode-fleet": "file:/Users/jack.mazac/Developer/opencode-fleet",
+    "@jackmazac/opencode-host-adapter": "file:/Users/jack.mazac/Developer/opencode-host-adapter",
     "@opencode-ai/plugin": "1.14.31",
-    "opencode-conductor": "file:/Users/jack.mazac/Developer/opencode-conductor",
+    "opencode-engram": "file:/Users/jack.mazac/Developer/engram",
     "jsonc-parser": "^3.3.1",
     "zod": "^4.3.6"
   },
@@ -11,5 +14,21 @@
     "@types/bun": "latest",
     "@types/node": "latest",
     "@typescript/native-preview": "latest"
+  },
+  "overrides": {
+    "@codemem/shared": "file:/Users/jack.mazac/Developer/codemem/artifacts/codemem-shared-0.1.0.tgz"
+  },
+  "scripts": {
+    "fleet": "bun run /Users/jack.mazac/Developer/opencode-fleet/src/cli.ts --manifest ./fleet.jsonc",
+    "fleet:doctor": "bun run /Users/jack.mazac/Developer/opencode-fleet/src/cli.ts doctor --manifest ./fleet.jsonc",
+    "fleet:status": "bun run /Users/jack.mazac/Developer/opencode-fleet/src/cli.ts status --manifest ./fleet.jsonc",
+    "fleet:test": "bun run /Users/jack.mazac/Developer/opencode-fleet/src/cli.ts test --manifest ./fleet.jsonc",
+    "fleet:test:concord": "bun run /Users/jack.mazac/Developer/opencode-fleet/src/cli.ts test --manifest ./fleet.jsonc --include-disabled concord",
+    "fleet:test:full-runtime": "bun run /Users/jack.mazac/Developer/opencode-fleet/src/cli.ts test --manifest ./fleet.jsonc --profile full-runtime",
+    "fleet:hygiene": "bun run /Users/jack.mazac/Developer/opencode-fleet/src/cli.ts hygiene --manifest ./fleet.jsonc",
+    "fleet:telemetry": "bun run /Users/jack.mazac/Developer/opencode-fleet/src/cli.ts telemetry status --manifest ./fleet.jsonc",
+    "preflight": "bun run scripts/preflight.ts",
+    "test": "bun test",
+    "check": "bun run preflight && bun run fleet:doctor && bun test"
   }
 }

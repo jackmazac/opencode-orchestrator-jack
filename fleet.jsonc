@@ -1,0 +1,76 @@
+{
+  // Local OpenCode plugin fleet manifest. This is the editable source for fleet checks.
+  "schema_version": 1,
+  "opencode_config": {
+    "root": "~/.config/opencode",
+    "config_file": "opencode.json"
+  },
+  "plugins": [
+    {
+      "name": "host-adapter",
+      "package": "@jackmazac/opencode-host-adapter",
+      "source": { "kind": "file", "ref": "~/Developer/opencode-host-adapter" },
+      "enabled": true,
+      "check_command": "bun test",
+      "telemetry": { "emits": ["plugin-boundary"] }
+    },
+    {
+      "name": "conductor",
+      "package": "@jackmazac/opencode-conductor",
+      "source": { "kind": "file", "ref": "~/Developer/opencode-conductor" },
+      "plugin_ref": "file://~/Developer/opencode-conductor/src/index.ts",
+      "cli_bin": "conductor",
+      "enabled": true,
+      "expected_tools": [
+        "explore_fast",
+        "persist_subplan",
+        "read_subplan",
+        "discard_subplan",
+        "persist_final_plan",
+        "read_final_plan",
+        "discard_final_plan"
+      ],
+      "doctor_command": "bun run check",
+      "telemetry": { "emits": ["profile", "policy", "lifecycle"] }
+    },
+    {
+      "name": "engram",
+      "package": "opencode-engram",
+      "source": { "kind": "file", "ref": "~/Developer/engram" },
+      "plugin_ref": "file://~/Developer/engram/src/index.ts",
+      "cli_bin": "engram",
+      "enabled": true,
+      "doctor_command": "bun run check",
+      "telemetry": { "sink": true, "emits": ["memory", "artifact", "retrieval"] }
+    },
+    {
+      "name": "codemem",
+      "package": "@codemem/plugin",
+      "source": { "kind": "tgz", "ref": "~/Developer/codemem/artifacts/codemem-plugin-0.1.1.tgz" },
+      "plugin_ref": "file://~/.config/opencode/node_modules/@codemem/plugin/dist/index.js",
+      "cli_bin": "codemem",
+      "enabled": true,
+      "doctor_command": "bun run verify",
+      "check_command": "bun run verify && bun run smoke:packaged && bun run bench:threshold -- --quick",
+      "command_cwd": "~/Developer/codemem",
+      "telemetry": { "emits": ["code-graph", "drift", "review-focus"] }
+    },
+    {
+      "name": "concord",
+      "package": "@concord/plugin",
+      "source": { "kind": "file", "ref": "~/Developer/concord" },
+      "plugin_ref": "file://~/.config/opencode/node_modules/@concord/plugin/dist/index.js",
+      "cli_bin": "concord",
+      "enabled": false,
+      "doctor_command": "bun run check",
+      "check_command": "bun run check && bun run live-smoke -- --json && bun run bench:threshold",
+      "command_cwd": "~/Developer/concord"
+    }
+  ],
+  "external_plugins": [
+    "@nick-vi/opencode-type-inject",
+    "@tarquinen/opencode-dcp@latest",
+    "@franlol/opencode-md-table-formatter@latest",
+    "@mohak34/opencode-notifier@latest"
+  ]
+}
