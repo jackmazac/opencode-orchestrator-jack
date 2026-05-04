@@ -2,13 +2,15 @@
   "dependencies": {
     "@codemem/plugin": "file:/Users/jack.mazac/Developer/codemem/artifacts/codemem-plugin-0.1.1.tgz",
     "@codemem/shared": "file:/Users/jack.mazac/Developer/codemem/artifacts/codemem-shared-0.1.0.tgz",
+    "@concord/plugin": "file:/Users/jack.mazac/Developer/concord/packages/concord-plugin",
+    "@concord/shared": "file:/Users/jack.mazac/Developer/concord/packages/concord-shared",
     "@jackmazac/opencode-conductor": "file:/Users/jack.mazac/Developer/opencode-conductor",
     "@jackmazac/opencode-fleet": "file:/Users/jack.mazac/Developer/opencode-fleet",
     "@jackmazac/opencode-host-adapter": "file:/Users/jack.mazac/Developer/opencode-host-adapter",
     "@opencode-ai/plugin": "1.14.31",
-    "opencode-engram": "file:/Users/jack.mazac/Developer/engram",
     "jsonc-parser": "^3.3.1",
-    "zod": "^4.3.6"
+    "opencode-engram": "file:/Users/jack.mazac/Developer/engram",
+    "zod": "4.1.8"
   },
   "devDependencies": {
     "@types/bun": "latest",
@@ -16,7 +18,8 @@
     "@typescript/native-preview": "latest"
   },
   "overrides": {
-    "@codemem/shared": "file:/Users/jack.mazac/Developer/codemem/artifacts/codemem-shared-0.1.0.tgz"
+    "@codemem/shared": "file:/Users/jack.mazac/Developer/codemem/artifacts/codemem-shared-0.1.0.tgz",
+    "@concord/shared": "file:/Users/jack.mazac/Developer/concord/packages/concord-shared"
   },
   "scripts": {
     "fleet": "bun run /Users/jack.mazac/Developer/opencode-fleet/src/cli.ts --manifest ./fleet.jsonc",
@@ -27,8 +30,8 @@
     "fleet:test:full-runtime": "bun run /Users/jack.mazac/Developer/opencode-fleet/src/cli.ts test --manifest ./fleet.jsonc --profile full-runtime",
     "fleet:hygiene": "bun run /Users/jack.mazac/Developer/opencode-fleet/src/cli.ts hygiene --manifest ./fleet.jsonc",
     "fleet:telemetry": "bun run /Users/jack.mazac/Developer/opencode-fleet/src/cli.ts telemetry status --manifest ./fleet.jsonc",
-    "preflight": "bun run scripts/preflight.ts",
-    "test": "bun test",
-    "check": "bun run preflight && bun run fleet:doctor && bun test"
+    "preflight": "bun run fleet:doctor && bun run fleet:hygiene -- --strict",
+    "test": "bun -e 'console.log(\"no config-local tests; fleet:test owns plugin runtime validation\")'",
+    "check": "bun run fleet:doctor && bun run fleet:test && bun run test"
   }
 }

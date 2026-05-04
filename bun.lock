@@ -6,13 +6,15 @@
       "dependencies": {
         "@codemem/plugin": "file:/Users/jack.mazac/Developer/codemem/artifacts/codemem-plugin-0.1.1.tgz",
         "@codemem/shared": "file:/Users/jack.mazac/Developer/codemem/artifacts/codemem-shared-0.1.0.tgz",
+        "@concord/plugin": "file:/Users/jack.mazac/Developer/concord/packages/concord-plugin",
+        "@concord/shared": "file:/Users/jack.mazac/Developer/concord/packages/concord-shared",
         "@jackmazac/opencode-conductor": "file:/Users/jack.mazac/Developer/opencode-conductor",
         "@jackmazac/opencode-fleet": "file:/Users/jack.mazac/Developer/opencode-fleet",
         "@jackmazac/opencode-host-adapter": "file:/Users/jack.mazac/Developer/opencode-host-adapter",
         "@opencode-ai/plugin": "1.14.31",
         "jsonc-parser": "^3.3.1",
         "opencode-engram": "file:/Users/jack.mazac/Developer/engram",
-        "zod": "^4.3.6",
+        "zod": "4.1.8",
       },
       "devDependencies": {
         "@types/bun": "latest",
@@ -23,6 +25,7 @@
   },
   "overrides": {
     "@codemem/shared": "file:/Users/jack.mazac/Developer/codemem/artifacts/codemem-shared-0.1.0.tgz",
+    "@concord/shared": "file:/Users/jack.mazac/Developer/concord/packages/concord-shared",
   },
   "packages": {
     "@ai-sdk/gateway": ["@ai-sdk/gateway@2.0.30", "", { "dependencies": { "@ai-sdk/provider": "2.0.1", "@ai-sdk/provider-utils": "3.0.20", "@vercel/oidc": "3.1.0" }, "peerDependencies": { "zod": "^3.25.76 || ^4.1.8" } }, "sha512-5Nrkj8B4MzkkOfjjA+Cs5pamkbkK4lI11bx80QV7TFcen/hWA8wEC+UVzwuM5H2zpekoNMjvl6GonHnR62XIZw=="],
@@ -33,15 +36,19 @@
 
     "@ai-sdk/provider-utils": ["@ai-sdk/provider-utils@3.0.20", "", { "dependencies": { "@ai-sdk/provider": "2.0.1", "@standard-schema/spec": "^1.0.0", "eventsource-parser": "^3.0.6" }, "peerDependencies": { "zod": "^3.25.76 || ^4.1.8" } }, "sha512-iXHVe0apM2zUEzauqJwqmpC37A5rihrStAih5Ks+JE32iTe4LZ58y17UGBjpQQTCRw9YxMeo2UFLxLpBluyvLQ=="],
 
-    "@codemem/plugin": ["@codemem/plugin@/Users/jack.mazac/Developer/codemem/artifacts/codemem-plugin-0.1.1.tgz", { "dependencies": { "@codemem/shared": "0.1.0", "@opencode-ai/plugin": "1.14.31" }, "bin": { "codemem": "./dist/cli.js" } }, "sha512-Z/73rsqVyvjOikqDPWxwY3dpxAfTAjaBKKKc+i54XxaRyxy3Xj4SC6gdsXHKbnyUZvu2b+Kle3JO0qxNDYCNiA=="],
+    "@codemem/plugin": ["@codemem/plugin@/Users/jack.mazac/Developer/codemem/artifacts/codemem-plugin-0.1.1.tgz", { "dependencies": { "@codemem/shared": "0.1.0", "@jackmazac/opencode-fleet-contracts": "file:/Users/jack.mazac/Developer/opencode-fleet-contracts", "@opencode-ai/plugin": "1.14.31" }, "bin": { "codemem": "./dist/cli.js" } }, "sha512-JmTYvi9o4vR+/NSz96yCiUIdSpDi3xcUJKiTksgqrN0kpluiM9CnItUGpQYqOpCoPw1AlRqOf9uN01NQpLnpkg=="],
 
-    "@codemem/shared": ["@codemem/shared@/Users/jack.mazac/Developer/codemem/artifacts/codemem-shared-0.1.0.tgz", {}, "sha512-spvPzetJUVU1Sg5GUFtI/5oWOTqC31VQuYCKydszZigGWPFP4gV+o2x44rwOSPNZu+44IXfZ0SS6Z/c464Hx3A=="],
+    "@codemem/shared": ["@codemem/shared@/Users/jack.mazac/Developer/codemem/artifacts/codemem-shared-0.1.0.tgz", { "dependencies": { "@jackmazac/opencode-fleet-contracts": "file:/Users/jack.mazac/Developer/opencode-fleet-contracts" } }, "sha512-fac9kXc6hyCRmIC6ESW4QtaQVqyA2lNSgHjeGAxrjLJeD9aovDKxF2GpWvKeaLSFbgyAinIGFDkP4CeILO0G1w=="],
 
-    "@jackmazac/opencode-conductor": ["@jackmazac/opencode-conductor@file:../../Developer/opencode-conductor", { "dependencies": { "@opencode-ai/plugin": "1.14.31", "zod": "^4.3.6" }, "devDependencies": { "@tsconfig/bun": "latest", "@types/bun": "latest", "@types/node": "latest", "@typescript/native-preview": "latest", "opencode-engram": "file:../engram" } }],
+    "@concord/plugin": ["@concord/plugin@file:../../Developer/concord/packages/concord-plugin", { "dependencies": { "@concord/shared": "0.1.0" }, "bin": { "concord": "./dist/cli.js" } }],
 
-    "@jackmazac/opencode-fleet": ["@jackmazac/opencode-fleet@file:../../Developer/opencode-fleet", { "devDependencies": { "@tsconfig/bun": "latest", "@types/bun": "latest", "@types/node": "latest", "@typescript/native-preview": "latest" }, "bin": { "opencode-fleet": "./src/cli.ts" } }],
+    "@concord/shared": ["@concord/shared@file:../../Developer/concord/packages/concord-shared", {}],
 
-    "@jackmazac/opencode-host-adapter": ["@jackmazac/opencode-host-adapter@file:../../Developer/opencode-host-adapter", { "dependencies": { "@opencode-ai/plugin": "1.14.31" }, "devDependencies": { "@types/bun": "latest", "@types/node": "latest", "typescript": "^5.0.0" } }],
+    "@jackmazac/opencode-conductor": ["@jackmazac/opencode-conductor@file:../../Developer/opencode-conductor", { "dependencies": { "@jackmazac/opencode-fleet-contracts": "file:../opencode-fleet-contracts", "@jackmazac/opencode-host-adapter": "file:/Users/jack.mazac/Developer/opencode-host-adapter", "@opencode-ai/plugin": "1.14.31", "zod": "4.1.8" }, "devDependencies": { "@tsconfig/bun": "latest", "@types/bun": "latest", "@types/node": "latest", "@typescript/native-preview": "latest", "opencode-engram": "file:../engram" }, "bin": { "conductor": "./src/cli.ts" } }],
+
+    "@jackmazac/opencode-fleet": ["@jackmazac/opencode-fleet@file:../../Developer/opencode-fleet", { "dependencies": { "@jackmazac/opencode-fleet-contracts": "file:../opencode-fleet-contracts", "@jackmazac/opencode-host-adapter": "file:../opencode-host-adapter" }, "devDependencies": { "@tsconfig/bun": "latest", "@types/bun": "latest", "@types/node": "latest", "@typescript/native-preview": "latest" }, "bin": { "opencode-fleet": "./src/cli.ts" } }],
+
+    "@jackmazac/opencode-host-adapter": ["@jackmazac/opencode-host-adapter@file:../../Developer/opencode-host-adapter", { "dependencies": { "@jackmazac/opencode-fleet-contracts": "file:../opencode-fleet-contracts" }, "devDependencies": { "@opencode-ai/plugin": "1.14.31", "@types/bun": "latest", "@types/node": "latest", "@typescript/native-preview": "latest" }, "peerDependencies": { "@opencode-ai/plugin": ">=1.14.0" }, "bin": { "opencode-check-no-zod-import": "./src/cli/check-no-zod-import.ts", "opencode-audit-zod": "./src/cli/audit-zod.ts" } }],
 
     "@msgpackr-extract/msgpackr-extract-darwin-arm64": ["@msgpackr-extract/msgpackr-extract-darwin-arm64@3.0.3", "", { "os": "darwin", "cpu": "arm64" }, "sha512-QZHtlVgbAdy2zAqNA9Gu1UpIuI8Xvsd1v8ic6B2pZmeFnFcMWiPLfWXh7TVw4eGEZ/C9TH281KwhVoeQUKbyjw=="],
 
@@ -69,21 +76,21 @@
 
     "@types/node": ["@types/node@25.6.0", "", { "dependencies": { "undici-types": "~7.19.0" } }, "sha512-+qIYRKdNYJwY3vRCZMdJbPLJAtGjQBudzZzdzwQYkEPQd+PJGixUL5QfvCLDaULoLv+RhT3LDkwEfKaAkgSmNQ=="],
 
-    "@typescript/native-preview": ["@typescript/native-preview@7.0.0-dev.20260429.1", "", { "optionalDependencies": { "@typescript/native-preview-darwin-arm64": "7.0.0-dev.20260429.1", "@typescript/native-preview-darwin-x64": "7.0.0-dev.20260429.1", "@typescript/native-preview-linux-arm": "7.0.0-dev.20260429.1", "@typescript/native-preview-linux-arm64": "7.0.0-dev.20260429.1", "@typescript/native-preview-linux-x64": "7.0.0-dev.20260429.1", "@typescript/native-preview-win32-arm64": "7.0.0-dev.20260429.1", "@typescript/native-preview-win32-x64": "7.0.0-dev.20260429.1" }, "bin": { "tsgo": "bin/tsgo.js" } }, "sha512-SGKnvs5EA+V1spnraYJqum/lEajE0IQ2bVVPC72hFfWjoCfQ6N7iVYxLUGreiE3VFyQWWQBPgXZrRUFnawVvpQ=="],
+    "@typescript/native-preview": ["@typescript/native-preview@7.0.0-dev.20260503.1", "", { "optionalDependencies": { "@typescript/native-preview-darwin-arm64": "7.0.0-dev.20260503.1", "@typescript/native-preview-darwin-x64": "7.0.0-dev.20260503.1", "@typescript/native-preview-linux-arm": "7.0.0-dev.20260503.1", "@typescript/native-preview-linux-arm64": "7.0.0-dev.20260503.1", "@typescript/native-preview-linux-x64": "7.0.0-dev.20260503.1", "@typescript/native-preview-win32-arm64": "7.0.0-dev.20260503.1", "@typescript/native-preview-win32-x64": "7.0.0-dev.20260503.1" }, "bin": { "tsgo": "bin/tsgo.js" } }, "sha512-gDro38CPFiBUGbaFGNt+ufOsEd1OrZrfrOPxsLSfBcvvoGaqAxV++ul/BHTOShoEkIYHiFsoDX2az1IPCDV2jQ=="],
 
-    "@typescript/native-preview-darwin-arm64": ["@typescript/native-preview-darwin-arm64@7.0.0-dev.20260429.1", "", { "os": "darwin", "cpu": "arm64" }, "sha512-+Rl8iPf+vYKq0fnb8euEOJxxvE/abEOWmhdllQIe+Shd8xhS7UVi+2WunsP1GyH2Ofc+N8rGYz0/dMnhrRYEZA=="],
+    "@typescript/native-preview-darwin-arm64": ["@typescript/native-preview-darwin-arm64@7.0.0-dev.20260503.1", "", { "os": "darwin", "cpu": "arm64" }, "sha512-rUZQVuBcZlxADagx+pnhDHqjX2Ewh+KWave6vtilRWR5vsGyR3FaCzPFqXteiwPg6XRijEMnMaXg60t5itm8EA=="],
 
-    "@typescript/native-preview-darwin-x64": ["@typescript/native-preview-darwin-x64@7.0.0-dev.20260429.1", "", { "os": "darwin", "cpu": "x64" }, "sha512-be6Y7VVJz+usdI1ifCHy5mcldpxf8KXGYoyIp8w5Rd54zUtvtkYEJJWKzV5/bJt4bsQLLcp1i0vD4KJSr06Tmg=="],
+    "@typescript/native-preview-darwin-x64": ["@typescript/native-preview-darwin-x64@7.0.0-dev.20260503.1", "", { "os": "darwin", "cpu": "x64" }, "sha512-YtK8ac8RCkRh7jwoP8Wt4LaBhpGK8cOVMi3e0cvF/8Xn5XV1ewJK3/HdNBnlDhCib3j0eVRxK/Pg9GIq/hFUxQ=="],
 
-    "@typescript/native-preview-linux-arm": ["@typescript/native-preview-linux-arm@7.0.0-dev.20260429.1", "", { "os": "linux", "cpu": "arm" }, "sha512-ngN6+qt5bPdp2zzasShoT4UONGXr+tvzHdz4NjuitwhiAF/d70CseXunb4syaudl1a+lJyTHro/ALTC0hRf6vA=="],
+    "@typescript/native-preview-linux-arm": ["@typescript/native-preview-linux-arm@7.0.0-dev.20260503.1", "", { "os": "linux", "cpu": "arm" }, "sha512-28vAomYeU8hpz1f0dDoWz6PYehz0ffEfkJhFq4tqXzUM/QY1I15u5y03EJQ5UcP4LRwrdJe22J5LdrYpM2Lr3w=="],
 
-    "@typescript/native-preview-linux-arm64": ["@typescript/native-preview-linux-arm64@7.0.0-dev.20260429.1", "", { "os": "linux", "cpu": "arm64" }, "sha512-44amAEH/VxG6K/hrAmhiyOTnwoTzm7bj0ja7d8sV8Iuocv37oUiSB/8OgJLytLqfIh+Q6kipfTwY6Do3jh6THQ=="],
+    "@typescript/native-preview-linux-arm64": ["@typescript/native-preview-linux-arm64@7.0.0-dev.20260503.1", "", { "os": "linux", "cpu": "arm64" }, "sha512-c5yM3Ea2WZSLKmscMxUhEDdaR2Ugp7P9CX6osciIPgZIF9c4LDiuKQohjQAyidx9JZKCsSXnfS88QssWH/+ONQ=="],
 
-    "@typescript/native-preview-linux-x64": ["@typescript/native-preview-linux-x64@7.0.0-dev.20260429.1", "", { "os": "linux", "cpu": "x64" }, "sha512-haAOqc0fJCZkt4RDi0/ZQGBdDfpDzr2N+mEcR+FbiYQD3Y00kOK34hXSrjZafO2kq56ZDWunvCaUTCev0fJDbA=="],
+    "@typescript/native-preview-linux-x64": ["@typescript/native-preview-linux-x64@7.0.0-dev.20260503.1", "", { "os": "linux", "cpu": "x64" }, "sha512-M64z7LwpqNfOXYCBKmD/ObwyxYOobUk4tDv0ECNLit7pDER1sswNZjJGjgRYjQsKokmydy6p3FqtJ1uUPUP/sw=="],
 
-    "@typescript/native-preview-win32-arm64": ["@typescript/native-preview-win32-arm64@7.0.0-dev.20260429.1", "", { "os": "win32", "cpu": "arm64" }, "sha512-J5O0tGVGqOZHbqm9ijRnZ5ADfPqYTjFIwZtYKpQL1yj1dZnUzMszO8P3bnOSfYD//DJhZINQyJzpPJxu29uiwQ=="],
+    "@typescript/native-preview-win32-arm64": ["@typescript/native-preview-win32-arm64@7.0.0-dev.20260503.1", "", { "os": "win32", "cpu": "arm64" }, "sha512-QHy3R1VBb8MYszjpz0IyuDjKaW6JUHg8hYEqzhZIxvrydKLF3gyDeKohnmWSFTS/oII0GvUmYM3h83fbanBvcQ=="],
 
-    "@typescript/native-preview-win32-x64": ["@typescript/native-preview-win32-x64@7.0.0-dev.20260429.1", "", { "os": "win32", "cpu": "x64" }, "sha512-/OZ99Hi/32huvZQ5fdqTwqLvZtKC3QrCXmLuKfMyVuBisV/TSd6LhlFQLolvIpr7/E530mnFZ4sXjgDEzVFqAw=="],
+    "@typescript/native-preview-win32-x64": ["@typescript/native-preview-win32-x64@7.0.0-dev.20260503.1", "", { "os": "win32", "cpu": "x64" }, "sha512-nrapqpVONrg0IZjKp3AzV9M+jxPwKGTQZEOxuKh6WHMhy/UElN8RnOFlfetA8ZMtKvPkmjgjqw0qoAa5QMwhPA=="],
 
     "@vercel/oidc": ["@vercel/oidc@3.1.0", "", {}, "sha512-Fw28YZpRnA3cAHHDlkt7xQHiJ0fcL+NRcIqsocZQUSmbzeIKRpwttJjik5ZGanXP+vlA4SbTg+AbA3bP363l+w=="],
 
@@ -113,7 +120,7 @@
 
     "kubernetes-types": ["kubernetes-types@1.30.0", "", {}, "sha512-Dew1okvhM/SQcIa2rcgujNndZwU8VnSapDgdxlYoB84ZlpAD43U6KLAFqYo17ykSFGHNPrg0qry0bP+GJd9v7Q=="],
 
-    "msgpackr": ["msgpackr@1.11.10", "", { "optionalDependencies": { "msgpackr-extract": "^3.0.2" } }, "sha512-iCZNq+HszvF+fC3anCm4nBmWEnbeIAfpDs6IStAEKhQ2YSgkjzVG2FF9XJqwwQh5bH3N9OUTUt4QwVN6MLMLtA=="],
+    "msgpackr": ["msgpackr@1.11.12", "", { "optionalDependencies": { "msgpackr-extract": "^3.0.2" } }, "sha512-RBdJ1Un7yGlXWajrkxcSa93nvQ0w4zBf60c0yYv7YtBelP8H2FA7XsfBbMHtXKXUMUxH7zV3Zuozh+kUQWhHvg=="],
 
     "msgpackr-extract": ["msgpackr-extract@3.0.3", "", { "dependencies": { "node-gyp-build-optional-packages": "5.2.2" }, "optionalDependencies": { "@msgpackr-extract/msgpackr-extract-darwin-arm64": "3.0.3", "@msgpackr-extract/msgpackr-extract-darwin-x64": "3.0.3", "@msgpackr-extract/msgpackr-extract-linux-arm": "3.0.3", "@msgpackr-extract/msgpackr-extract-linux-arm64": "3.0.3", "@msgpackr-extract/msgpackr-extract-linux-x64": "3.0.3", "@msgpackr-extract/msgpackr-extract-win32-x64": "3.0.3" }, "bin": { "download-msgpackr-prebuilds": "bin/download-prebuilds.js" } }, "sha512-P0efT1C9jIdVRefqjzOQ9Xml57zpOXnIuS+csaB4MdZbTdmGDLo8XhzBG1N7aO11gKDDkJvBLULeFTo46wwreA=="],
 
@@ -121,7 +128,7 @@
 
     "node-gyp-build-optional-packages": ["node-gyp-build-optional-packages@5.2.2", "", { "dependencies": { "detect-libc": "^2.0.1" }, "bin": { "node-gyp-build-optional-packages": "bin.js", "node-gyp-build-optional-packages-optional": "optional.js", "node-gyp-build-optional-packages-test": "build-test.js" } }, "sha512-s+w+rBWnpTMwSFbaE0UXsRlg7hU4FjekKU4eyAih5T8nJuNZT1nNsskXpxmeqSK9UzkBl6UgRlnKc8hz8IEqOw=="],
 
-    "opencode-engram": ["opencode-engram@file:../../Developer/engram", { "dependencies": { "@ai-sdk/openai": "2.0.89", "@jackmazac/opencode-host-adapter": "file:/Users/jack.mazac/Developer/opencode-host-adapter", "@opencode-ai/plugin": "1.14.31", "@opencode-ai/sdk": "1.3.3", "ai": "5.0.124", "strip-json-comments": "5.0.1", "ulid": "3.0.1", "xdg-basedir": "5.1.0", "zod": "4.1.8" }, "devDependencies": { "@tsconfig/bun": "1.0.9", "@types/bun": "1.3.11", "@typescript/native-preview": "7.0.0-dev.20251207.1", "typescript": "5.8.2" }, "bin": { "engram": "./src/cli/run.ts" } }],
+    "opencode-engram": ["opencode-engram@file:../../Developer/engram", { "dependencies": { "@ai-sdk/openai": "2.0.89", "@jackmazac/opencode-fleet-contracts": "file:../opencode-fleet-contracts", "@jackmazac/opencode-host-adapter": "file:/Users/jack.mazac/Developer/opencode-host-adapter", "@opencode-ai/plugin": "1.14.31", "@opencode-ai/sdk": "1.3.3", "ai": "5.0.124", "strip-json-comments": "5.0.1", "ulid": "3.0.1", "xdg-basedir": "5.1.0", "zod": "4.1.8" }, "devDependencies": { "@tsconfig/bun": "1.0.9", "@types/bun": "1.3.11", "@typescript/native-preview": "7.0.0-dev.20251207.1" }, "bin": { "engram": "./src/cli/run.ts" } }],
 
     "path-key": ["path-key@3.1.1", "", {}, "sha512-ojmeN0qd+y0jszEtoY48r0Peq5dwMEkIlCOu6Q5f41lfkswXuKtYrhgoTpLnyIcHm24Uhqx+5Tqm2InSwLhE6Q=="],
 
@@ -135,8 +142,6 @@
 
     "toml": ["toml@4.1.1", "", {}, "sha512-EBJnVBr3dTXdA89WVFoAIPUqkBjxPMwRqsfuo1r240tKFHXv3zgca4+NJib/h6TyvGF7vOawz0jGuryJCdNHrw=="],
 
-    "typescript": ["typescript@5.8.2", "", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-aJn6wq13/afZp/jT9QZmwEjDqqvSGp1VT5GVg+f/t6/oVyrgXM6BY1h9BRh/O5p3PlUPAe+WuiEZOmb/49RqoQ=="],
-
     "ulid": ["ulid@3.0.1", "", { "bin": { "ulid": "dist/cli.js" } }, "sha512-dPJyqPzx8preQhqq24bBG1YNkvigm87K8kVEHCD+ruZg24t6IFEFv00xMWfxcC4djmFtiTLdFuADn4+DOz6R7Q=="],
 
     "undici-types": ["undici-types@7.19.2", "", {}, "sha512-qYVnV5OEm2AW8cJMCpdV20CDyaN3g0AjDlOGf1OW4iaDEx8MwdtChUp4zu4H0VP3nDRF/8RKWH+IPp9uW0YGZg=="],
@@ -147,21 +152,31 @@
 
     "xdg-basedir": ["xdg-basedir@5.1.0", "", {}, "sha512-GCPAHLvrIH13+c0SuacwvRYj2SxJXQ4kaVTT5xgL3kPrz56XxkF21IGhjSE1+W0aw7gpBWRGXLCPnPby6lSpmQ=="],
 
-    "yaml": ["yaml@2.8.3", "", { "bin": { "yaml": "bin.mjs" } }, "sha512-AvbaCLOO2Otw/lW5bmh9d/WEdcDFdQp2Z2ZUH3pX9U2ihyUY0nvLv7J6TrWowklRGPYbB/IuIMfYgxaCPg5Bpg=="],
+    "yaml": ["yaml@2.8.4", "", { "bin": { "yaml": "bin.mjs" } }, "sha512-ml/JPOj9fOQK8RNnWojA67GbZ0ApXAUlN2UQclwv2eVgTgn7O9gg9o7paZWKMp4g0H3nTLtS9LVzhkpOFIKzog=="],
 
-    "zod": ["zod@4.3.6", "", {}, "sha512-rftlrkhHZOcjDwkGlnUtZZkvaPHCsDATp4pGpuOOMDaTdDDXF91wuVDJoWoPsKX/3YPQ5fHuF3STjcYyKr+Qhg=="],
+    "zod": ["zod@4.1.8", "", {}, "sha512-5R1P+WwQqmmMIEACyzSvo4JXHY5WiAFHRMg+zBZKgKS+Q1viRa0C1hmUKtHltoIFKtIdki3pRxkmpP74jnNYHQ=="],
 
-    "@jackmazac/opencode-conductor/@typescript/native-preview": ["@typescript/native-preview@7.0.0-dev.20260503.1", "", { "optionalDependencies": { "@typescript/native-preview-darwin-arm64": "7.0.0-dev.20260503.1", "@typescript/native-preview-darwin-x64": "7.0.0-dev.20260503.1", "@typescript/native-preview-linux-arm": "7.0.0-dev.20260503.1", "@typescript/native-preview-linux-arm64": "7.0.0-dev.20260503.1", "@typescript/native-preview-linux-x64": "7.0.0-dev.20260503.1", "@typescript/native-preview-win32-arm64": "7.0.0-dev.20260503.1", "@typescript/native-preview-win32-x64": "7.0.0-dev.20260503.1" }, "bin": { "tsgo": "bin/tsgo.js" } }, "sha512-gDro38CPFiBUGbaFGNt+ufOsEd1OrZrfrOPxsLSfBcvvoGaqAxV++ul/BHTOShoEkIYHiFsoDX2az1IPCDV2jQ=="],
+    "@codemem/plugin/@jackmazac/opencode-fleet-contracts": ["@jackmazac/opencode-fleet-contracts@file:../../Developer/opencode-fleet-contracts", {}],
 
-    "@jackmazac/opencode-conductor/opencode-engram": ["opencode-engram@file:../../Developer/engram", { "dependencies": { "@ai-sdk/openai": "2.0.89", "@jackmazac/opencode-host-adapter": "file:/Users/jack.mazac/Developer/opencode-host-adapter", "@opencode-ai/plugin": "1.14.31", "@opencode-ai/sdk": "1.3.3", "ai": "5.0.124", "strip-json-comments": "5.0.1", "ulid": "3.0.1", "xdg-basedir": "5.1.0", "zod": "4.1.8" }, "devDependencies": { "@tsconfig/bun": "1.0.9", "@types/bun": "1.3.11", "@typescript/native-preview": "7.0.0-dev.20251207.1", "typescript": "5.8.2" }, "bin": { "engram": "./src/cli/run.ts" } }],
+    "@codemem/shared/@jackmazac/opencode-fleet-contracts": ["@jackmazac/opencode-fleet-contracts@file:../../Developer/opencode-fleet-contracts", {}],
 
-    "@jackmazac/opencode-fleet/@typescript/native-preview": ["@typescript/native-preview@7.0.0-dev.20260503.1", "", { "optionalDependencies": { "@typescript/native-preview-darwin-arm64": "7.0.0-dev.20260503.1", "@typescript/native-preview-darwin-x64": "7.0.0-dev.20260503.1", "@typescript/native-preview-linux-arm": "7.0.0-dev.20260503.1", "@typescript/native-preview-linux-arm64": "7.0.0-dev.20260503.1", "@typescript/native-preview-linux-x64": "7.0.0-dev.20260503.1", "@typescript/native-preview-win32-arm64": "7.0.0-dev.20260503.1", "@typescript/native-preview-win32-x64": "7.0.0-dev.20260503.1" }, "bin": { "tsgo": "bin/tsgo.js" } }, "sha512-gDro38CPFiBUGbaFGNt+ufOsEd1OrZrfrOPxsLSfBcvvoGaqAxV++ul/BHTOShoEkIYHiFsoDX2az1IPCDV2jQ=="],
+    "@concord/plugin/@concord/shared": ["@concord/shared@file:/Users/jack.mazac/Developer/concord/packages/concord-shared", {}],
 
-    "@jackmazac/opencode-host-adapter/@types/bun": ["@types/bun@1.3.11", "", { "dependencies": { "bun-types": "1.3.11" } }, "sha512-5vPne5QvtpjGpsGYXiFyycfpDF2ECyPcTSsFBMa0fraoxiQyMJ3SmuQIGhzPg2WJuWxVBoxWJ2kClYTcw/4fAg=="],
+    "@jackmazac/opencode-conductor/@jackmazac/opencode-fleet-contracts": ["@jackmazac/opencode-fleet-contracts@file:../../Developer/opencode-fleet-contracts", {}],
 
-    "@opencode-ai/plugin/zod": ["zod@4.1.8", "", {}, "sha512-5R1P+WwQqmmMIEACyzSvo4JXHY5WiAFHRMg+zBZKgKS+Q1viRa0C1hmUKtHltoIFKtIdki3pRxkmpP74jnNYHQ=="],
+    "@jackmazac/opencode-conductor/@jackmazac/opencode-host-adapter": ["@jackmazac/opencode-host-adapter@file:../../Developer/opencode-host-adapter", {}],
 
-    "opencode-engram/@jackmazac/opencode-host-adapter": ["@jackmazac/opencode-host-adapter@file:../../Developer/opencode-host-adapter", { "dependencies": { "@opencode-ai/plugin": "1.14.31" }, "devDependencies": { "@types/bun": "latest", "@types/node": "latest", "typescript": "^5.0.0" } }],
+    "@jackmazac/opencode-conductor/opencode-engram": ["opencode-engram@file:../../Developer/engram", {}],
+
+    "@jackmazac/opencode-fleet/@jackmazac/opencode-fleet-contracts": ["@jackmazac/opencode-fleet-contracts@file:../../Developer/opencode-fleet-contracts", {}],
+
+    "@jackmazac/opencode-fleet/@jackmazac/opencode-host-adapter": ["@jackmazac/opencode-host-adapter@file:../../Developer/opencode-host-adapter", {}],
+
+    "@jackmazac/opencode-host-adapter/@jackmazac/opencode-fleet-contracts": ["@jackmazac/opencode-fleet-contracts@file:../../Developer/opencode-fleet-contracts", {}],
+
+    "opencode-engram/@jackmazac/opencode-fleet-contracts": ["@jackmazac/opencode-fleet-contracts@file:../../Developer/opencode-fleet-contracts", {}],
+
+    "opencode-engram/@jackmazac/opencode-host-adapter": ["@jackmazac/opencode-host-adapter@file:../../Developer/opencode-host-adapter", {}],
 
     "opencode-engram/@opencode-ai/sdk": ["@opencode-ai/sdk@1.3.3", "", {}, "sha512-qg7DwEVUpZArsYajs0DcaHqmIYB3EfHCuuTdMJir7Yc976DUWDfLR/5y9h8fKb9HAMJXe4TZkAIEr0/3OmK67g=="],
 
@@ -170,50 +185,6 @@
     "opencode-engram/@types/bun": ["@types/bun@1.3.11", "", { "dependencies": { "bun-types": "1.3.11" } }, "sha512-5vPne5QvtpjGpsGYXiFyycfpDF2ECyPcTSsFBMa0fraoxiQyMJ3SmuQIGhzPg2WJuWxVBoxWJ2kClYTcw/4fAg=="],
 
     "opencode-engram/@typescript/native-preview": ["@typescript/native-preview@7.0.0-dev.20251207.1", "", { "optionalDependencies": { "@typescript/native-preview-darwin-arm64": "7.0.0-dev.20251207.1", "@typescript/native-preview-darwin-x64": "7.0.0-dev.20251207.1", "@typescript/native-preview-linux-arm": "7.0.0-dev.20251207.1", "@typescript/native-preview-linux-arm64": "7.0.0-dev.20251207.1", "@typescript/native-preview-linux-x64": "7.0.0-dev.20251207.1", "@typescript/native-preview-win32-arm64": "7.0.0-dev.20251207.1", "@typescript/native-preview-win32-x64": "7.0.0-dev.20251207.1" }, "bin": { "tsgo": "bin/tsgo.js" } }, "sha512-4QcRnzB0pi9rS0AOvg8kWbmuwHv5X7B2EXHbgcms9+56hsZ8SZrZjNgBJb2rUIodJ4kU5mrkj/xlTTT4r9VcpQ=="],
-
-    "opencode-engram/zod": ["zod@4.1.8", "", {}, "sha512-5R1P+WwQqmmMIEACyzSvo4JXHY5WiAFHRMg+zBZKgKS+Q1viRa0C1hmUKtHltoIFKtIdki3pRxkmpP74jnNYHQ=="],
-
-    "@jackmazac/opencode-conductor/@typescript/native-preview/@typescript/native-preview-darwin-arm64": ["@typescript/native-preview-darwin-arm64@7.0.0-dev.20260503.1", "", { "os": "darwin", "cpu": "arm64" }, "sha512-rUZQVuBcZlxADagx+pnhDHqjX2Ewh+KWave6vtilRWR5vsGyR3FaCzPFqXteiwPg6XRijEMnMaXg60t5itm8EA=="],
-
-    "@jackmazac/opencode-conductor/@typescript/native-preview/@typescript/native-preview-darwin-x64": ["@typescript/native-preview-darwin-x64@7.0.0-dev.20260503.1", "", { "os": "darwin", "cpu": "x64" }, "sha512-YtK8ac8RCkRh7jwoP8Wt4LaBhpGK8cOVMi3e0cvF/8Xn5XV1ewJK3/HdNBnlDhCib3j0eVRxK/Pg9GIq/hFUxQ=="],
-
-    "@jackmazac/opencode-conductor/@typescript/native-preview/@typescript/native-preview-linux-arm": ["@typescript/native-preview-linux-arm@7.0.0-dev.20260503.1", "", { "os": "linux", "cpu": "arm" }, "sha512-28vAomYeU8hpz1f0dDoWz6PYehz0ffEfkJhFq4tqXzUM/QY1I15u5y03EJQ5UcP4LRwrdJe22J5LdrYpM2Lr3w=="],
-
-    "@jackmazac/opencode-conductor/@typescript/native-preview/@typescript/native-preview-linux-arm64": ["@typescript/native-preview-linux-arm64@7.0.0-dev.20260503.1", "", { "os": "linux", "cpu": "arm64" }, "sha512-c5yM3Ea2WZSLKmscMxUhEDdaR2Ugp7P9CX6osciIPgZIF9c4LDiuKQohjQAyidx9JZKCsSXnfS88QssWH/+ONQ=="],
-
-    "@jackmazac/opencode-conductor/@typescript/native-preview/@typescript/native-preview-linux-x64": ["@typescript/native-preview-linux-x64@7.0.0-dev.20260503.1", "", { "os": "linux", "cpu": "x64" }, "sha512-M64z7LwpqNfOXYCBKmD/ObwyxYOobUk4tDv0ECNLit7pDER1sswNZjJGjgRYjQsKokmydy6p3FqtJ1uUPUP/sw=="],
-
-    "@jackmazac/opencode-conductor/@typescript/native-preview/@typescript/native-preview-win32-arm64": ["@typescript/native-preview-win32-arm64@7.0.0-dev.20260503.1", "", { "os": "win32", "cpu": "arm64" }, "sha512-QHy3R1VBb8MYszjpz0IyuDjKaW6JUHg8hYEqzhZIxvrydKLF3gyDeKohnmWSFTS/oII0GvUmYM3h83fbanBvcQ=="],
-
-    "@jackmazac/opencode-conductor/@typescript/native-preview/@typescript/native-preview-win32-x64": ["@typescript/native-preview-win32-x64@7.0.0-dev.20260503.1", "", { "os": "win32", "cpu": "x64" }, "sha512-nrapqpVONrg0IZjKp3AzV9M+jxPwKGTQZEOxuKh6WHMhy/UElN8RnOFlfetA8ZMtKvPkmjgjqw0qoAa5QMwhPA=="],
-
-    "@jackmazac/opencode-conductor/opencode-engram/@jackmazac/opencode-host-adapter": ["@jackmazac/opencode-host-adapter@file:../../Developer/opencode-host-adapter", { "dependencies": { "@opencode-ai/plugin": "1.14.31" }, "devDependencies": { "@types/bun": "latest", "@types/node": "latest", "typescript": "^5.0.0" } }],
-
-    "@jackmazac/opencode-conductor/opencode-engram/@opencode-ai/sdk": ["@opencode-ai/sdk@1.3.3", "", {}, "sha512-qg7DwEVUpZArsYajs0DcaHqmIYB3EfHCuuTdMJir7Yc976DUWDfLR/5y9h8fKb9HAMJXe4TZkAIEr0/3OmK67g=="],
-
-    "@jackmazac/opencode-conductor/opencode-engram/@tsconfig/bun": ["@tsconfig/bun@1.0.9", "", {}, "sha512-4M0/Ivfwcpz325z6CwSifOBZYji3DFOEpY6zEUt0+Xi2qRhzwvmqQN9XAHJh3OVvRJuAqVTLU2abdCplvp6mwQ=="],
-
-    "@jackmazac/opencode-conductor/opencode-engram/@types/bun": ["@types/bun@1.3.11", "", { "dependencies": { "bun-types": "1.3.11" } }, "sha512-5vPne5QvtpjGpsGYXiFyycfpDF2ECyPcTSsFBMa0fraoxiQyMJ3SmuQIGhzPg2WJuWxVBoxWJ2kClYTcw/4fAg=="],
-
-    "@jackmazac/opencode-conductor/opencode-engram/@typescript/native-preview": ["@typescript/native-preview@7.0.0-dev.20251207.1", "", { "optionalDependencies": { "@typescript/native-preview-darwin-arm64": "7.0.0-dev.20251207.1", "@typescript/native-preview-darwin-x64": "7.0.0-dev.20251207.1", "@typescript/native-preview-linux-arm": "7.0.0-dev.20251207.1", "@typescript/native-preview-linux-arm64": "7.0.0-dev.20251207.1", "@typescript/native-preview-linux-x64": "7.0.0-dev.20251207.1", "@typescript/native-preview-win32-arm64": "7.0.0-dev.20251207.1", "@typescript/native-preview-win32-x64": "7.0.0-dev.20251207.1" }, "bin": { "tsgo": "bin/tsgo.js" } }, "sha512-4QcRnzB0pi9rS0AOvg8kWbmuwHv5X7B2EXHbgcms9+56hsZ8SZrZjNgBJb2rUIodJ4kU5mrkj/xlTTT4r9VcpQ=="],
-
-    "@jackmazac/opencode-conductor/opencode-engram/zod": ["zod@4.1.8", "", {}, "sha512-5R1P+WwQqmmMIEACyzSvo4JXHY5WiAFHRMg+zBZKgKS+Q1viRa0C1hmUKtHltoIFKtIdki3pRxkmpP74jnNYHQ=="],
-
-    "@jackmazac/opencode-fleet/@typescript/native-preview/@typescript/native-preview-darwin-arm64": ["@typescript/native-preview-darwin-arm64@7.0.0-dev.20260503.1", "", { "os": "darwin", "cpu": "arm64" }, "sha512-rUZQVuBcZlxADagx+pnhDHqjX2Ewh+KWave6vtilRWR5vsGyR3FaCzPFqXteiwPg6XRijEMnMaXg60t5itm8EA=="],
-
-    "@jackmazac/opencode-fleet/@typescript/native-preview/@typescript/native-preview-darwin-x64": ["@typescript/native-preview-darwin-x64@7.0.0-dev.20260503.1", "", { "os": "darwin", "cpu": "x64" }, "sha512-YtK8ac8RCkRh7jwoP8Wt4LaBhpGK8cOVMi3e0cvF/8Xn5XV1ewJK3/HdNBnlDhCib3j0eVRxK/Pg9GIq/hFUxQ=="],
-
-    "@jackmazac/opencode-fleet/@typescript/native-preview/@typescript/native-preview-linux-arm": ["@typescript/native-preview-linux-arm@7.0.0-dev.20260503.1", "", { "os": "linux", "cpu": "arm" }, "sha512-28vAomYeU8hpz1f0dDoWz6PYehz0ffEfkJhFq4tqXzUM/QY1I15u5y03EJQ5UcP4LRwrdJe22J5LdrYpM2Lr3w=="],
-
-    "@jackmazac/opencode-fleet/@typescript/native-preview/@typescript/native-preview-linux-arm64": ["@typescript/native-preview-linux-arm64@7.0.0-dev.20260503.1", "", { "os": "linux", "cpu": "arm64" }, "sha512-c5yM3Ea2WZSLKmscMxUhEDdaR2Ugp7P9CX6osciIPgZIF9c4LDiuKQohjQAyidx9JZKCsSXnfS88QssWH/+ONQ=="],
-
-    "@jackmazac/opencode-fleet/@typescript/native-preview/@typescript/native-preview-linux-x64": ["@typescript/native-preview-linux-x64@7.0.0-dev.20260503.1", "", { "os": "linux", "cpu": "x64" }, "sha512-M64z7LwpqNfOXYCBKmD/ObwyxYOobUk4tDv0ECNLit7pDER1sswNZjJGjgRYjQsKokmydy6p3FqtJ1uUPUP/sw=="],
-
-    "@jackmazac/opencode-fleet/@typescript/native-preview/@typescript/native-preview-win32-arm64": ["@typescript/native-preview-win32-arm64@7.0.0-dev.20260503.1", "", { "os": "win32", "cpu": "arm64" }, "sha512-QHy3R1VBb8MYszjpz0IyuDjKaW6JUHg8hYEqzhZIxvrydKLF3gyDeKohnmWSFTS/oII0GvUmYM3h83fbanBvcQ=="],
-
-    "@jackmazac/opencode-fleet/@typescript/native-preview/@typescript/native-preview-win32-x64": ["@typescript/native-preview-win32-x64@7.0.0-dev.20260503.1", "", { "os": "win32", "cpu": "x64" }, "sha512-nrapqpVONrg0IZjKp3AzV9M+jxPwKGTQZEOxuKh6WHMhy/UElN8RnOFlfetA8ZMtKvPkmjgjqw0qoAa5QMwhPA=="],
-
-    "@jackmazac/opencode-host-adapter/@types/bun/bun-types": ["bun-types@1.3.11", "", { "dependencies": { "@types/node": "*" } }, "sha512-1KGPpoxQWl9f6wcZh57LvrPIInQMn2TQ7jsgxqpRzg+l0QPOFvJVH7HmvHo/AiPgwXy+/Thf6Ov3EdVn1vOabg=="],
 
     "opencode-engram/@types/bun/bun-types": ["bun-types@1.3.11", "", { "dependencies": { "@types/node": "*" } }, "sha512-1KGPpoxQWl9f6wcZh57LvrPIInQMn2TQ7jsgxqpRzg+l0QPOFvJVH7HmvHo/AiPgwXy+/Thf6Ov3EdVn1vOabg=="],
 
@@ -230,21 +201,5 @@
     "opencode-engram/@typescript/native-preview/@typescript/native-preview-win32-arm64": ["@typescript/native-preview-win32-arm64@7.0.0-dev.20251207.1", "", { "os": "win32", "cpu": "arm64" }, "sha512-KxY1i+HxeSFfzZ+HVsKwMGBM79laTRZv1ibFqHu22CEsfSPDt4yiV1QFis8Nw7OBXswNqJG/UGqY47VP8FeTvw=="],
 
     "opencode-engram/@typescript/native-preview/@typescript/native-preview-win32-x64": ["@typescript/native-preview-win32-x64@7.0.0-dev.20251207.1", "", { "os": "win32", "cpu": "x64" }, "sha512-5l51HlXjX7lXwo65DEl1IaCFLjmkMtL6K3NrSEamPNeNTtTQwZRa3pQ9V65dCglnnCQ0M3+VF1RqzC7FU0iDKg=="],
-
-    "@jackmazac/opencode-conductor/opencode-engram/@types/bun/bun-types": ["bun-types@1.3.11", "", { "dependencies": { "@types/node": "*" } }, "sha512-1KGPpoxQWl9f6wcZh57LvrPIInQMn2TQ7jsgxqpRzg+l0QPOFvJVH7HmvHo/AiPgwXy+/Thf6Ov3EdVn1vOabg=="],
-
-    "@jackmazac/opencode-conductor/opencode-engram/@typescript/native-preview/@typescript/native-preview-darwin-arm64": ["@typescript/native-preview-darwin-arm64@7.0.0-dev.20251207.1", "", { "os": "darwin", "cpu": "arm64" }, "sha512-waWJnuuvkXh4WdpbTjYf7pyahJzx0ycesV2BylyHrE9OxU9FSKcD/cRLQYvbq3YcBSdF7sZwRLDBer7qTeLsYA=="],
-
-    "@jackmazac/opencode-conductor/opencode-engram/@typescript/native-preview/@typescript/native-preview-darwin-x64": ["@typescript/native-preview-darwin-x64@7.0.0-dev.20251207.1", "", { "os": "darwin", "cpu": "x64" }, "sha512-3bkD9QuIjxETtp6J1l5X2oKgudJ8z+8fwUq0izCjK1JrIs2vW1aQnbzxhynErSyHWH7URGhHHzcsXHbikckAsg=="],
-
-    "@jackmazac/opencode-conductor/opencode-engram/@typescript/native-preview/@typescript/native-preview-linux-arm": ["@typescript/native-preview-linux-arm@7.0.0-dev.20251207.1", "", { "os": "linux", "cpu": "arm" }, "sha512-OjrZBq8XJkB7uCQvT1AZ1FPsp+lT0cHxY5SisE+ZTAU6V0IHAZMwJ7J/mnwlGsBcCKRLBT+lX3hgEuOTSwHr9w=="],
-
-    "@jackmazac/opencode-conductor/opencode-engram/@typescript/native-preview/@typescript/native-preview-linux-arm64": ["@typescript/native-preview-linux-arm64@7.0.0-dev.20251207.1", "", { "os": "linux", "cpu": "arm64" }, "sha512-Qhp06OObkwy5B+PlAhAmq+Ls3GVt4LHAovrTRcpLB3Mk3yJ0h9DnIQwPQiayp16TdvTsGHI3jdIX4MGm5L/ghA=="],
-
-    "@jackmazac/opencode-conductor/opencode-engram/@typescript/native-preview/@typescript/native-preview-linux-x64": ["@typescript/native-preview-linux-x64@7.0.0-dev.20251207.1", "", { "os": "linux", "cpu": "x64" }, "sha512-fPRw0zfTBeVmrkgi5Le+sSwoeAz6pIdvcsa1OYZcrspueS9hn3qSC5bLEc5yX4NJP1vItadBqyGLUQ7u8FJjow=="],
-
-    "@jackmazac/opencode-conductor/opencode-engram/@typescript/native-preview/@typescript/native-preview-win32-arm64": ["@typescript/native-preview-win32-arm64@7.0.0-dev.20251207.1", "", { "os": "win32", "cpu": "arm64" }, "sha512-KxY1i+HxeSFfzZ+HVsKwMGBM79laTRZv1ibFqHu22CEsfSPDt4yiV1QFis8Nw7OBXswNqJG/UGqY47VP8FeTvw=="],
-
-    "@jackmazac/opencode-conductor/opencode-engram/@typescript/native-preview/@typescript/native-preview-win32-x64": ["@typescript/native-preview-win32-x64@7.0.0-dev.20251207.1", "", { "os": "win32", "cpu": "x64" }, "sha512-5l51HlXjX7lXwo65DEl1IaCFLjmkMtL6K3NrSEamPNeNTtTQwZRa3pQ9V65dCglnnCQ0M3+VF1RqzC7FU0iDKg=="],
   }
 }

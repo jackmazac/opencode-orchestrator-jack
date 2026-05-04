@@ -9,13 +9,26 @@
     "@tarquinen/opencode-dcp@latest",
     "@franlol/opencode-md-table-formatter@latest",
     "@mohak34/opencode-notifier@latest",
-    "file:///Users/jack.mazac/Developer/engram/src/index.ts",
     "file:///Users/jack.mazac/Developer/opencode-conductor/src/index.ts",
-    "file:///Users/jack.mazac/.config/opencode/node_modules/@codemem/plugin/dist/index.js"
+    "file:///Users/jack.mazac/Developer/engram/src/index.ts",
+    "file:///Users/jack.mazac/.config/opencode/node_modules/@codemem/plugin/dist/index.js",
+    "file:///Users/jack.mazac/.config/opencode/node_modules/@concord/plugin/dist/index.js"
   ],
   "instructions": [
     "./plugin/shell-strategy/shell_strategy.md"
   ],
+  "permission": {
+    "external_directory": {
+      "~/Developer/*": "allow",
+      "~/.config/*": "allow",
+      "~/tmp/*": "allow",
+      "~/.tmp/*": "allow",
+      "~/local/": "allow",
+      "~/.local/*": "allow",
+      "~/Downloads/": "allow",
+      "~/Desktop/": "allow"
+    }
+  },
   "formatter": {
     "biome": {
       "disabled": true
