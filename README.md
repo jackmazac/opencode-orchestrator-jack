@@ -1,138 +1,168 @@
-# OpenCode Orchestrator Config
+# OpenCode Fleet Config
 
-Multi-agent orchestrator setup for OpenCode with planner, executors, reviewer, explorer, and designer agents. Uses Claude (Bedrock) and GPT models.
+Runtime distribution and local machine config for the OpenCode plugin fleet. `fleet.jsonc` is the editable source of truth; `opencode.json` is generated from it by `opencode-fleet` and must not be hand-edited.
 
 ## Prerequisites
 
 - [OpenCode](https://opencode.ai) installed
-- [Bun](https://bun.sh) (for plugin dependencies)
+- [Bun](https://bun.sh) (for plugin dependencies and fleet scripts)
 - API access to **OpenAI** and **Amazon Bedrock** (Claude models)
 
-## Install
-
-### 1. Clone into OpenCode config directory
-
-```bash
-# Backup existing config if needed
-mv ~/.config/opencode ~/.config/opencode.bak 2>/dev/null || true
-
-# Clone this repo as your config
-git clone https://github.com/jackmazac/opencode-orchestrator-jack.git ~/.config/opencode
-cd ~/.config/opencode
-```
-
-Or, if you already have other config in `~/.config/opencode`, clone elsewhere and copy:
-
-```bash
-git clone https://github.com/jackmazac/opencode-orchestrator-jack.git /tmp/opencode-orchestrator
-cp -r /tmp/opencode-orchestrator/* ~/.config/opencode/
-```
-
-### 2. Install dependencies
+## Install / refresh workflow
 
 ```bash
 cd ~/.config/opencode
 bun install
-bun run fleet:doctor -- --json
+bun run fleet:doctor -- --json   # quick health check
+bun run fleet:test -- --json     # runtime contract validation
 ```
 
-`fleet.jsonc` is the editable source for the local plugin fleet. `opencode.json` is generated from it with `opencode-fleet`; user-owned top-level sections such as agents, MCP servers, formatter/LSP settings, instructions, theme, and compaction are preserved while the `plugin` array is regenerated.
+`fleet.jsonc` is the editable source for the local plugin fleet. `opencode.json` is generated from it with `opencode-fleet`; user-owned top-level sections (agents, MCP servers, formatter, LSP, instructions, theme, compaction) are preserved while the `plugin` array is regenerated.
 
-### 3. Configure providers
+## Regeneration workflow
 
-Create `~/.config/opencode/.env` (or set env vars) with your API keys. `.env` and `.env.*` are gitignored; `.env.example` is tracked and intentionally contains placeholders only. See `.env.example` for names OpenCode interpolates via `{env:…}` in `opencode.json`.
+Edit `fleet.jsonc`, then regenerate and validate:
 
 ```bash
-# OpenAI (for gpt-5.2, gpt-5.3-codex)
-OPENAI_API_KEY=sk-...
+# 1. Regenerate opencode.json from fleet.jsonc
+bun run /Users/jack.mazac/Developer/opencode-fleet/src/cli.ts generate-opencode-json --force
 
-# Amazon Bedrock (for Claude models)
-# Use AWS CLI to configure: aws configure
-# Or set explicit credentials:
-AWS_ACCESS_KEY_ID=...
-AWS_SECRET_ACCESS_KEY=...
-AWS_REGION=us-east-1
+# 2. Install updated dependencies
+bun run /Users/jack.mazac/Developer/opencode-fleet/src/cli.ts install
 
-# Motif MCP (required if you use the `motif` MCP server)
-E2E_AUTH_SECRET=...
+# 3. Validate the full runtime contract
+bun run fleet:test:full-runtime
+
+# 4. Commit fleet.jsonc + opencode.json + .opencode-fleet.lock.json + package.json + bun.lock
 ```
 
-Provider and secret expectations:
+Only the `plugin` array in `opencode.json` should change during regeneration; all other sections (agent, mcp, formatter, lsp, instructions) stay byte-identical unless you edited them separately.
 
-- OpenAI can be supplied through `OPENAI_API_KEY` in `.env` or the shell environment.
-- Amazon Bedrock can use normal AWS configuration (`aws configure`, SSO, or environment variables such as `AWS_PROFILE`, `AWS_REGION`, `AWS_ACCESS_KEY_ID`, and `AWS_SECRET_ACCESS_KEY`).
-- Exa and Motif secrets are stored in macOS Keychain when possible; inspect with commands such as `security find-generic-password -s <service> -w` instead of committing secrets to this repo.
-- Fleet reports and plugin telemetry are local-only diagnostics and must not include raw secrets, API keys, prompts, or payloads.
+## Fleet scripts
 
-### 4. Run OpenCode
+All fleet scripts are defined in `package.json` and wrap the `opencode-fleet` CLI:
 
-```bash
-opencode
-```
+| Script | Purpose |
+|--------|---------|
+| `bun run fleet` | Raw fleet CLI passthrough |
+| `bun run fleet:doctor` | Quick health check: config/plugin paths, telemetry sink shape |
+| `bun run fleet:status` | Fleet status summary |
+| `bun run fleet:test` | Runtime contract validation against `expected_tools` |
+| `bun run fleet:test:concord` | Test including disabled Concord plugin |
+| `bun run fleet:test:full-runtime` | Full runtime profile: all plugins including disabled |
+| `bun run fleet:hygiene` | Lockfile and toolchain hygiene checks |
+| `bun run fleet:telemetry` | Telemetry sink status |
+| `bun run check` | fleet:doctor + fleet:test + local no-op test |
 
-## Structure
+`scripts/preflight.ts` was removed in Wave 7 because Fleet now owns duplicate coverage: `doctor` validates config/plugin paths and telemetry sink shape, `test` validates enabled plugin command/runtime contracts against `expected_tools`, and `hygiene --strict` validates lockfile/toolchain hygiene.
+
+## Directory structure
 
 | Path | Purpose |
 |------|---------|
-| `opencode.json` | Main config: agents, models, prompts |
-| `prompts/*.txt` | Agent prompt templates |
-| `plugin/shell-strategy/shell_strategy.md` | Vendored copy of [JRedeker/opencode-shell-strategy](https://github.com/JRedeker/opencode-shell-strategy) (`shell_strategy.md` + `LICENSE` in that folder) |
-| `tools/` | OpenCode plugin tools: audits, progress, journal, handoff, executor status (see below) |
-| `dcp.jsonc` | Dynamic context pruning config (per-model limits + nudge tuning) |
-| `dcp-prompts/overrides/*.md` | DCP nudge text overrides (`customPrompts` in `dcp.jsonc`) |
-| `dcp-escape-hatches.md` | Stronger DCP options if compression is still too aggressive |
-| `fleet.jsonc` | Editable source for local plugin fleet install/doctor/test |
-| `.opencode-fleet.lock.json` | Generated manifest hash and plugin array lock written by `opencode-fleet` |
+| `fleet.jsonc` | EDITABLE source for local plugin fleet (plugins, expected_tools, CLI bins) |
+| `opencode.json` | GENERATED runtime config: do NOT hand-edit; regenerate via Fleet CLI |
+| `.opencode-fleet.lock.json` | Drift sidecar: tracks `fleet.jsonc` manifest hash and generated plugin array |
+| `package.json` | fleet:* script wrappers over `opencode-fleet` CLI; pins Zod to 4.1.8 |
+| `bun.lock` | Regenerated by `bun install`; committed alongside package.json changes |
+| `.env` | Gitignored secrets — user-managed, never committed |
+| `.env.example` | Tracked placeholders for all expected env vars |
+| `dcp.jsonc` | Dynamic context pruning config (per-model limits, nudge tuning) |
+| `dcp-escape-hatches.md` | Stronger DCP options for aggressive compression scenarios |
+| `dcp-prompts/` | DCP nudge text overrides (`customPrompts` in `dcp.jsonc`) |
+| `command/` | User-defined OpenCode commands |
+| `plugin/` | User plugin overrides ONLY — no product logic; product code belongs in plugin repos |
+| `prompts/` | Agent prompt templates |
 
-### Persisted artifacts
+## DCP configuration
 
-This config repo must not contain project/session state under `~/.config/opencode/.opencode/`. Conductor and Engram artifacts are project-local: each real worktree owns its own `.opencode/` directory (for example `.opencode/plans/`, `.opencode/status/`, and `.opencode/memory.db`). The config `.gitignore` ignores `.opencode/` to prevent accidental global memory DBs, snapshots, lifecycle artifacts, nested lockfiles, and stale session scratch from returning.
+`dcp.jsonc` configures Dynamic Context Pruning (via `@tarquinen/opencode-dcp`):
 
-| File | Tools (typical names) | Storage |
-|------|----------------------|---------|
-| `opencode-conductor` plugin | `persist_subplan`, `read_subplan`, `discard_subplan` | `.opencode/subplans/<slug>.md` — planner draft/intermediary plans for orchestrator synthesis |
-| `opencode-conductor` plugin | `persist_final_plan`, `read_final_plan`, `discard_final_plan` | `.opencode/plans/<slug>.md` — canonical final plans; executors/reviewers/scribes load via `read_final_plan` (`Plan:` header in prompts) |
-| `audit.ts` | `audit_write`, `audit_read`, `audit_done` | `.opencode/audits/<slug>.md` — **orchestrator only**; subagents do not call `audit_read`; inline slice context in `task` prompts |
-| `progress.ts` | `progress_update`, `progress_read`, `progress_done` | `.opencode/progress/<plan_slug>.json` — wave state per plan |
-| `audit-progress.ts` | `audit_progress_update`, `audit_progress_read`, `audit_progress_done` | `.opencode/audit-progress/<audit_slug>.json` — wave state per persisted audit |
-| `status.ts` | `status_write`, `status_read`, `status_done` | `.opencode/status/<slug>.json` — compact transient executor scratch state, not transcripts |
-| `journal.ts` | `journal_write`, `journal_read`, `journal_done` | `.opencode/journal.jsonl` — concise durable decisions/contracts/patterns only |
-| `opencode-conductor` plugin | `context_usage` | OpenCode session messages via the host client — context-budget diagnostic; no config-local product plugin remains |
+- `compress.mode = "range"` — agent-driven range compression
+- `compress.protectedTools` — `task`, `skill`, `todowrite`, `todoread` outputs are never compressed
+- `compress.nudgeForce = "soft"` — nudges agent to compress without forcing
+- `dcp-prompts/overrides/` — custom nudge text per override key defined in `dcp.jsonc`
+- `dcp-escape-hatches.md` — documents additional options when default config is insufficient
 
-Slug rules and read caps are enforced by the Conductor plan tools. Use `read_subplan({ slug, section })` or `read_final_plan({ slug, section })` to load one markdown heading from large plans.
+## Agent definitions
 
-## Models Used
+All agent definitions live in `opencode.json` under the `agent` array. There are approximately 18 agents configured (orchestrator, planner, executor tiers, reviewer, explorer, designer, scribe, and specialized roles). Edit `opencode.json` directly for agent changes; Fleet does not regenerate the `agent` section.
+
+Models in use:
 
 - **Orchestrator**: `anthropic.claude-opus-4-6-v1-1m` (Bedrock)
 - **Planner**: `gpt-5.2` (OpenAI)
 - **Executors**: Claude Sonnet/Opus (Bedrock), GPT-5.3-codex (OpenAI)
 - **Reviewer**: `gpt-5.2`
-- **Explore**: Claude Haiku (Bedrock), GPT-5.3-codex
+- **Explorer**: Claude Haiku (Bedrock), GPT-5.3-codex
 - **Designer**: Claude Sonnet (Bedrock)
 
-Adjust models in `opencode.json` if you lack access to a provider.
+## MCP servers
 
-## Fleet operations
+MCP servers are defined in `opencode.json` under the `mcp` key. User-defined servers (Exa, Motif, AWS knowledge, etc.) live here and are NOT regenerated by Fleet. Secrets for MCP servers are sourced from:
 
-Common commands from `~/.config/opencode`:
+- `.env` via `{env:NAME}` interpolation in `opencode.json`
+- macOS Keychain for Exa and Motif (inspect with `security find-generic-password -s <service> -w`)
+
+## Environment and secrets
 
 ```bash
-bun run fleet:doctor -- --json
-bun run fleet:test -- --json
-bun run fleet:test:full-runtime
-bun run fleet:hygiene -- --strict --json
-bun run check
+# Copy .env.example and fill in local secrets only
+cp .env.example .env
 ```
 
-`scripts/preflight.ts` was removed because Fleet now owns duplicate coverage: `doctor` validates config/plugin paths and telemetry sink shape, `test` validates enabled plugin command/runtime contracts against `expected_tools`, and `hygiene --strict` validates lockfile/toolchain hygiene.
+`.env` and `.env.*` are gitignored; `.env.example` is tracked and contains placeholders only.
+
+Provider and secret expectations:
+
+- **OpenAI** — `OPENAI_API_KEY` in `.env` or shell environment
+- **Amazon Bedrock** — normal AWS configuration (`aws configure`, SSO, or `AWS_PROFILE` / `AWS_REGION` / `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY`)
+- **Exa / Motif** — stored in macOS Keychain when possible; env fallback via `.env`
+- **Fleet telemetry** — local-only diagnostics; must not include raw secrets, API keys, prompts, or payloads
+
+## Persisted artifacts
+
+This config repo must not contain project/session state under `~/.config/opencode/.opencode/`. Conductor and Engram artifacts are project-local: each worktree owns its own `.opencode/` directory. The config `.gitignore` excludes `.opencode/` to prevent accidental global memory DBs, session scratch, and lifecycle artifacts from being tracked.
+
+| Tool category | Typical tool names | Storage location |
+|--------------|-------------------|-----------------|
+| Plans (final) | `persist_final_plan`, `read_final_plan`, `discard_final_plan` | `.opencode/plans/<slug>.md` |
+| Plans (subplan) | `persist_subplan`, `read_subplan`, `discard_subplan` | `.opencode/subplans/<slug>.md` |
+| Audits | `audit_write`, `audit_read`, `audit_done` | `.opencode/audits/<slug>.md` |
+| Progress | `progress_update`, `progress_read`, `progress_done` | `.opencode/progress/<plan_slug>.json` |
+| Status | `status_write`, `status_read`, `status_done` | `.opencode/status/<slug>.json` |
+| Journal | `journal_write`, `journal_read`, `journal_done` | `.opencode/journal.jsonl` |
+| Context | `context_usage` | OpenCode session messages (no config-local file) |
+
+## Archive and recovery
+
+Pre-Wave-7 `.opencode/` state archived at:
+
+```
+~/.local/share/opencode/archive/config-opencode-20260503-204036/
+```
+
+Contains a copied tree and `opencode-artifacts.tgz`. The `.opencode/` directory under this config root was removed in Wave 7 (W7.4) and must not be recreated here; per-project `.opencode/` belongs in each project's worktree.
 
 ## Branch merge plan (`plan-persistence-config` → `main`)
 
-Merge this branch to `main` only after all Wave 7 gates are true:
+Merge to `main` only after all Wave 7 gates are confirmed:
 
-1. `opencode.json` generation is deterministic and only the `plugin` array is Fleet-managed.
-2. Drift is cleared and `.opencode-fleet.lock.json` records the current manifest hash and generated plugin array.
-3. Package scripts are stable (`preflight` delegates to Fleet; `check` runs Fleet doctor/test plus Bun tests).
-4. No secrets or machine/session state are tracked: `.env` stays ignored, `.env.example` is tracked, and global `.opencode/` artifacts were archived outside the repo then removed.
+1. `opencode.json` generation is deterministic and only the `plugin` array is Fleet-managed. (DONE)
+2. Drift is cleared: `.opencode-fleet.lock.json` records the current manifest hash and generated plugin array. (DONE)
+3. Package scripts are stable: `preflight` delegates to Fleet; `check` runs Fleet doctor/test plus Bun tests. (DONE)
+4. No secrets or machine/session state are tracked: `.env` stays ignored, `.env.example` is tracked, and global `.opencode/` artifacts were archived outside the repo and removed. (DONE)
 
 The merge itself is intentionally a follow-up operation; this branch documents the plan and contains the generated/config cleanup changes only.
+
+## Ownership
+
+This directory **owns**: `fleet.jsonc` (editable manifest), `opencode.json` (generated), `.opencode-fleet.lock.json` (drift sidecar), `package.json` (fleet:* scripts), `.env.example` (tracked placeholders), `dcp.jsonc` + `dcp-prompts/` + `dcp-escape-hatches.md` (DCP config), `command/` (user commands), `opencode.json` agent and MCP definitions.
+
+This directory **does NOT own**: plugin implementation code (belongs in plugin repos — conductor, engram, codemem, concord, host-adapter), per-project `.opencode/` artifacts (belong in each worktree), secrets (gitignored), duplicate validation logic (Fleet doctor/test/hygiene covers it).
+
+## Links
+
+- Canonical plan: `~/Developer/opencode-conductor/.opencode/plans/fleet-correlation.md`
+- Fleet manager: `~/Developer/opencode-fleet/AGENTS.md`
+- Plugin repos: `opencode-conductor`, `engram`, `concord`, `codemem`, `opencode-host-adapter`, `opencode-fleet-contracts`
