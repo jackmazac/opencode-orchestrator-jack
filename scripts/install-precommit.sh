@@ -3,7 +3,7 @@
 #
 # The hook runs `bun run lint:no-zod && bun run typecheck` (when those scripts
 # exist in package.json) before allowing the commit. For ~/.config/opencode/,
-# it runs the integration smoke test when opencode.json is staged.
+# it runs `bun run check` when fleet.jsonc, opencode.json, or plugin overrides are staged.
 #
 # Idempotent: re-runs replace the hook with the latest version.
 #
@@ -22,8 +22,8 @@ REPOS=(
 # Hook payload — generic; the hook itself decides which checks apply per repo.
 HOOK_BODY='#!/usr/bin/env bash
 # Installed by ~/.config/opencode/scripts/install-precommit.sh
-# Runs lint:no-zod, typecheck, and (for ~/.config/opencode/) the cross-plugin
-# integration smoke test when relevant files are staged.
+# Runs lint:no-zod, typecheck, and (for ~/.config/opencode/) fleet check when
+# manifest or generated config is staged.
 
 set -e
 
@@ -53,12 +53,11 @@ if git diff --cached --name-only | grep -qE "\.ts$"; then
   run_if_script_exists "typecheck"
 fi
 
-# In ~/.config/opencode/, run the cross-plugin smoke test when opencode.json
-# or any plugin/*.ts is staged.
+# In ~/.config/opencode/, run fleet doctor + test when manifest or generated config is staged.
 if [ "$repo_root" = "/Users/jack.mazac/.config/opencode" ]; then
-  if git diff --cached --name-only | grep -qE "(^opencode\.json$|^plugin/.*\.ts$)"; then
-    echo "[pre-commit] $repo_root: bun test test/integration-smoke.test.ts"
-    bun test test/integration-smoke.test.ts
+  if git diff --cached --name-only | grep -qE "(^opencode\.json$|^fleet\.jsonc$|^plugin/.*\.ts$)"; then
+    echo "[pre-commit] $repo_root: bun run check"
+    bun run check
   fi
 fi
 '

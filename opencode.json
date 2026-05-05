@@ -10,9 +10,7 @@
     "@franlol/opencode-md-table-formatter@latest",
     "@mohak34/opencode-notifier@latest",
     "file:///Users/jack.mazac/Developer/opencode-conductor/src/index.ts",
-    "file:///Users/jack.mazac/Developer/engram/src/index.ts",
-    "file:///Users/jack.mazac/.config/opencode/node_modules/@codemem/plugin/dist/index.js",
-    "file:///Users/jack.mazac/.config/opencode/node_modules/@concord/plugin/dist/index.js"
+    "file:///Users/jack.mazac/Developer/engram/src/index.ts"
   ],
   "instructions": [
     "./plugin/shell-strategy/shell_strategy.md"
@@ -79,7 +77,7 @@
       "description": "Primary agent that plans, ideates, delegates, and synthesizes — Claude Opus 4.7 1m",
       "mode": "primary",
       "model": "amazon-bedrock/anthropic.claude-opus-4-7",
-      "reasoningEffort": "max",
+      "reasoningEffort": "high",
       "prompt": "{file:./node_modules/@jackmazac/opencode-conductor/prompts/orchestrator.txt}",
       "permission": {
         "persist_subplan": "deny",
@@ -245,10 +243,10 @@
       }
     },
     "suborchestrator": {
-      "description": "Manages focused multi-file campaigns — lint fixes, mechanical refactors, migrations — Claude Sonnet 4.6 1m with max reasoning",
+      "description": "Manages focused multi-file campaigns — lint fixes, mechanical refactors, migrations — Claude Sonnet 4.6 1m with high reasoning",
       "mode": "subagent",
       "model": "amazon-bedrock/anthropic.claude-sonnet-4-6",
-      "reasoningEffort": "max",
+      "reasoningEffort": "high",
       "prompt": "{file:./node_modules/@jackmazac/opencode-conductor/prompts/suborchestrator.txt}",
       "tools": {
         "write": false,
@@ -508,12 +506,9 @@
       }
     },
     "exa": {
-      "type": "local",
-      "command": [
-        "sh",
-        "-lc",
-        "EXA_API_KEY=\"$(security find-generic-password -a \"$USER\" -s \"opencode/EXA_API_KEY\" -w)\" exec npx -y exa-mcp-server"
-      ]
+      "type": "remote",
+      "url": "https://mcp.exa.ai/mcp",
+      "enabled": true
     },
     "ecs": {
       "type": "local",

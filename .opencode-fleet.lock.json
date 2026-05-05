@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "manifest_hash": "sha256:67a206753fbfbe8c94c14499ad81d3e0ba6ad822ca4966c96022e244ec10bf88",
+  "manifest_hash": "sha256:c40213d3b84e5c957c2cd3bf77c337e896647c1beba15bf58e88eb9185c5a511",
   "manifest_path": "/Users/jack.mazac/.config/opencode/fleet.jsonc",
   "generated_plugins": [
     "@nick-vi/opencode-type-inject",
@@ -8,9 +8,7 @@
     "@franlol/opencode-md-table-formatter@latest",
     "@mohak34/opencode-notifier@latest",
     "file:///Users/jack.mazac/Developer/opencode-conductor/src/index.ts",
-    "file:///Users/jack.mazac/Developer/engram/src/index.ts",
-    "file:///Users/jack.mazac/.config/opencode/node_modules/@codemem/plugin/dist/index.js",
-    "file:///Users/jack.mazac/.config/opencode/node_modules/@concord/plugin/dist/index.js"
+    "file:///Users/jack.mazac/Developer/engram/src/index.ts"
   ],
-  "generated_at": "2026-05-04T04:12:27.448Z"
+  "generated_at": "2026-05-05T01:12:43.505Z"
 }

@@ -83,7 +83,7 @@
       "source": { "kind": "tgz", "ref": "~/Developer/codemem/artifacts/codemem-plugin-0.1.1.tgz" },
       "plugin_ref": "file://~/.config/opencode/node_modules/@codemem/plugin/dist/index.js",
       "cli_bin": "codemem",
-      "enabled": true,
+      "enabled": false,
       "expected_tools": [
         "codemem_check",
         "codemem_drift_map",
@@ -108,7 +108,7 @@
       "source": { "kind": "file", "ref": "~/Developer/concord/packages/concord-plugin" },
       "plugin_ref": "file://~/.config/opencode/node_modules/@concord/plugin/dist/index.js",
       "cli_bin": "concord",
-      "enabled": true,
+      "enabled": false,
       "doctor_command": "bun run check",
       "check_command": "bun run check && bun run live-smoke -- --json && bun run bench:threshold",
       "command_cwd": "~/Developer/concord"
