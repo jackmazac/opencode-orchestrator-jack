@@ -53,7 +53,7 @@ bun run /Users/jack.mazac/Developer/opencode-fleet/src/cli.ts generate-opencode-
 
 **`.opencode-fleet.lock.json` tracks drift.** If modified by hand, `fleet generate-opencode-json` warns until `--force` is passed. Commit it alongside `fleet.jsonc` and `opencode.json` as a single logical change.
 
-**`fleet.jsonc` `expected_tools` must match actual plugin surfaces.** Update when a plugin adds or removes tools. Verify with `bun run fleet:test`. Current values: conductor 31 (exact default), engram 7, codemem 10 (`expected_tools_exact: true`), concord (hook-only, no expected_tools count set), host-adapter (library-only, no `plugin_ref`).
+**`fleet.jsonc` `expected_tools` must match actual plugin surfaces.** Update when a plugin adds or removes tools. Verify with `bun run fleet:test`. Current manifest: conductor 30 tools, engram 7 tools when enabled, host-adapter (library-only, no `plugin_ref`). Codemem, Concord, and `external_plugins` are not listed in `fleet.jsonc`.
 
 **Zod pinned to `4.1.8`.** Do not bump without coordinating across the fleet. Set in `package.json` `dependencies` and `overrides`.
 
@@ -91,7 +91,7 @@ bun run fleet:hygiene -- --strict --json  # lockfile and toolchain hygiene
 bun run check                          # fleet:doctor + fleet:test + local no-op test
 ```
 
-Final state (Wave 7): fleet:doctor 25 ok, fleet:test 30 ok, fleet:test:full-runtime 37 pass / 0 fail / 0 warn / 1 skip.
+Validate with `bun run fleet:doctor -- --json` and `bun run fleet:test -- --json`; exact check counts depend on which plugins are enabled in `fleet.jsonc`.
 
 ## Secrets handling
 
@@ -127,7 +127,7 @@ Currently on `plan-persistence-config`. Merge to `main` planned after:
 
 ## Fleet position
 
-This directory is downstream of `opencode-fleet` (the install/doctor/test/hygiene CLI) and `opencode-fleet-contracts` (canonical IDs and shapes). It is a peer to the plugin repos (conductor, engram, codemem, concord, host-adapter) — it configures and loads them but does not implement any of their behavior.
+This directory is downstream of `opencode-fleet` (the install/doctor/test/hygiene CLI) and `opencode-fleet-contracts` (canonical IDs and shapes). The active `fleet.jsonc` lists jackmazac fleet packages only (host-adapter, conductor, engram); it configures and loads them but does not implement their behavior. Other plugin repos may exist on disk for development without being wired through this manifest.
 
 ## Plugins registered in fleet.jsonc
 
@@ -135,16 +135,13 @@ This directory is downstream of `opencode-fleet` (the install/doctor/test/hygien
 |--------|---------|------|---------|
 | host-adapter | `@jackmazac/opencode-host-adapter` | file ref | Library-only; no `plugin_ref` |
 | conductor | `@jackmazac/opencode-conductor` | file ref | `file://~/Developer/opencode-conductor/src/index.ts` |
-| engram | `opencode-engram` | file ref | `file://~/Developer/engram/src/index.ts` |
-| codemem | `@codemem/plugin` | tgz | `node_modules/@codemem/plugin/dist/index.js` |
-| concord | `@concord/plugin` | file ref | `node_modules/@concord/plugin/dist/index.js` |
+| engram | `opencode-engram` | file ref | `file://~/Developer/engram/src/index.ts` (disabled by default; set `enabled` to load) |
 
-External plugins (not in fleet.jsonc plugin list; installed via `external_plugins`):
-`@nick-vi/opencode-type-inject`, `@tarquinen/opencode-dcp@latest`, `@franlol/opencode-md-table-formatter@latest`, `@mohak34/opencode-notifier@latest`.
+There is no `external_plugins` entry in `fleet.jsonc` (community npm plugins are opt-in elsewhere, not Fleet-managed here).
 
 ## Links
 
 - Canonical plan: `~/Developer/opencode-conductor/.opencode/plans/fleet-correlation.md`
 - Fleet manager: `~/Developer/opencode-fleet/AGENTS.md`
 - Fleet contracts: `~/Developer/opencode-fleet-contracts/AGENTS.md`
-- Plugin repos: `opencode-conductor`, `engram`, `concord`, `codemem`, `opencode-host-adapter`
+- Plugin repos in this manifest: `opencode-conductor`, `engram`, `opencode-host-adapter`

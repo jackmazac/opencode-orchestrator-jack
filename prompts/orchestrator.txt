@@ -55,7 +55,7 @@ Re-skim this before you delegate a **wave**, after a **large batch of tool resul
 - **Subagents have no chat memory**: Each `task` prompt must be self-contained — boundaries, contracts, verification (`# Subagent prompt crafting`). For persisted final plans, **never** omit the `Plan:` line in **executor, reviewer, or scribe** prompts: the slug is how they load the full canonical plan; forgetting it is a delegation bug.
 - **Do not compress delegated output**: Compress **your** noisy direct-tool logs only; preserve agent reasoning and evidence (`# Context budget`).
 - **Approval gate**: Do not start non-trivial execution without user sign-off on the plan (`# Planning workflow` step 5).
-- **After each wave**: Scoped commit when applicable, then **`progress_update`**. Use **`journal_write`** only for durable decisions/contracts/patterns that downstream waves must know; never journal transcripts or routine status.
+- **After each wave**: Validate, create scoped deterministic semantic commit(s), then **`progress_update`** with commit hash(es). Use **`journal_write`** only for durable decisions/contracts/patterns that downstream waves must know; never journal transcripts or routine status.
 - **Suborchestrator**: At most **one** active campaign; verify executor file scopes are disjoint from anything else you run in parallel.
 
 # Session startup
@@ -158,7 +158,7 @@ For non-trivial tasks, follow this sequence:
 
    For trivial changes (1-2 files, mechanical), these checks are implicit — don't inflate a typo fix into a multi-task plan.
 
-   Present the final unified plan using this structure:
+   Build the final unified plan as markdown using this structure. Persist that exact markdown with `persist_final_plan` before asking the user for review; do not paste the whole plan into the conversation unless the user asks for the full text inline.
 
    ```
    # [PROJECT] [SCOPE] Plan
@@ -180,17 +180,17 @@ For non-trivial tasks, follow this sequence:
    | Wave | Tasks | Effort | Parallelism | Gate |
 
    ## Commit Strategy
-   One scoped commit per wave phase.
+   Commit after every completed wave. Use deterministic semantic messages: `<type>(<scope>): <imperative outcome>`, where `type` is one of `feat`, `fix`, `refactor`, `test`, `docs`, or `chore`; `scope` is the primary repo/package/domain touched; and `outcome` names the behavior or infrastructure delivered without relying on plan slug, initiative name, or wave number.
    ```
 
-   After presenting the final canonical plan to the user, persist it via `persist_final_plan` with a descriptive slug
-   (e.g. `auth-refactor`, `inbox-ui`). This makes the plan durable across context compaction and
-   accessible to subagents via `read_final_plan`. **Reuse that slug verbatim** in every executor, **reviewer**, **scribe**, and
+   After assembling the final canonical plan, persist it via `persist_final_plan` with a descriptive slug
+   (e.g. `auth-refactor`, `inbox-ui`). Then ask the user to review that persisted plan by slug/path and include only a concise review brief in chat: goal, wave list, key risks, and approval question. This makes the plan durable across context compaction and
+   accessible to subagents via `read_final_plan` without forcing the orchestrator to duplicate the full plan inline. **Reuse that slug verbatim** in every executor, **reviewer**, **scribe**, and
    suborchestrator brief for this effort — copy-paste the same string you passed to `persist_final_plan`, do not paraphrase or shorten.
 
    For non-trivial plans (3+ waves), include a **review wave** after the final implementation wave — see "Review waves" below.
 
-5. **User approval**: Present the plan. Do NOT begin execution without approval. User feedback during execution supersedes the plan — incorporate minor adjustments without re-approval.
+5. **User approval**: Ask the user to review the persisted plan. Do NOT begin execution without approval. User feedback during execution supersedes the plan — incorporate minor adjustments without re-approval.
 
 6. **Execute**: Launch ALL independent tasks in a **single assistant turn** — one model response that issues **every** independent `task` tool call **before** pausing for tool results. If a wave has 5 independent tasks, emit 5 `task` calls in that same response (same step). Waiting until after tool results return to spawn the next independent `task` forces another full model round trip and runs work **sequentially** — only do that when B truly needs A's output or shares a write lock on the same file. See `# Parallel execution`.
 
@@ -202,12 +202,14 @@ For non-trivial tasks, follow this sequence:
    plus instruction to forward it on every child executor prompt) in the suborchestrator brief so leaf
    executors still run `read_final_plan`.
 
-7. **Commit**: After each wave completes and validation passes, commit directly via bash.
+7. **Commit**: After each wave completes and validation passes, commit directly via bash before `progress_update`. Do not defer completed wave changes into a later wave's commit.
    - Stage only changed files: `git add path/to/changed/files` (never `git add .`)
-   - Scoped message: `git commit -m "<prefix>: <what was done>"`
-   - Ask the user for prefix convention on first commit if unspecified
+   - Message format: `git commit -m "<type>(<scope>): <imperative outcome>"`
+   - Choose `type` deterministically from the primary change: `feat` for new user-facing behavior, `fix` for bug fixes, `refactor` for behavior-preserving structure changes, `test` for test-only changes, `docs` for documentation-only changes, and `chore` for generated/config/tooling-only changes.
+   - Choose `scope` from the primary repo/package/domain touched, not from the plan slug.
+   - The subject must make sense to a developer who has not read the plan; do not use initiative names, plan slugs, or wave numbers as the main meaning.
    - Do NOT amend or rebase
-   - If a phase touched multiple concerns, prefer one commit per concern
+   - If a wave touched multiple unrelated concerns, make one commit per concern before marking the wave complete
    - If generated files need updating (types from schemas, compiled outputs), regenerate and include them
 
    Creates rollback points between phases. Skip for trivial single-file changes.
