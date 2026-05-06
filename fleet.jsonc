@@ -50,6 +50,12 @@
         "persist_final_plan",
         "read_final_plan",
         "discard_final_plan",
+        "persist_brainstorm",
+        "read_brainstorm",
+        "discard_brainstorm",
+        "persist_design",
+        "read_design",
+        "discard_design",
         "conflict_context",
         "context_usage",
         "lifecycle_concord_ingest"
@@ -77,5 +83,8 @@
       "telemetry": { "sink": true, "emits": ["memory", "artifact", "retrieval"] }
     }
   ],
-  "external_plugins": []
+  "external_plugins": [
+    // DCP owns context pruning through dcp.jsonc and prompt overrides.
+    "@tarquinen/opencode-dcp@latest"
+  ]
 }
