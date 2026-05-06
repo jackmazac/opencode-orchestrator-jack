@@ -1,9 +1,6 @@
 {
   "$schema": "https://opencode.ai/config.json",
   "autoupdate": false,
-  "compaction": {
-    "reserved": 160000
-  },
   "plugin": [
     "file:///Users/jack.mazac/Developer/opencode-conductor/src/index.ts"
   ],
