@@ -13,7 +13,7 @@
       "source": { "kind": "file", "ref": "~/Developer/opencode-host-adapter" },
       "enabled": true,
       "check_command": "bun test",
-      "telemetry": { "sink": true, "emits": ["plugin-boundary"] }
+      "telemetry": { "emits": ["plugin-boundary"] }
     },
     {
       "name": "conductor",
@@ -58,7 +58,20 @@
         "discard_design",
         "conflict_context",
         "context_usage",
-        "lifecycle_concord_ingest"
+        "lifecycle_concord_ingest",
+        "explore_fast",
+        "discard_explore_cache",
+        "commit",
+        "artifact_index",
+        "run_list",
+        "session_init",
+        "drift_check",
+        "plan_validate",
+        "journal_search",
+        "workspace_info",
+        "task_dispatch",
+        "spine_query",
+        "changelog_emit"
       ],
       "doctor_command": "bun run check",
       "telemetry": { "emits": ["profile", "policy", "lifecycle"] }
@@ -69,7 +82,7 @@
       "source": { "kind": "file", "ref": "~/Developer/engram" },
       "plugin_ref": "file://~/Developer/engram/src/index.ts",
       "cli_bin": "engram",
-      "enabled": false,
+      "enabled": true,
       "expected_tools": [
         "memory",
         "memory_context",
@@ -81,6 +94,50 @@
       ],
       "doctor_command": "bun run check",
       "telemetry": { "sink": true, "emits": ["memory", "artifact", "retrieval"] }
+    },
+    {
+      "name": "concord",
+      "package": "@concord/plugin",
+      "source": { "kind": "file", "ref": "~/Developer/concord" },
+      "plugin_ref": "file://~/Developer/concord/packages/concord-plugin/src/index.ts",
+      "cli_bin": "concord",
+      "enabled": true,
+      "mode": "hook",
+      "expected_hooks": [
+        "chat.message",
+        "event",
+        "experimental.session.compacting",
+        "tool.execute.before",
+        "tool.execute.after"
+      ],
+      "expected_hooks_exact": true,
+      "check_command": "bun run check",
+      "check_timeout_ms": 300000,
+      "telemetry": { "emits": ["collision", "guidance", "health"] }
+    },
+    {
+      "name": "codemem",
+      "package": "@codemem/plugin",
+      "source": { "kind": "file", "ref": "~/Developer/codemem" },
+      "plugin_ref": "file://~/Developer/codemem/packages/codemem-plugin/src/index.ts",
+      "cli_bin": "codemem",
+      "enabled": true,
+      "mode": "plugin",
+      "expected_tools": [
+        "codemem_check",
+        "codemem_drift_map",
+        "codemem_conflicts",
+        "codemem_change_risk",
+        "codemem_before_edit",
+        "codemem_review_focus",
+        "codemem_api_surface",
+        "codemem_impact_cone",
+        "codemem_layer_boundaries",
+        "codemem_artifact"
+      ],
+      "check_command": "bun run verify",
+      "check_timeout_ms": 300000,
+      "telemetry": { "emits": ["graph", "review", "health"] }
     }
   ],
   "external_plugins": [
