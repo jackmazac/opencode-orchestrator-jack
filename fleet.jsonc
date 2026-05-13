@@ -82,7 +82,7 @@
       "source": { "kind": "file", "ref": "~/Developer/engram" },
       "plugin_ref": "file://~/Developer/engram/src/index.ts",
       "cli_bin": "engram",
-      "enabled": false,
+      "enabled": true,
       "expected_tools": [
         "memory",
         "memory_context",
@@ -101,7 +101,7 @@
       "source": { "kind": "file", "ref": "~/Developer/concord" },
       "plugin_ref": "file://~/Developer/concord/packages/concord-plugin/src/index.ts",
       "cli_bin": "concord",
-      "enabled": false,
+      "enabled": true,
       "mode": "hook",
       "expected_hooks": [
         "chat.message",
@@ -121,7 +121,7 @@
       "source": { "kind": "file", "ref": "~/Developer/codemem" },
       "plugin_ref": "file://~/Developer/codemem/packages/codemem-plugin/src/index.ts",
       "cli_bin": "codemem",
-      "enabled": false,
+      "enabled": true,
       "mode": "plugin",
       "expected_tools": [
         "codemem_check",
