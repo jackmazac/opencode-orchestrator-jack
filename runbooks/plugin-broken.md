@@ -117,7 +117,7 @@ bun test
 | `n._zod.def` undefined during chat | Plugin uses `args: z.object({...})` instead of `args: { ... }` | Change to ZodRawShape literal; preflight catches this |
 | `Configured OCX binary "undefined"` at load | Worktree plugin's named exports are probed by opencode loader | Un-export internal helpers; only export the Plugin |
 | `ENOENT: no such file or directory ... @codemem/package.json` | Codemem not published to npm; opencode looks in cache | Use `file://` ref to local install in opencode.json |
-| Conductor tools differ from your dev tree | npm `opencode-conductor` is NocturnLabs' package, not yours | Rename to `@jackmazac/opencode-conductor`; quarantine cache |
+| Conductor tools differ from your dev tree | npm `opencode-conductor` is NocturnLabs' package, not yours | Rename to `@mazac-fox/opencode-conductor`; quarantine cache |
 
 ## What NOT to do
 

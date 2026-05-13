@@ -9,7 +9,7 @@
     {
       // host-adapter is a library/contract harness, not a runtime plugin.
       "name": "host-adapter",
-      "package": "@jackmazac/opencode-host-adapter",
+      "package": "@mazac-fox/opencode-host-adapter",
       "source": { "kind": "file", "ref": "~/Developer/opencode-host-adapter" },
       "enabled": true,
       "check_command": "bun test",
@@ -17,7 +17,7 @@
     },
     {
       "name": "conductor",
-      "package": "@jackmazac/opencode-conductor",
+      "package": "@mazac-fox/opencode-conductor",
       "source": { "kind": "file", "ref": "~/Developer/opencode-conductor" },
       "plugin_ref": "file://~/Developer/opencode-conductor/src/index.ts",
       "cli_bin": "conductor",
@@ -117,7 +117,7 @@
     },
     {
       "name": "codemem",
-      "package": "@codemem/plugin",
+      "package": "@mazac-fox/codemem-plugin",
       "source": { "kind": "file", "ref": "~/Developer/codemem" },
       "plugin_ref": "file://~/Developer/codemem/packages/codemem-plugin/src/index.ts",
       "cli_bin": "codemem",

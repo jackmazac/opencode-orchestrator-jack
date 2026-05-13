@@ -21,7 +21,7 @@ This directory is the runtime boundary between the user's machine and the fleet.
 
 ## Canonical contracts
 
-ID types (`AgentRunId`, `PlanId`, `PlanSlug`, `WorkspaceId`, `CorrelationId`, `WaveId`, `TaskId`, `SpineSeq`, `ArtifactRef`, `LifecycleObjectId`, `ConcordEventId`, `FleetRunId`), the telemetry envelope, artifact ref shapes, and the canonical `HealthReport` all come from `@jackmazac/opencode-fleet-contracts` via `@jackmazac/opencode-host-adapter`. Do not redefine them here.
+ID types (`AgentRunId`, `PlanId`, `PlanSlug`, `WorkspaceId`, `CorrelationId`, `WaveId`, `TaskId`, `SpineSeq`, `ArtifactRef`, `LifecycleObjectId`, `ConcordEventId`, `FleetRunId`), the telemetry envelope, artifact ref shapes, and the canonical `HealthReport` all come from `@mazac-fox/opencode-fleet-contracts` via `@mazac-fox/opencode-host-adapter`. Do not redefine them here.
 
 ## What agents do here
 
@@ -133,8 +133,8 @@ This directory is downstream of `opencode-fleet` (the install/doctor/test/hygien
 
 | Plugin | Package | Kind | Runtime |
 |--------|---------|------|---------|
-| host-adapter | `@jackmazac/opencode-host-adapter` | file ref | Library-only; no `plugin_ref` |
-| conductor | `@jackmazac/opencode-conductor` | file ref | `file://~/Developer/opencode-conductor/src/index.ts` |
+| host-adapter | `@mazac-fox/opencode-host-adapter` | file ref | Library-only; no `plugin_ref` |
+| conductor | `@mazac-fox/opencode-conductor` | file ref | `file://~/Developer/opencode-conductor/src/index.ts` |
 | engram | `opencode-engram` | file ref | `file://~/Developer/engram/src/index.ts` (disabled by default; set `enabled` to load) |
 
 There is no `external_plugins` entry in `fleet.jsonc` (community npm plugins are opt-in elsewhere, not Fleet-managed here).
