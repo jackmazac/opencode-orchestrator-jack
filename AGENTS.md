@@ -40,6 +40,7 @@ ID types (`AgentRunId`, `PlanId`, `PlanSlug`, `WorkspaceId`, `CorrelationId`, `W
 - Add duplicate validation logic. Fleet `doctor`, `test`, and `hygiene` already cover it.
 - Commit secrets. `.env` is gitignored; use macOS Keychain or `.env` locally only.
 - Create or write to `~/.config/opencode/.opencode/`. This directory is gitignored and must never hold per-project runtime artifacts; those belong in each project's worktree.
+- Maintain a **`prompts/`** tree here that mirrors **Conductor** agent prompts (`orchestrator.txt`, `planner.txt`, etc.). Generated **`opencode.json`** loads those from **`./node_modules/@mazac-fox/opencode-conductor/prompts/`**; copies under `~/.config/opencode/prompts/` only drift and confuse.
 - Bump Zod without coordinating across the fleet. The pin at `4.1.8` matches the plugin SDK expectation.
 - Change branch structure without reviewing the `plan-persistence-config` merge plan in `README.md`.
 
