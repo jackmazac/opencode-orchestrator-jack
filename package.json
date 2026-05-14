@@ -1,8 +1,8 @@
 {
   "dependencies": {
-    "@mazac-fox/codemem-plugin": "file:/Users/jack.mazac/Developer/codemem/packages/codemem-plugin",
+    "@mazac-fox/codemem-plugin": "file:/Users/jack.mazac/Developer/codemem",
     "@mazac-fox/codemem-shared": "file:/Users/jack.mazac/Developer/codemem/packages/codemem-shared",
-    "@mazac-fox/concord-plugin": "file:/Users/jack.mazac/Developer/concord/packages/concord-plugin",
+    "@mazac-fox/concord-plugin": "file:/Users/jack.mazac/Developer/concord",
     "@mazac-fox/concord-shared": "file:/Users/jack.mazac/Developer/concord/packages/concord-shared",
     "@mazac-fox/opencode-conductor": "file:/Users/jack.mazac/Developer/opencode-conductor",
     "@mazac-fox/opencode-fleet": "file:/Users/jack.mazac/Developer/opencode-fleet",
