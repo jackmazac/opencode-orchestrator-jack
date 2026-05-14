@@ -97,7 +97,7 @@
     },
     {
       "name": "concord",
-      "package": "@concord/plugin",
+      "package": "@mazac-fox/concord-plugin",
       "source": { "kind": "file", "ref": "~/Developer/concord" },
       "plugin_ref": "file://~/Developer/concord/packages/concord-plugin/src/index.ts",
       "cli_bin": "concord",
