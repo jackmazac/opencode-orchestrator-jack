@@ -1,7 +1,7 @@
 {
   "dependencies": {
-    "@codemem/plugin": "file:/Users/jack.mazac/Developer/codemem/artifacts/codemem-plugin-0.1.1.tgz",
-    "@codemem/shared": "file:/Users/jack.mazac/Developer/codemem/artifacts/codemem-shared-0.1.0.tgz",
+    "@mazac-fox/codemem-plugin": "file:/Users/jack.mazac/Developer/codemem/packages/codemem-plugin",
+    "@mazac-fox/codemem-shared": "file:/Users/jack.mazac/Developer/codemem/packages/codemem-shared",
     "@concord/plugin": "file:/Users/jack.mazac/Developer/concord/packages/concord-plugin",
     "@concord/shared": "file:/Users/jack.mazac/Developer/concord/packages/concord-shared",
     "@mazac-fox/opencode-conductor": "file:/Users/jack.mazac/Developer/opencode-conductor",
@@ -18,7 +18,7 @@
     "@typescript/native-preview": "latest"
   },
   "overrides": {
-    "@codemem/shared": "file:/Users/jack.mazac/Developer/codemem/artifacts/codemem-shared-0.1.0.tgz",
+    "@mazac-fox/codemem-shared": "file:/Users/jack.mazac/Developer/codemem/packages/codemem-shared",
     "@concord/shared": "file:/Users/jack.mazac/Developer/concord/packages/concord-shared"
   },
   "scripts": {

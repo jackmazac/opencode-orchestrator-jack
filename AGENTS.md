@@ -65,21 +65,35 @@ bun run /Users/jack.mazac/Developer/opencode-fleet/src/cli.ts generate-opencode-
 
 ## Regeneration workflow
 
-1. Edit `fleet.jsonc` (enable/disable plugin, update `expected_tools`, add/remove entries).
+1. Edit `fleet.jsonc` (enable/disable plugin, update `expected_tools`, add/remove entries). For **registry-based** installs (no local `~/Developer` paths), start from **`examples/fleet.npm.jsonc`** in the **opencode-fleet** repo and align `plugin_ref` with `opencode_config.root`.
 2. Regenerate:
    ```bash
    bun run /Users/jack.mazac/Developer/opencode-fleet/src/cli.ts generate-opencode-json --force
+   ```
+   Or with an explicit manifest:
+   ```bash
+   bun run /Users/jack.mazac/Developer/opencode-fleet/src/cli.ts generate-opencode-json --manifest /path/to/fleet.npm.jsonc --force
    ```
 3. Review the diff: only the `plugin` array in `opencode.json` should change; agent/mcp/formatter/lsp/instructions sections must remain byte-identical.
 4. Install updated dependencies:
    ```bash
    bun run /Users/jack.mazac/Developer/opencode-fleet/src/cli.ts install
    ```
+   Or: `bun run .../opencode-fleet/src/cli.ts install --manifest /path/to/fleet.npm.jsonc`
 5. Validate the full runtime contract:
    ```bash
    bun run fleet:test:full-runtime
    ```
 6. Commit `fleet.jsonc` + `opencode.json` + `.opencode-fleet.lock.json` + `package.json` + `bun.lock` as a single logical commit.
+
+### Consumer vs maintainer manifests
+
+| Goal | Manifest pattern |
+|------|------------------|
+| End users / CI | **`source.kind: "package"`** + `version`, `plugin_ref` under `~/…/node_modules/…` (see **opencode-fleet** `examples/fleet.npm.jsonc`) |
+| Maintainers | **`source.kind: "file"`** + `~/Developer/…` (see `examples/fleet.local.jsonc`) or npm manifest + **`package.json` overrides** to `file:` local checkouts |
+
+Do not commit machine-specific **`/Users/...`** `file:` paths. Use tilde paths or overrides.
 
 ## Validation before commit
 
